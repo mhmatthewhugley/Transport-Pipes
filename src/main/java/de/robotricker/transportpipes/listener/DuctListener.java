@@ -30,6 +30,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
@@ -138,7 +139,7 @@ public class DuctListener implements Listener {
                 boolean manualPlaceable = itemDuctType != null || interaction.item.getType().isSolid();
 
                 // ********************** WRENCH DUCT CLICK ****************************
-                if (clickedDuct != null && (itemService.isWrench(interaction.item) || !generalConf.getWrenchRequired())) {
+                if (clickedDuct != null && (itemService.isWrench(interaction.item) || (!generalConf.getWrenchRequired() && !canBeUsedToObfuscate(interaction.item.getType())))) {
                     //wrench click
                     if (buildAllowed(interaction.p, clickedDuct.getBlockLoc().toBlock(interaction.p.getWorld()))) {
                         clickedDuct.notifyClick(interaction.p, interaction.p.isSneaking());
@@ -171,7 +172,10 @@ public class DuctListener implements Listener {
                         setDirectionalBlockFace(ductBlock.getLocation(), bd, interaction.p);
                         ductBlock.setBlockData(bd, true);
                         clickedDuct.obfuscatedWith(bd);
-
+                        
+                        BlockPlaceEvent event = new BlockPlaceEvent(ductBlock, ductBlock.getState(), ductBlock.getRelative(BlockFace.DOWN), interaction.item, interaction.p, true, interaction.hand);
+                        Bukkit.getServer().getPluginManager().callEvent(event);
+                        
                         decreaseHandItem(interaction.p, interaction.hand);
                     }
 
@@ -239,6 +243,10 @@ public class DuctListener implements Listener {
                             if (WorldUtils.isContainerBlock(interaction.item.getType())) {
                                 tpContainerListener.updateContainerBlock(placeBlock, true, true);
                             }
+                            
+                            BlockPlaceEvent event = new BlockPlaceEvent(placeBlock, placeBlock.getState(), clickedDuct.getBlockLoc().toBlock(placeBlock.getWorld()), interaction.item, interaction.p, true, interaction.hand);
+                            Bukkit.getServer().getPluginManager().callEvent(event);
+                            
                             decreaseHandItem(interaction.p, interaction.hand);
                         }
                         interaction.cancel = true;
