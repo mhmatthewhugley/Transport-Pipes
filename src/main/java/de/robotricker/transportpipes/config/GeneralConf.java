@@ -52,6 +52,10 @@ public class GeneralConf extends Conf {
     public boolean getWrenchGlowing() {
         return (boolean) read("wrench.glowing");
     }
+    
+    public boolean getWrenchRequired() {
+    	return (boolean) read("wrench.required");
+    }
 
     public String getLanguage() {
         return (String) read("language");

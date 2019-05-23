@@ -15,5 +15,6 @@ disabled_worlds: []
 wrench:
   item: STICK
   glowing: true
+  required: false
 language: en
 show_hidden_ducts_time: 5
