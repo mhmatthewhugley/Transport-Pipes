@@ -1,16 +1,17 @@
 package de.robotricker.transportpipes.container;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.block.DoubleChest;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.Collection;
 
+import de.robotricker.transportpipes.api.DuctExtractEvent;
+import de.robotricker.transportpipes.api.DuctInsertEvent;
 import de.robotricker.transportpipes.duct.pipe.filter.ItemFilter;
 import de.robotricker.transportpipes.location.TPDirection;
 
@@ -53,6 +54,7 @@ public class SimpleInventoryContainer extends BlockContainer {
                 ItemStack invItem = cachedInv.getItem(i);
                 invItem.setAmount(invItem.getAmount() - (itemTaken.getAmount() - amountBefore));
                 cachedInv.setItem(i, invItem.getAmount() <= 0 ? null : invItem);
+        		if (invItem.getAmount() > 0) Bukkit.getServer().getPluginManager().callEvent(new DuctExtractEvent(cachedInv, invItem));
             }
         }
         if (itemTaken != null) {
@@ -70,6 +72,7 @@ public class SimpleInventoryContainer extends BlockContainer {
             return insertion;
         }
         Collection<ItemStack> overflow = cachedInv.addItem(insertion).values();
+		Bukkit.getServer().getPluginManager().callEvent(new DuctInsertEvent(cachedInv, insertion));
         //block.getState().update();
         if (overflow.isEmpty()) {
             return null;
