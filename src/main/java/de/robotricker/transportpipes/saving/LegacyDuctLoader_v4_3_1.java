@@ -48,15 +48,17 @@ public class LegacyDuctLoader_v4_3_1 extends DuctLoader {
         synchronized (globalDuctManager.getDucts()) {
             Map<Duct, CompoundTag> ductCompoundTagMap = new HashMap<>();
             for (CompoundTag ductTag : listTag) {
-                if (!ductTag.getString("DuctType").equals("PIPE")) {
+            	
+                if (!ductTag.getString("DuctDetails").contains("pipe")) {
                     continue;
                 }
+                
                 DuctType ductType;
 
                 String ductDetails = ductTag.getString("DuctDetails");
-                String pipeType = ductDetails.split(";")[1].split(":")[1];
-                if (pipeType.equals("COLORED")) {
-                    String color = ductDetails.split(";")[2].split(":")[1];
+                String pipeType = ductDetails.split(":")[1];
+                if (pipeType.equals("colored")) {
+                    String color = ductDetails.split(":")[2];
                     ductType = ductRegister.baseDuctTypeOf("pipe").ductTypeOf(color);
                 } else {
                     ductType = ductRegister.baseDuctTypeOf("pipe").ductTypeOf(pipeType);
