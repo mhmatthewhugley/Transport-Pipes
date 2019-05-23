@@ -139,7 +139,7 @@ public class DuctListener implements Listener {
                 boolean manualPlaceable = itemDuctType != null || interaction.item.getType().isSolid();
 
                 // ********************** WRENCH DUCT CLICK ****************************
-                if (clickedDuct != null && (itemService.isWrench(interaction.item) || (!generalConf.getWrenchRequired() && !canBeUsedToObfuscate(interaction.item.getType())))) {
+                if (clickedDuct != null && itemDuctType == null && (itemService.isWrench(interaction.item) || (!generalConf.getWrenchRequired() && !canBeUsedToObfuscate(interaction.item.getType())))) {
                     //wrench click
                     if (buildAllowed(interaction.p, clickedDuct.getBlockLoc().toBlock(interaction.p.getWorld()))) {
                         clickedDuct.notifyClick(interaction.p, interaction.p.isSneaking());
