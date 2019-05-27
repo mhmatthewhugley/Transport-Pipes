@@ -52,12 +52,16 @@ public class ItemFilter {
         }
         if (getFilterMode() == FilterMode.NORMAL) {
             int weight = 0;
+            boolean hasItem = false;
             for (ItemData id : filterItems) {
-                if (id != null && matchesItemStrictness(id.toItemStack(), item)) {
-                    weight++;
-                }
+            	if (id != null) {
+            		hasItem = true;
+                    if (matchesItemStrictness(id.toItemStack(), item)) {
+                        weight++;
+                    }
+            	}
             }
-            return weight;
+            return hasItem ? weight : 1;
         }
         if (getFilterMode() == FilterMode.INVERTED) {
             for (ItemData id : filterItems) {
