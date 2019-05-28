@@ -50,6 +50,7 @@ public class GoldenPipe extends Pipe {
     protected Map<TPDirection, Integer> calculateItemDistribution(PipeItem pipeItem, TPDirection movingDir, List<TPDirection> dirs, TransportPipes transportPipes) {
         Map<TPDirection, Integer> dirAmtWithItems = new HashMap<>();
         Map<TPDirection, Integer> dirAmtWithoutItems = new HashMap<>();
+        dirs.remove(movingDir.getOpposite());
         for (TPDirection dir : dirs) {
         	FilterResponse response = getItemFilter(Color.getByDir(dir)).applyFilter(pipeItem.getItem());
             int amount = response.getAmount();
