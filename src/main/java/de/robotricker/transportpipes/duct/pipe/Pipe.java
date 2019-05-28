@@ -8,12 +8,14 @@ import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import de.robotricker.transportpipes.TransportPipes;
@@ -75,7 +77,25 @@ public class Pipe extends Duct {
     @Override
     public Set<TPDirection> getAllConnections() {
         Set<TPDirection> allConnections = super.getAllConnections();
+        
+        if (this instanceof IronPipe) {
+        	Iterator<TPDirection> iterator = allConnections.iterator();
+        	while (iterator.hasNext()) {
+        		TPDirection dir = iterator.next();
+        		if (getDuctConnections().containsKey(dir)) {
+        			if (getDuctConnections().get(dir) instanceof IronPipe) {
+        				IronPipe ironPipe = (IronPipe) getDuctConnections().get(dir);
+        				TPDirection direction = ironPipe.getCurrentOutputDirection();
+        				if (dir == direction.getOpposite()) {
+        					iterator.remove();
+        				}
+        			}
+        		}
+        	}
+        }
+        
         allConnections.addAll(getContainerConnections().keySet());
+
         return allConnections;
     }
 
