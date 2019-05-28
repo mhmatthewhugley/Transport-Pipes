@@ -38,13 +38,13 @@ public class BrewingStandContainer extends BlockContainer {
         }
         if (extractDirection != TPDirection.DOWN && ((BrewingStand) block.getState()).getBrewingTime() == 0) {
             ItemStack takeItem = null;
-            if (itemFilter.applyFilter(cachedInv.getItem(0)) > 0) {
+            if (itemFilter.applyFilter(cachedInv.getItem(0)).getAmount() > 0) {
                 takeItem = cachedInv.getItem(0);
                 cachedInv.setItem(0, null);
-            } else if (itemFilter.applyFilter(cachedInv.getItem(1)) > 0) {
+            } else if (itemFilter.applyFilter(cachedInv.getItem(1)).getAmount() > 0) {
                 takeItem = cachedInv.getItem(1);
                 cachedInv.setItem(1, null);
-            } else if (itemFilter.applyFilter(cachedInv.getItem(2)) > 0) {
+            } else if (itemFilter.applyFilter(cachedInv.getItem(2)).getAmount() > 0) {
                 takeItem = cachedInv.getItem(2);
                 cachedInv.setItem(2, null);
             }

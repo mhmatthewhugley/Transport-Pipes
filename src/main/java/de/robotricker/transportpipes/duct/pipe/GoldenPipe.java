@@ -3,7 +3,6 @@ package de.robotricker.transportpipes.duct.pipe;
 import net.querz.nbt.CompoundTag;
 import net.querz.nbt.ListTag;
 
-import org.bukkit.ChatColor;
 import org.bukkit.Chunk;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -13,17 +12,16 @@ import org.bukkit.inventory.ItemStack;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import de.robotricker.transportpipes.TransportPipes;
 import de.robotricker.transportpipes.config.LangConf;
 import de.robotricker.transportpipes.duct.manager.DuctManager;
 import de.robotricker.transportpipes.duct.manager.GlobalDuctManager;
+import de.robotricker.transportpipes.duct.pipe.filter.FilterResponse;
 import de.robotricker.transportpipes.duct.pipe.filter.ItemDistributorService;
 import de.robotricker.transportpipes.duct.pipe.filter.ItemFilter;
 import de.robotricker.transportpipes.duct.pipe.items.PipeItem;
 import de.robotricker.transportpipes.duct.types.DuctType;
 import de.robotricker.transportpipes.inventory.DuctSettingsInventory;
-import de.robotricker.transportpipes.inventory.GoldenPipeSettingsInventory;
 import de.robotricker.transportpipes.items.ItemService;
 import de.robotricker.transportpipes.location.BlockLocation;
 import de.robotricker.transportpipes.location.TPDirection;
@@ -50,12 +48,29 @@ public class GoldenPipe extends Pipe {
 
     @Override
     protected Map<TPDirection, Integer> calculateItemDistribution(PipeItem pipeItem, TPDirection movingDir, List<TPDirection> dirs, TransportPipes transportPipes) {
-        Map<TPDirection, Integer> absWeights = new HashMap<>();
+        Map<TPDirection, Integer> dirAmtWithItems = new HashMap<>();
+        Map<TPDirection, Integer> dirAmtWithoutItems = new HashMap<>();
         for (TPDirection dir : dirs) {
-            int amount = getItemFilter(Color.getByDir(dir)).applyFilter(pipeItem.getItem());
-            absWeights.put(dir, amount);
+        	FilterResponse response = getItemFilter(Color.getByDir(dir)).applyFilter(pipeItem.getItem());
+            int amount = response.getAmount();
+            if (response.hasItem()) {
+            	dirAmtWithItems.put(dir, amount);
+            }
+            else {
+            	dirAmtWithoutItems.put(dir, amount);
+            }
         }
-        return itemDistributor.splitPipeItem(pipeItem.getItem(), absWeights, this);
+        if (!dirAmtWithItems.isEmpty()) {
+        	Map<TPDirection, Integer> splitMap = itemDistributor.splitPipeItem(pipeItem.getItem(), dirAmtWithItems, this);
+        	if (splitMap.isEmpty()) {
+        		dirAmtWithItems.putAll(dirAmtWithoutItems);
+        		return itemDistributor.splitPipeItem(pipeItem.getItem(), dirAmtWithItems, this);
+        	}
+        	else {
+        		return splitMap;
+        	}
+        }
+        return itemDistributor.splitPipeItem(pipeItem.getItem(), dirAmtWithoutItems, this);
     }
 
     @Override

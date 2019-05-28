@@ -43,7 +43,7 @@ public class SimpleInventoryContainer extends BlockContainer {
         }
         ItemStack itemTaken = null;
         for (int i = 0; i < cachedInv.getSize(); i++) {
-            if (itemFilter.applyFilter(cachedInv.getItem(i)) > 0) {
+            if (itemFilter.applyFilter(cachedInv.getItem(i)).getAmount() > 0) {
                 int amountBefore = itemTaken != null ? itemTaken.getAmount() : 0;
                 if (itemTaken == null) {
                     itemTaken = cachedInv.getItem(i).clone();

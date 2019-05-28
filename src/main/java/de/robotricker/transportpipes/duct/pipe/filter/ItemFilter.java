@@ -46,32 +46,39 @@ public class ItemFilter {
         this.filterStrictness = filterStrictness;
     }
 
-    public int applyFilter(ItemStack item) {
+    public FilterResponse applyFilter(ItemStack item) {
         if (item == null || getFilterMode() == FilterMode.BLOCK_ALL) {
-            return 0;
+        	return new FilterResponse(0, false);
         }
         if (getFilterMode() == FilterMode.NORMAL) {
             int weight = 0;
-            boolean hasItem = false;
+            boolean emptyList = true;
             for (ItemData id : filterItems) {
             	if (id != null) {
-            		hasItem = true;
+            		emptyList = false;
                     if (matchesItemStrictness(id.toItemStack(), item)) {
                         weight++;
                     }
             	}
             }
-            return hasItem ? weight : 1;
+            if (emptyList) {
+            	return new FilterResponse(1, false);
+            }
+            else {
+            	return new FilterResponse(weight, weight > 0 ? true : false);
+            }
         }
         if (getFilterMode() == FilterMode.INVERTED) {
             for (ItemData id : filterItems) {
-                if (id != null && matchesItemStrictness(id.toItemStack(), item)) {
-                    return 0;
+                if (id != null) {
+                	if (matchesItemStrictness(id.toItemStack(), item)) {
+                		return new FilterResponse(0, false);
+                	}
                 }
             }
-            return 1;
+            return new FilterResponse(1, true);
         }
-        return 0;
+        return new FilterResponse(0, false);
     }
 
     private boolean matchesItemStrictness(ItemStack mask, ItemStack itemStack) {
