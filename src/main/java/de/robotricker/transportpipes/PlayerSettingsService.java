@@ -1,11 +1,11 @@
 package de.robotricker.transportpipes;
 
-import org.bukkit.entity.Player;
-
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.inject.Inject;
+
+import org.bukkit.entity.Player;
 
 import de.robotricker.transportpipes.config.GeneralConf;
 import de.robotricker.transportpipes.config.PlayerSettingsConf;

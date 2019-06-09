@@ -1,13 +1,5 @@
 package de.robotricker.transportpipes.duct.manager;
 
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.Tag;
-import org.bukkit.World;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.ShapedRecipe;
-
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -17,6 +9,14 @@ import java.util.Set;
 import java.util.TreeMap;
 
 import javax.inject.Inject;
+
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.Tag;
+import org.bukkit.World;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ShapedRecipe;
 
 import de.robotricker.transportpipes.PlayerSettingsService;
 import de.robotricker.transportpipes.TransportPipes;

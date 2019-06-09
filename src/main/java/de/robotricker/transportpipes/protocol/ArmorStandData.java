@@ -1,9 +1,9 @@
 package de.robotricker.transportpipes.protocol;
 
+import java.util.Objects;
+
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
-
-import java.util.Objects;
 
 import de.robotricker.transportpipes.location.RelativeLocation;
 

@@ -1,15 +1,12 @@
 package de.robotricker.transportpipes.saving;
 
-import net.querz.nbt.CompoundTag;
-import net.querz.nbt.ListTag;
-
-import org.bukkit.World;
-import org.bukkit.inventory.ItemStack;
-
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.inject.Inject;
+
+import org.bukkit.World;
+import org.bukkit.inventory.ItemStack;
 
 import de.robotricker.transportpipes.duct.Duct;
 import de.robotricker.transportpipes.duct.DuctRegister;
@@ -31,6 +28,8 @@ import de.robotricker.transportpipes.items.ItemService;
 import de.robotricker.transportpipes.location.BlockLocation;
 import de.robotricker.transportpipes.location.RelativeLocation;
 import de.robotricker.transportpipes.location.TPDirection;
+import net.querz.nbt.CompoundTag;
+import net.querz.nbt.ListTag;
 
 public class LegacyDuctLoader_v4_3_1 extends DuctLoader {
 

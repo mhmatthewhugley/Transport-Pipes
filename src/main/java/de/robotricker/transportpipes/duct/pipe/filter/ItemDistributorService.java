@@ -1,7 +1,5 @@
 package de.robotricker.transportpipes.duct.pipe.filter;
 
-import org.bukkit.inventory.ItemStack;
-
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -10,6 +8,8 @@ import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
+
+import org.bukkit.inventory.ItemStack;
 
 import de.robotricker.transportpipes.api.TransportPipesContainer;
 import de.robotricker.transportpipes.duct.Duct;

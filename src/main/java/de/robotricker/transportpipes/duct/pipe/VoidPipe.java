@@ -1,11 +1,11 @@
 package de.robotricker.transportpipes.duct.pipe;
 
+import java.util.List;
+import java.util.Map;
+
 import org.bukkit.Chunk;
 import org.bukkit.Material;
 import org.bukkit.World;
-
-import java.util.List;
-import java.util.Map;
 
 import de.robotricker.transportpipes.TransportPipes;
 import de.robotricker.transportpipes.duct.manager.GlobalDuctManager;

@@ -1,8 +1,8 @@
 package de.robotricker.transportpipes.duct.manager;
 
-import org.bukkit.entity.Player;
-
 import javax.inject.Inject;
+
+import org.bukkit.entity.Player;
 
 import de.robotricker.transportpipes.TransportPipes;
 import de.robotricker.transportpipes.duct.Duct;

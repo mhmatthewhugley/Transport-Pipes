@@ -1,20 +1,13 @@
 package de.robotricker.transportpipes.listener;
 
-import de.robotricker.transportpipes.PlayerSettingsService;
-import de.robotricker.transportpipes.ThreadService;
-import de.robotricker.transportpipes.TransportPipes;
-import de.robotricker.transportpipes.config.GeneralConf;
-import de.robotricker.transportpipes.config.LangConf;
-import de.robotricker.transportpipes.duct.Duct;
-import de.robotricker.transportpipes.duct.DuctRegister;
-import de.robotricker.transportpipes.duct.manager.GlobalDuctManager;
-import de.robotricker.transportpipes.duct.types.DuctType;
-import de.robotricker.transportpipes.items.ItemService;
-import de.robotricker.transportpipes.location.BlockLocation;
-import de.robotricker.transportpipes.location.TPDirection;
-import de.robotricker.transportpipes.log.SentryService;
-import de.robotricker.transportpipes.utils.HitboxUtils;
-import de.robotricker.transportpipes.utils.WorldUtils;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
+import javax.inject.Inject;
+
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -38,8 +31,21 @@ import org.bukkit.plugin.RegisteredListener;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.Vector;
 
-import javax.inject.Inject;
-import java.util.*;
+import de.robotricker.transportpipes.PlayerSettingsService;
+import de.robotricker.transportpipes.ThreadService;
+import de.robotricker.transportpipes.TransportPipes;
+import de.robotricker.transportpipes.config.GeneralConf;
+import de.robotricker.transportpipes.config.LangConf;
+import de.robotricker.transportpipes.duct.Duct;
+import de.robotricker.transportpipes.duct.DuctRegister;
+import de.robotricker.transportpipes.duct.manager.GlobalDuctManager;
+import de.robotricker.transportpipes.duct.types.DuctType;
+import de.robotricker.transportpipes.items.ItemService;
+import de.robotricker.transportpipes.location.BlockLocation;
+import de.robotricker.transportpipes.location.TPDirection;
+import de.robotricker.transportpipes.log.SentryService;
+import de.robotricker.transportpipes.utils.HitboxUtils;
+import de.robotricker.transportpipes.utils.WorldUtils;
 
 public class DuctListener implements Listener {
 

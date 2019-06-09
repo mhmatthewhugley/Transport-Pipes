@@ -1,11 +1,5 @@
 package de.robotricker.transportpipes;
 
-import org.bukkit.Bukkit;
-import org.bukkit.Material;
-import org.bukkit.World;
-import org.bukkit.entity.Player;
-import org.bukkit.plugin.java.JavaPlugin;
-
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -15,14 +9,17 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
+import org.bukkit.Bukkit;
+import org.bukkit.Material;
+import org.bukkit.World;
+import org.bukkit.entity.Player;
+import org.bukkit.plugin.java.JavaPlugin;
+
 import de.robotricker.transportpipes.duct.Duct;
-import de.robotricker.transportpipes.duct.DuctRegister;
 import de.robotricker.transportpipes.duct.manager.GlobalDuctManager;
-import de.robotricker.transportpipes.items.ItemService;
 import de.robotricker.transportpipes.location.BlockLocation;
 import de.robotricker.transportpipes.log.LoggerService;
 import de.robotricker.transportpipes.log.SentryService;
-import de.robotricker.transportpipes.protocol.ProtocolService;
 import de.robotricker.transportpipes.utils.WorldUtils;
 
 public class ThreadService extends Thread {

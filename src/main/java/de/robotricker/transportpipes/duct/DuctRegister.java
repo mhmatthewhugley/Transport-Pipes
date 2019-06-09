@@ -1,7 +1,5 @@
 package de.robotricker.transportpipes.duct;
 
-import net.querz.nbt.CompoundTag;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,6 +13,7 @@ import de.robotricker.transportpipes.duct.types.BaseDuctType;
 import de.robotricker.transportpipes.duct.types.DuctType;
 import de.robotricker.transportpipes.items.ItemManager;
 import de.robotricker.transportpipes.location.BlockLocation;
+import net.querz.nbt.CompoundTag;
 
 public class DuctRegister {
 

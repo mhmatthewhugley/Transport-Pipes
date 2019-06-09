@@ -1,10 +1,10 @@
 package de.robotricker.transportpipes.config;
 
-import org.bukkit.plugin.Plugin;
-
 import java.util.List;
 
 import javax.inject.Inject;
+
+import org.bukkit.plugin.Plugin;
 
 import de.robotricker.transportpipes.ResourcepackService;
 

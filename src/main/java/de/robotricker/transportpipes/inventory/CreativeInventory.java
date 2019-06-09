@@ -1,11 +1,11 @@
 package de.robotricker.transportpipes.inventory;
 
+import javax.inject.Inject;
+
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-
-import javax.inject.Inject;
 
 import de.robotricker.transportpipes.config.LangConf;
 import de.robotricker.transportpipes.duct.Duct;

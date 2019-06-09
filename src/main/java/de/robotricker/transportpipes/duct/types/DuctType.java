@@ -4,12 +4,11 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import de.robotricker.transportpipes.duct.Duct;
-import net.querz.nbt.CompoundTag;
-
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Recipe;
+
+import de.robotricker.transportpipes.duct.Duct;
 
 public class DuctType {
 

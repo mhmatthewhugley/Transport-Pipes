@@ -1,8 +1,8 @@
 package de.robotricker.transportpipes.items;
 
-import org.bukkit.inventory.ItemStack;
-
 import javax.inject.Inject;
+
+import org.bukkit.inventory.ItemStack;
 
 import de.robotricker.transportpipes.duct.DuctRegister;
 import de.robotricker.transportpipes.duct.pipe.Pipe;

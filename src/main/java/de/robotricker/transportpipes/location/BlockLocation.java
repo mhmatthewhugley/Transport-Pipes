@@ -1,11 +1,11 @@
 package de.robotricker.transportpipes.location;
 
+import java.util.Objects;
+
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.Objects;
 
 public class BlockLocation implements Comparable<BlockLocation> {
 

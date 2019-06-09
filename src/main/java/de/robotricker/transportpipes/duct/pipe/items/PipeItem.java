@@ -1,7 +1,5 @@
 package de.robotricker.transportpipes.duct.pipe.items;
 
-import net.querz.nbt.CompoundTag;
-
 import org.bukkit.World;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
@@ -11,6 +9,7 @@ import de.robotricker.transportpipes.location.BlockLocation;
 import de.robotricker.transportpipes.location.RelativeLocation;
 import de.robotricker.transportpipes.location.TPDirection;
 import de.robotricker.transportpipes.protocol.ArmorStandData;
+import net.querz.nbt.CompoundTag;
 
 public class PipeItem {
 

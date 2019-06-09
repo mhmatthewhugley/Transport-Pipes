@@ -1,8 +1,11 @@
 package de.robotricker.transportpipes.utils;
 
-import com.comphenix.packetwrapper.WrapperPlayServerTitle;
-import com.comphenix.protocol.wrappers.EnumWrappers;
-import com.comphenix.protocol.wrappers.WrappedChatComponent;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -10,12 +13,9 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import com.comphenix.packetwrapper.WrapperPlayServerTitle;
+import com.comphenix.protocol.wrappers.EnumWrappers;
+import com.comphenix.protocol.wrappers.WrappedChatComponent;
 
 import de.robotricker.transportpipes.PlayerSettingsService;
 import de.robotricker.transportpipes.ThreadService;

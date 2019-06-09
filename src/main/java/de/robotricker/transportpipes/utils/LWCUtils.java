@@ -1,17 +1,17 @@
 package de.robotricker.transportpipes.utils;
 
-import com.griefcraft.model.Protection;
-import com.griefcraft.scripting.JavaModule;
-import com.griefcraft.scripting.event.LWCProtectionRegistrationPostEvent;
-
-import org.bukkit.Location;
-
 import java.util.Map;
 
 import javax.inject.Inject;
 
-import de.robotricker.transportpipes.config.LangConf;
+import org.bukkit.Location;
+
+import com.griefcraft.model.Protection;
+import com.griefcraft.scripting.JavaModule;
+import com.griefcraft.scripting.event.LWCProtectionRegistrationPostEvent;
+
 import de.robotricker.transportpipes.api.TransportPipesContainer;
+import de.robotricker.transportpipes.config.LangConf;
 import de.robotricker.transportpipes.duct.Duct;
 import de.robotricker.transportpipes.duct.DuctRegister;
 import de.robotricker.transportpipes.duct.manager.DuctManager;

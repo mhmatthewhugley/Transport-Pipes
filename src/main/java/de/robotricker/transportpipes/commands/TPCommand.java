@@ -1,15 +1,15 @@
 package de.robotricker.transportpipes.commands;
 
+import java.util.Map;
+
+import javax.inject.Inject;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
-
-import java.util.Map;
-
-import javax.inject.Inject;
 
 import co.aikar.commands.BaseCommand;
 import co.aikar.commands.CommandHelp;
@@ -25,7 +25,6 @@ import de.robotricker.transportpipes.duct.manager.GlobalDuctManager;
 import de.robotricker.transportpipes.duct.pipe.Pipe;
 import de.robotricker.transportpipes.inventory.CreativeInventory;
 import de.robotricker.transportpipes.inventory.PlayerSettingsInventory;
-import de.robotricker.transportpipes.items.ItemService;
 import de.robotricker.transportpipes.location.BlockLocation;
 import de.robotricker.transportpipes.utils.MessageUtils;
 

@@ -1,9 +1,9 @@
 package de.robotricker.transportpipes.duct.factory;
 
+import javax.inject.Inject;
+
 import org.bukkit.Chunk;
 import org.bukkit.World;
-
-import javax.inject.Inject;
 
 import de.robotricker.transportpipes.TransportPipes;
 import de.robotricker.transportpipes.duct.Duct;

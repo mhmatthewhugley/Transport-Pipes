@@ -1,5 +1,7 @@
 package de.robotricker.transportpipes.container;
 
+import java.util.Collection;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.Material;
@@ -7,8 +9,6 @@ import org.bukkit.block.Block;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
-
-import java.util.Collection;
 
 import de.robotricker.transportpipes.api.DuctExtractEvent;
 import de.robotricker.transportpipes.api.DuctInsertEvent;

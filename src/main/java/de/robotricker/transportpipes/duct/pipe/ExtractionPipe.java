@@ -1,6 +1,7 @@
 package de.robotricker.transportpipes.duct.pipe;
 
-import net.querz.nbt.CompoundTag;
+import java.util.List;
+import java.util.Map;
 
 import org.bukkit.Chunk;
 import org.bukkit.Material;
@@ -8,9 +9,6 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-
-import java.util.List;
-import java.util.Map;
 
 import de.robotricker.transportpipes.TransportPipes;
 import de.robotricker.transportpipes.api.TransportPipesContainer;
@@ -27,6 +25,7 @@ import de.robotricker.transportpipes.inventory.DuctSettingsInventory;
 import de.robotricker.transportpipes.items.ItemService;
 import de.robotricker.transportpipes.location.BlockLocation;
 import de.robotricker.transportpipes.location.TPDirection;
+import net.querz.nbt.CompoundTag;
 
 public class ExtractionPipe extends Pipe {
 

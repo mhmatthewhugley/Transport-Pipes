@@ -1,10 +1,10 @@
 package de.robotricker.transportpipes.listener;
 
+import javax.inject.Inject;
+
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.world.WorldSaveEvent;
-
-import javax.inject.Inject;
 
 import de.robotricker.transportpipes.TransportPipes;
 

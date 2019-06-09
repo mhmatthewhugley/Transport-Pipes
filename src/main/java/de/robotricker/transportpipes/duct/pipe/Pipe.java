@@ -1,22 +1,17 @@
 package de.robotricker.transportpipes.duct.pipe;
 
-import net.querz.nbt.CompoundTag;
-import net.querz.nbt.ListTag;
-
-import org.bukkit.Chunk;
-import org.bukkit.World;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
+
+import org.bukkit.Chunk;
+import org.bukkit.World;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 import de.robotricker.transportpipes.TransportPipes;
 import de.robotricker.transportpipes.api.TransportPipesContainer;
@@ -34,6 +29,8 @@ import de.robotricker.transportpipes.items.ItemService;
 import de.robotricker.transportpipes.location.BlockLocation;
 import de.robotricker.transportpipes.location.RelativeLocation;
 import de.robotricker.transportpipes.location.TPDirection;
+import net.querz.nbt.CompoundTag;
+import net.querz.nbt.ListTag;
 
 public class Pipe extends Duct {
 
@@ -84,9 +81,7 @@ public class Pipe extends Duct {
         		TPDirection dir = iterator.next();
         		if (getDuctConnections().containsKey(dir)) {
         			if (getDuctConnections().get(dir) instanceof IronPipe) {
-        				IronPipe ironPipe = (IronPipe) getDuctConnections().get(dir);
-        				TPDirection direction = ironPipe.getCurrentOutputDirection();
-        				if (dir == direction.getOpposite()) {
+        				if (dir == ((IronPipe) getDuctConnections().get(dir)).getCurrentOutputDirection().getOpposite()) {
         					iterator.remove();
         				}
         			}

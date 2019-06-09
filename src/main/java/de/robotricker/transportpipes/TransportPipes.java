@@ -1,5 +1,18 @@
 package de.robotricker.transportpipes;
 
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.Iterator;
+import java.util.logging.Logger;
+import java.util.stream.Collectors;
+
+import org.bukkit.Bukkit;
+import org.bukkit.Chunk;
+import org.bukkit.World;
+import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.java.JavaPlugin;
+
 import ch.jalu.injector.Injector;
 import ch.jalu.injector.InjectorBuilder;
 import co.aikar.commands.PaperCommandManager;
@@ -32,18 +45,6 @@ import de.robotricker.transportpipes.utils.LWCUtils;
 import de.robotricker.transportpipes.utils.legacy.LegacyUtils;
 import de.robotricker.transportpipes.utils.legacy.LegacyUtils_1_13;
 import io.sentry.event.Breadcrumb;
-import org.bukkit.Bukkit;
-import org.bukkit.Chunk;
-import org.bukkit.World;
-import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
-import org.bukkit.plugin.java.JavaPlugin;
-
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.Iterator;
-import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
 public class TransportPipes extends JavaPlugin {
 

@@ -1,16 +1,15 @@
 package de.robotricker.transportpipes.duct.pipe.filter;
 
-import net.querz.nbt.CompoundTag;
-import net.querz.nbt.ListTag;
-import net.querz.nbt.StringTag;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import de.robotricker.transportpipes.items.ItemService;
+import net.querz.nbt.CompoundTag;
+import net.querz.nbt.ListTag;
+import net.querz.nbt.StringTag;
 
 public class ItemFilter {
 

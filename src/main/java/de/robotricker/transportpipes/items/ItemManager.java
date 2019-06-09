@@ -1,9 +1,9 @@
 package de.robotricker.transportpipes.items;
 
-import org.bukkit.inventory.ItemStack;
-
 import java.util.HashMap;
 import java.util.Map;
+
+import org.bukkit.inventory.ItemStack;
 
 import de.robotricker.transportpipes.duct.Duct;
 import de.robotricker.transportpipes.duct.types.DuctType;

@@ -1,10 +1,10 @@
 package de.robotricker.transportpipes.rendersystems.pipe.vanilla.model;
 
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.util.Vector;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.util.Vector;
 
 import de.robotricker.transportpipes.duct.pipe.GoldenPipe;
 import de.robotricker.transportpipes.hitbox.AxisAlignedBB;

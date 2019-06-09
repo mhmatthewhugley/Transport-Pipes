@@ -1,11 +1,11 @@
 package de.robotricker.transportpipes.rendersystems.pipe.vanilla.model;
 
-import org.bukkit.Material;
-import org.bukkit.inventory.ItemStack;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.bukkit.Material;
+import org.bukkit.inventory.ItemStack;
 
 import de.robotricker.transportpipes.duct.DuctRegister;
 import de.robotricker.transportpipes.duct.pipe.GoldenPipe;
