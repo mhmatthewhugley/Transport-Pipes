@@ -1,6 +1,7 @@
 package de.robotricker.transportpipes.duct.types;
 
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -94,6 +95,10 @@ public class DuctType {
 
     public void setDuctRecipe(Recipe ductRecipe) {
         this.ductRecipe = ductRecipe;
+        Iterator<Recipe> iterator = Bukkit.recipeIterator();
+        while (iterator.hasNext()) {
+        	if (iterator.next().getResult().equals(ductRecipe.getResult())) return;
+        }
         Bukkit.addRecipe(ductRecipe);
     }
 

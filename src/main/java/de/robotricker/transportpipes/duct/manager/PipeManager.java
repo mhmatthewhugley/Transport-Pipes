@@ -3,6 +3,7 @@ package de.robotricker.transportpipes.duct.manager;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -16,6 +17,7 @@ import org.bukkit.Material;
 import org.bukkit.Tag;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
 
 import de.robotricker.transportpipes.PlayerSettingsService;
@@ -177,6 +179,10 @@ public class PipeManager extends DuctManager<Pipe> {
         ductType.setDuctRecipe(itemService.createShapedRecipe(transportPipes, "crafting_pipe", pipeBaseDuctType.getItemManager().getClonedItem(ductType), new String[]{" a ", "aba", " a "}, 'a', Material.GLASS, 'b', Material.CRAFTING_TABLE));
 
         wrenchRecipe = itemService.createShapedRecipe(transportPipes, "wrench", itemService.getWrench(), new String[]{" a ", "aba", " a "}, 'a', Material.REDSTONE, 'b', Material.STICK);
+        Iterator<Recipe> iterator = Bukkit.recipeIterator();
+        while (iterator.hasNext()) {
+        	if (iterator.next().getResult().equals(wrenchRecipe.getResult())) return;
+        }
         Bukkit.addRecipe(wrenchRecipe);
     }
 
