@@ -181,6 +181,7 @@ public class Pipe extends Duct {
                 List<TPDirection> possibleMovingDirs = new ArrayList<>(getAllConnections());
 
                 Map<TPDirection, Integer> distribution = calculateItemDistribution(pipeItem, pipeItem.getMovingDir(), possibleMovingDirs, transportPipes);
+                TransportPipesContainer transportPipesContainer = getContainerConnections().get(pipeItem.getMovingDir());
 
                 if (distribution == null || distribution.isEmpty()) {
                     items.remove(pipeItem);
@@ -188,7 +189,12 @@ public class Pipe extends Duct {
                     if (distribution != null) {
                         //drop item
                         transportPipes.runTaskSync(() -> {
-                            pipeItem.getWorld().dropItem(pipeItem.getBlockLoc().toLocation(pipeItem.getWorld()), pipeItem.getItem());
+
+                            if (transportPipesContainer != null) {
+                            	pipeItem.setMovingDir(pipeItem.getMovingDir().getOpposite());
+                                pipeManager.putPipeItemInPipe(pipeItem);
+                            }
+                            else pipeItem.getWorld().dropItem(pipeItem.getBlockLoc().toLocation(pipeItem.getWorld()), pipeItem.getItem());
                         });
                     }
                     continue;
@@ -223,7 +229,7 @@ public class Pipe extends Duct {
                 if (duct instanceof Pipe) {
 
                     Pipe pipe = (Pipe) duct;
-
+                    
                     //make pipe item ready for next pipe
                     pipeItem.setBlockLoc(pipe.getBlockLoc());
                     pipeItem.getRelativeLocation().switchValues();
@@ -251,7 +257,14 @@ public class Pipe extends Duct {
 
                                 ItemStack overflow = transportPipesContainer.insertItem(pipeItem.getMovingDir(), pipeItem.getItem());
                                 if (overflow != null) {
-                                    getWorld().dropItem(getBlockLoc().toLocation(getWorld()), overflow);
+                                    //getWorld().dropItem(getBlockLoc().toLocation(getWorld()), overflow);
+                                	pipeItem.getItem().setAmount(overflow.getAmount());
+                                	pipeItem.setMovingDir(pipeItem.getMovingDir().getOpposite());
+                                	pipeItem.setBlockLoc(this.getBlockLoc());
+                                    pipeItem.getRelativeLocation().switchValues();
+                                    pipeItem.resetOldRelativeLocation();
+                                    pipeManager.spawnPipeItem(pipeItem);
+                                	this.putPipeItem(pipeItem);
                                 }
                             } else {
                                 unloadedItems.add(pipeItem);
