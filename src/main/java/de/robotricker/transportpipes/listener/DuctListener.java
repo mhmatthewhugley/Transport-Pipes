@@ -16,6 +16,7 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.block.data.Directional;
+import org.bukkit.block.data.type.Stairs;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
@@ -78,7 +79,7 @@ public class DuctListener implements Listener {
 
         for (Material m : Material.values()) {
             if (m.isInteractable()) {
-                interactables.add(m);
+                if (m != Material.PUMPKIN && m != Material.REDSTONE_ORE && m != Material.MOVING_PISTON && m != Material.TNT) interactables.add(m);
             }
         }
 
@@ -143,6 +144,11 @@ public class DuctListener implements Listener {
                 Duct clickedDuct = HitboxUtils.getDuctLookingTo(globalDuctManager, interaction.p, interaction.clickedBlock);
                 DuctType itemDuctType = itemService.readDuctNBTTags(interaction.item, ductRegister);
                 boolean manualPlaceable = itemDuctType != null || interaction.item.getType().isSolid();
+                
+                // ********************** CLICKING AIR WITHOUT A WRENCH ****************************
+                if (interaction.action == Action.RIGHT_CLICK_AIR && clickedDuct == null && !itemService.isWrench(interaction.item)) {
+                	return;
+                }
 
                 // ********************** WRENCH DUCT CLICK ****************************
                 if (clickedDuct != null && itemDuctType == null && (itemService.isWrench(interaction.item) || (!generalConf.getWrenchRequired() && !canBeUsedToObfuscate(interaction.item.getType())))) {
@@ -192,18 +198,32 @@ public class DuctListener implements Listener {
 
                 // ********************** PREPARATIONS FOR DUCT / BLOCK PLACE ****************************
                 Block placeBlock = null;
+                // If duct clicked, get block relative to clicked duct
                 if (clickedDuct != null) {
                     placeBlock = HitboxUtils.getRelativeBlockOfDuct(globalDuctManager, interaction.p, clickedDuct.getBlockLoc().toBlock(interaction.p.getWorld()));
-                } else if (interaction.clickedBlock != null) {
+                }
+                // Otherwise if block clicked, get block relative to clicked block
+                else if (interaction.clickedBlock != null) {
                     placeBlock = interaction.clickedBlock.getRelative(interaction.blockFace);
                 }
+                // If hand item is not a duct, duct was not clicked, a block is placed, and the block isn't being placed at a duct
+                if (itemDuctType == null && clickedDuct == null && (placeBlock != null && globalDuctManager.getDuctAtLoc(placeBlock.getLocation()) == null)) {
+                	return;
+                }
+                // If a block is placed and it's either solid or there's a duct where it's being placed
                 if (placeBlock != null && (placeBlock.getType().isSolid() || globalDuctManager.getDuctAtLoc(placeBlock.getLocation()) != null)) {
                     placeBlock = null;
                 }
+                // If duct was not clicked, a block was clicked, the clicked block is interactable, and the player is not sneaking
                 if (clickedDuct == null && interaction.clickedBlock != null && interactables.contains(interaction.clickedBlock.getType()) && !interaction.p.isSneaking()) {
-                    return;
-                } else if (placeBlock == null || (clickedDuct != null && !manualPlaceable)) {
-                    if (!interaction.item.getType().isEdible()) {
+                	// Stairs are considered interactable for some weird reason so ignore those
+                    if (!(interaction.clickedBlock.getBlockData() instanceof Stairs)) {
+                    	return;
+                    }
+                }
+                // Otherwise if a block is not placed or a duct was clicked and hand item is not a duct or solid block
+                else if (placeBlock == null || (clickedDuct != null && !manualPlaceable)) {
+                    if (!interaction.item.getType().isEdible() && interaction.item.getType() != Material.BONE_MEAL) {
                         interaction.denyBlockUse = true;
                     }
                     return;
