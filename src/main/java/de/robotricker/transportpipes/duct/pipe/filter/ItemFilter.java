@@ -51,21 +51,16 @@ public class ItemFilter {
         }
         if (getFilterMode() == FilterMode.NORMAL) {
             int weight = 0;
-            boolean emptyList = true;
+            boolean hasItems = true;
             for (ItemData id : filterItems) {
             	if (id != null) {
-            		emptyList = false;
+            		hasItems = true;
                     if (matchesItemStrictness(id.toItemStack(), item)) {
                         weight++;
                     }
             	}
             }
-            if (emptyList) {
-            	return new FilterResponse(1, false);
-            }
-            else {
-            	return new FilterResponse(weight, weight > 0 ? true : false);
-            }
+            return hasItems ? new FilterResponse(weight, weight > 0) : new FilterResponse(1, true);
         }
         if (getFilterMode() == FilterMode.INVERTED) {
             for (ItemData id : filterItems) {

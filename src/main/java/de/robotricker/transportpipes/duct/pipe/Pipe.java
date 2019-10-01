@@ -75,23 +75,7 @@ public class Pipe extends Duct {
 	@Override
 	public Set<TPDirection> getAllConnections() {
 		Set<TPDirection> allConnections = super.getAllConnections();
-
-		if (this instanceof IronPipe) {
-			Iterator<TPDirection> iterator = allConnections.iterator();
-			while (iterator.hasNext()) {
-				TPDirection dir = iterator.next();
-				if (getDuctConnections().containsKey(dir)) {
-					if (getDuctConnections().get(dir) instanceof IronPipe) {
-						if (dir == ((IronPipe) getDuctConnections().get(dir)).getCurrentOutputDirection().getOpposite()) {
-							iterator.remove();
-						}
-					}
-				}
-			}
-		}
-
 		allConnections.addAll(getContainerConnections().keySet());
-
 		return allConnections;
 	}
 

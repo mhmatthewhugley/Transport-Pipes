@@ -53,8 +53,8 @@ public class GoldenPipe extends Pipe {
         dirs.remove(movingDir.getOpposite());
         for (TPDirection dir : dirs) {
         	FilterResponse response = getItemFilter(Color.getByDir(dir)).applyFilter(pipeItem.getItem());
-            int amount = response.getAmount();
-            if (response.hasItem()) {
+            int amount = response.getWeight();
+            if (response.hasItems()) {
             	dirAmtWithItems.put(dir, amount);
             }
             else {

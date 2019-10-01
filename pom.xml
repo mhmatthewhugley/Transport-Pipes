@@ -5,7 +5,7 @@
 
     <groupId>de.robotricker</groupId>
     <artifactId>transportpipes</artifactId>
-    <version>5.0.0</version>
+    <version>5.1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>TransportPipes</name>
@@ -51,8 +51,7 @@
         <!-- Environment properties -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <java.version>1.8</java.version>
-        <maven.minimumVersion>3.3.9</maven.minimumVersion>
+        <java.version>8</java.version>
 
         <!-- Versioning properties -->
         <project.buildNumber>CUSTOM</project.buildNumber>
@@ -137,28 +136,6 @@
         </resources>
 
         <plugins>
-            <!-- Enforce build environment -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-enforcer-plugin</artifactId>
-                <version>1.4.1</version>
-                <executions>
-                    <execution>
-                        <id>enforce-environment</id>
-                        <goals>
-                            <goal>enforce</goal>
-                        </goals>
-                        <configuration>
-                            <rules>
-                                <requireMavenVersion>
-                                    <version>3.3.9</version>
-                                </requireMavenVersion>
-                            </rules>
-                            <fail>true</fail>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
             <!-- Clean the target folder content -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -175,7 +152,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.0</version>
+                <version>3.8.1</version>
                 <configuration>
                     <source>${java.version}</source>
                     <target>${java.version}</target>
@@ -185,7 +162,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.22.0</version>
+                <version>2.22.2</version>
                 <configuration>
                     <!-- Don't trim stack traces -->
                     <trimStackTrace>false</trimStackTrace>
@@ -195,14 +172,15 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
-                <version>3.1.0</version>
+                <version>3.1.2</version>
             </plugin>
             <!-- Generate a jar containing the source javadoc -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <version>3.0.1</version>
+                <version>3.1.1</version>
                 <configuration>
+                    <source>${java.version}</source>
                     <finalName>${project.finalNameBase}</finalName>
                 </configuration>
                 <executions>
@@ -218,7 +196,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
-                <version>3.0.1</version>
+                <version>3.1.0</version>
                 <configuration>
                     <finalName>${project.finalNameBase}</finalName>
                 </configuration>
@@ -235,7 +213,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>3.2.0</version>
+                <version>3.2.1</version>
                 <configuration>
                     <!-- Don't create the reduced pom file, as we don't deploy the shaded jar -->
                     <createDependencyReducedPom>false</createDependencyReducedPom>
@@ -278,10 +256,12 @@
                             <pattern>co.aikar.commands</pattern>
                             <shadedPattern>de.robotricker.transportpipes.libs.co.aikar.commands</shadedPattern>
                         </relocation>
+                        <!--
                         <relocation>
                             <pattern>org.apache.commons</pattern>
                             <shadedPattern>de.robotricker.transportpipes.libs.org.apache.commons</shadedPattern>
                         </relocation>
+                        -->
                     </relocations>
 
                     <filters>
@@ -322,7 +302,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-site-plugin</artifactId>
-                <version>3.7.1</version>
+                <version>3.8.2</version>
             </plugin>
         </plugins>
     </build>
@@ -376,13 +356,9 @@
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
-            <version>1.14-R0.1-SNAPSHOT</version>
+            <version>1.13.2-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
             <exclusions>
-                <exclusion>
-                    <groupId>commons-lang</groupId>
-                    <artifactId>commons-lang</artifactId>
-                </exclusion>
                 <exclusion>
                     <groupId>com.googlecode.json-simple</groupId>
                     <artifactId>json-simple</artifactId>
@@ -450,11 +426,13 @@
             <optional>true</optional>
         </dependency>
 
+        <!--
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
             <version>3.8</version>
         </dependency>
+        -->
 
         <!-- LogisticsAPI, tech mechanics API for spigot plugins, https://github.com/LogisticsCraft/Logistics-API -->
         <dependency>
@@ -468,7 +446,7 @@
         <dependency>
             <groupId>io.sentry</groupId>
             <artifactId>sentry</artifactId>
-            <version>1.7.9</version>
+            <version>1.7.27</version>
             <optional>true</optional>
             <exclusions>
                 <exclusion>
@@ -489,27 +467,28 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
-            <version>1.7.25</version>
+            <version>1.7.28</version>
             <optional>true</optional>
         </dependency>
 
         <dependency>
             <groupId>com.github.Querz</groupId>
             <artifactId>NBT</artifactId>
-            <version>3.0</version>
+            <version>4.1</version>
+            <optional>true</optional>
         </dependency>
 
         <dependency>
             <groupId>com.griefcraft.lwc</groupId>
             <artifactId>Modern-LWC</artifactId>
-            <version>2.1.2</version>
+            <version>2.1.5</version>
             <scope>provided</scope>
         </dependency>
 
         <dependency>
             <groupId>fr.xephi</groupId>
             <artifactId>authme</artifactId>
-            <version>5.4.0</version>
+            <version>5.6.0-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
 

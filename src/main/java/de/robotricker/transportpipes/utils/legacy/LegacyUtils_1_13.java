@@ -6,16 +6,16 @@ public class LegacyUtils_1_13 extends LegacyUtils {
 
     @Override
     public Material getRedDye() {
-        return Material.valueOf("ROSE_RED");
+    	return Material.ROSE_RED;
     }
 
     @Override
     public Material getYellowDye() {
-        return Material.valueOf("DANDELION_YELLOW");
+    	return Material.DANDELION_YELLOW;
     }
 
     @Override
     public Material getGreenDye() {
-        return Material.valueOf("CACTUS_GREEN");
+    	return Material.CACTUS_GREEN;
     }
 }

@@ -36,7 +36,7 @@ public class FurnaceContainer extends BlockContainer {
         if (isInvLocked(cachedFurnace)) {
             return null;
         }
-        if (itemFilter.applyFilter(cachedInv.getResult()).getAmount() > 0) {
+        if (itemFilter.applyFilter(cachedInv.getResult()).getWeight() > 0) {
             ItemStack resultItem = cachedInv.getResult().clone();
             ItemStack returnItem = resultItem.clone();
 

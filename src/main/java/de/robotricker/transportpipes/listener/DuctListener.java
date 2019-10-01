@@ -179,16 +179,17 @@ public class DuctListener implements Listener {
                     // this block will be used to obfuscate the duct
                     Block ductBlock = clickedDuct.getBlockLoc().toBlock(interaction.p.getWorld());
                     if (buildAllowed(interaction.p, ductBlock)) {
-
-                        BlockData bd = interaction.item.getType().createBlockData();
-                        setDirectionalBlockFace(ductBlock.getLocation(), bd, interaction.p);
-                        ductBlock.setBlockData(bd, true);
-                        clickedDuct.obfuscatedWith(bd);
-                        
                         BlockPlaceEvent event = new BlockPlaceEvent(ductBlock, ductBlock.getState(), ductBlock.getRelative(BlockFace.DOWN), interaction.item, interaction.p, true, interaction.hand);
-                        Bukkit.getServer().getPluginManager().callEvent(event);
-                        
-                        decreaseHandItem(interaction.p, interaction.hand);
+                        Bukkit.getPluginManager().callEvent(event);
+                        if (!event.isCancelled()) {
+                        	
+	                        BlockData bd = interaction.item.getType().createBlockData();
+	                        setDirectionalBlockFace(ductBlock.getLocation(), bd, interaction.p);
+	                        ductBlock.setBlockData(bd, true);
+	                        clickedDuct.obfuscatedWith(bd);
+	                        
+	                        decreaseHandItem(interaction.p, interaction.hand);
+                        }
                     }
 
                     interaction.cancel = true;
@@ -260,20 +261,21 @@ public class DuctListener implements Listener {
                     } else if (clickedDuct != null) {
                         //block placement next to duct
                         if (buildAllowed(interaction.p, placeBlock)) {
-
-                            BlockData bd = interaction.item.getType().createBlockData();
-                            setDirectionalBlockFace(placeBlock.getLocation(), bd, interaction.p);
-                            placeBlock.setBlockData(bd, true);
-
-                            // create TransportPipesContainer from placed block if it is such
-                            if (WorldUtils.isContainerBlock(interaction.item.getType())) {
-                                tpContainerListener.updateContainerBlock(placeBlock, true, true);
-                            }
-                            
                             BlockPlaceEvent event = new BlockPlaceEvent(placeBlock, placeBlock.getState(), clickedDuct.getBlockLoc().toBlock(placeBlock.getWorld()), interaction.item, interaction.p, true, interaction.hand);
-                            Bukkit.getServer().getPluginManager().callEvent(event);
-                            
-                            decreaseHandItem(interaction.p, interaction.hand);
+                            Bukkit.getPluginManager().callEvent(event);
+                            if (!event.isCancelled()) {
+                            	
+	                            BlockData bd = interaction.item.getType().createBlockData();
+	                            setDirectionalBlockFace(placeBlock.getLocation(), bd, interaction.p);
+	                            placeBlock.setBlockData(bd, true);
+	
+	                            // create TransportPipesContainer from placed block if it is such
+	                            if (WorldUtils.isContainerBlock(interaction.item.getType())) {
+	                                tpContainerListener.updateContainerBlock(placeBlock, true, true);
+	                            }
+	                            
+	                            decreaseHandItem(interaction.p, interaction.hand);
+                            }
                         }
                         interaction.cancel = true;
                         interaction.successful = true;

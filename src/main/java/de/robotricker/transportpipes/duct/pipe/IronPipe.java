@@ -1,15 +1,15 @@
 package de.robotricker.transportpipes.duct.pipe;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import de.robotricker.transportpipes.duct.Duct;
+import net.querz.nbt.CompoundTag;
 
 import org.bukkit.Chunk;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
+
+import java.util.*;
 
 import de.robotricker.transportpipes.TransportPipes;
 import de.robotricker.transportpipes.duct.manager.GlobalDuctManager;
@@ -20,7 +20,6 @@ import de.robotricker.transportpipes.inventory.DuctSettingsInventory;
 import de.robotricker.transportpipes.items.ItemService;
 import de.robotricker.transportpipes.location.BlockLocation;
 import de.robotricker.transportpipes.location.TPDirection;
-import net.querz.nbt.CompoundTag;
 
 public class IronPipe extends Pipe {
 
@@ -29,6 +28,24 @@ public class IronPipe extends Pipe {
     public IronPipe(DuctType ductType, BlockLocation blockLoc, World world, Chunk chunk, DuctSettingsInventory settingsInv, GlobalDuctManager globalDuctManager, ItemDistributorService itemDistributor) {
         super(ductType, blockLoc, world, chunk, settingsInv, globalDuctManager, itemDistributor);
         currentOutputDirection = TPDirection.UP;
+    }
+    
+    @Override
+    public Set<TPDirection> getAllConnections() {
+        Set<TPDirection> connections = new HashSet<>();
+        // Avoid connections between iron pipes
+        for(Map.Entry<TPDirection, Duct> entry : getDuctConnections().entrySet()) {
+            if (entry.getValue() instanceof IronPipe) {
+                IronPipe other = (IronPipe) entry;
+                TPDirection otherDirection = other.getCurrentOutputDirection();
+                if (entry.getKey() == otherDirection.getOpposite()) {
+                    continue;
+                }
+            }
+            connections.add(entry.getKey());
+        }
+        connections.addAll(getContainerConnections().keySet());
+        return connections;
     }
 
     @Override
