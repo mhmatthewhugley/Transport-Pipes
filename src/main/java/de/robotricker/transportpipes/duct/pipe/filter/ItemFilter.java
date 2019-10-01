@@ -51,7 +51,7 @@ public class ItemFilter {
         }
         if (getFilterMode() == FilterMode.NORMAL) {
             int weight = 0;
-            boolean hasItems = true;
+            boolean hasItems = false;
             for (ItemData id : filterItems) {
             	if (id != null) {
             		hasItems = true;
