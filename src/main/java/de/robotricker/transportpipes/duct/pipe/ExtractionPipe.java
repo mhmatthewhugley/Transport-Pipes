@@ -40,7 +40,7 @@ public class ExtractionPipe extends Pipe {
     public ExtractionPipe(DuctType ductType, BlockLocation blockLoc, World world, Chunk chunk, DuctSettingsInventory settingsInv, GlobalDuctManager globalDuctManager, ItemDistributorService itemDistributor) {
         super(ductType, blockLoc, world, chunk, settingsInv, globalDuctManager, itemDistributor);
         this.extractDirection = null;
-        this.extractCondition = ExtractCondition.NEEDS_REDSTONE;
+        this.extractCondition = ExtractCondition.ALWAYS_EXTRACT;
         this.extractAmount = ExtractAmount.EXTRACT_1;
         this.itemFilter = new ItemFilter();
     }

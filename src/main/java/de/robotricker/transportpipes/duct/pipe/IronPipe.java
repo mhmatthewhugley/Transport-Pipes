@@ -36,7 +36,7 @@ public class IronPipe extends Pipe {
         // Avoid connections between iron pipes
         for(Map.Entry<TPDirection, Duct> entry : getDuctConnections().entrySet()) {
             if (entry.getValue() instanceof IronPipe) {
-                IronPipe other = (IronPipe) entry;
+                IronPipe other = (IronPipe) entry.getValue();
                 TPDirection otherDirection = other.getCurrentOutputDirection();
                 if (entry.getKey() == otherDirection.getOpposite()) {
                     continue;
