@@ -188,15 +188,17 @@ public class Pipe extends Duct {
 				ItemStack itemStack = pipeItem.getItem().clone();
 
 				PipeItem tempPipeItem = null;
+				BlockLocation location = getBlockLoc();
 				for (TPDirection dir : distribution.keySet()) {
 					int amount = distribution.get(dir);
 					if (tempPipeItem == null) {
 						tempPipeItem = pipeItem;
 					}
 					else {
-						tempPipeItem = new PipeItem(itemStack.clone(), getWorld(), getBlockLoc(), dir);
+						tempPipeItem = new PipeItem(itemStack.clone(), getWorld(), location, dir);
 					}
 					tempPipeItem.getItem().setAmount(amount);
+					tempPipeItem.addMovedDir(location, dir);
 					tempPipeItem.setMovingDir(dir);
 					tempPipeItem.getRelativeLocation().set(0.5d, 0.5d, 0.5d);
 					tempPipeItem.resetOldRelativeLocation();
@@ -216,9 +218,14 @@ public class Pipe extends Duct {
 				if (duct instanceof Pipe) {
 
 					Pipe pipe = (Pipe) duct;
+					BlockLocation location = pipe.getBlockLoc();
 
 					// make pipe item ready for next pipe
-					pipeItem.setBlockLoc(pipe.getBlockLoc());
+					pipeItem.setBlockLoc(location);
+					if (!pipeItem.hasSourceDir(location)) {
+						pipeItem.addSourceDir(location, pipeItem.getMovingDir().getOpposite());
+					}
+					pipeItem.addMovedDir(location, pipeItem.getMovingDir().getOpposite());
 					pipeItem.getRelativeLocation().switchValues();
 					pipeItem.resetOldRelativeLocation();
 

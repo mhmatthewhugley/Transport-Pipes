@@ -1,7 +1,10 @@
 package de.robotricker.transportpipes.duct.pipe;
 
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.bukkit.Chunk;
 import org.bukkit.Material;
@@ -127,6 +130,18 @@ public class ExtractionPipe extends Pipe {
     public Material getBreakParticleData() {
         return Material.OAK_PLANKS;
     }
+    
+    @Override
+    protected Map<TPDirection, Integer> calculateItemDistribution(PipeItem pipeItem, TPDirection movingDir, List<TPDirection> dirs, TransportPipes transportPipes) {
+    	BlockLocation location = getBlockLoc();
+    	List<TPDirection> newDirs = dirs.stream().filter(dir -> pipeItem.hasMovedDirs(location) && !pipeItem.getMovedDirs(location).contains(dir)).collect(Collectors.toList());
+    	if (newDirs.isEmpty()) {
+    		newDirs = pipeItem.hasSourceDir(location) ? Arrays.asList(pipeItem.getSourceDir(location)) : dirs;
+    	}
+		Map<TPDirection, Integer> absWeights = new HashMap<>();
+		newDirs.stream().filter(dir -> !dir.equals(movingDir.getOpposite())).forEach(dir -> absWeights.put(dir, 1));
+		return itemDistributor.splitPipeItem(pipeItem.getItem(), absWeights, this);
+	}
 
     @Override
     public List<ItemStack> destroyed(TransportPipes transportPipes, DuctManager ductManager, Player destroyer) {

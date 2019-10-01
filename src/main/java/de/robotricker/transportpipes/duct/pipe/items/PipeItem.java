@@ -1,5 +1,9 @@
 package de.robotricker.transportpipes.duct.pipe.items;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
 import org.bukkit.World;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
@@ -20,6 +24,8 @@ public class PipeItem {
 	private RelativeLocation oldRelativeLocation;
 	private RelativeLocation relativeLocation;
 	private TPDirection movingDir;
+	private HashMap<BlockLocation, List<TPDirection>> movedDirs = new HashMap<BlockLocation, List<TPDirection>>();
+	private HashMap<BlockLocation, TPDirection> sourceDirs = new HashMap<BlockLocation, TPDirection>();
 
 	public PipeItem() {}
 
@@ -88,6 +94,32 @@ public class PipeItem {
 
 	public void setMovingDir(TPDirection movingDir) {
 		this.movingDir = movingDir;
+	}
+	
+	public List<TPDirection> getMovedDirs(BlockLocation location) {
+		return movedDirs.get(location);
+	}
+	
+	public void addMovedDir(BlockLocation location, TPDirection movedDir) {
+		List<TPDirection> dirs = movedDirs.containsKey(location) ? movedDirs.get(location) : new ArrayList<TPDirection>();
+		dirs.add(movedDir);
+		movedDirs.put(location, dirs);
+	}
+	
+	public boolean hasMovedDirs(BlockLocation location) {
+		return movedDirs.containsKey(location);
+	}
+	
+	public TPDirection getSourceDir(BlockLocation location) {
+		return sourceDirs.get(location);
+	}
+	
+	public void addSourceDir(BlockLocation location, TPDirection sourceDir) {
+		sourceDirs.put(location, sourceDir);
+	}
+	
+	public boolean hasSourceDir(BlockLocation location) {
+		return sourceDirs.containsKey(location);
 	}
 
 	public void saveToNBTTag(CompoundTag compoundTag, ItemService itemService) {
