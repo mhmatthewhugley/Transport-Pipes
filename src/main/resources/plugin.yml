@@ -1,10 +1,10 @@
 name: ${project.name}
 version: ${project.versionCode}
-author: RoboTricker
+authors: [RoboTricker, BlackBeltPanda]
 main: ${project.groupId}.${project.artifactId}.${project.name}
 depend: [ProtocolLib]
 softdepend: [LogisticsApi]
-api-version: 1.13
+api-version: 1.15
 permissions:
   transportpipes.*:
     children:
