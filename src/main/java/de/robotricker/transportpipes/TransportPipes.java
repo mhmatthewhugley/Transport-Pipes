@@ -43,7 +43,7 @@ import de.robotricker.transportpipes.rendersystems.pipe.vanilla.VanillaPipeRende
 import de.robotricker.transportpipes.saving.DiskService;
 import de.robotricker.transportpipes.utils.LWCUtils;
 import de.robotricker.transportpipes.utils.legacy.LegacyUtils;
-import de.robotricker.transportpipes.utils.legacy.LegacyUtils_1_13;
+import de.robotricker.transportpipes.utils.legacy.LegacyUtils_1_15;
 import io.sentry.event.Breadcrumb;
 
 public class TransportPipes extends JavaPlugin {
@@ -57,11 +57,11 @@ public class TransportPipes extends JavaPlugin {
     @Override
     public void onEnable() {
 
-        if (Bukkit.getVersion().contains("1.13")) {
-            LegacyUtils.setInstance(new LegacyUtils_1_13());
-        } else {
+    	if (Bukkit.getVersion().contains("1.15")) {
+    		LegacyUtils.setInstance(new LegacyUtils_1_15());
+    	} else {
             System.err.println("------------------------------------------");
-            System.err.println("TransportPipes currently only works with Minecraft 1.13.1 and 1.13.2");
+            System.err.println("TransportPipes currently only works with Minecraft 1.15 and above.");
             System.err.println("------------------------------------------");
             Bukkit.getPluginManager().disablePlugin(this);
             return;
@@ -71,7 +71,7 @@ public class TransportPipes extends JavaPlugin {
             Class.forName("org.bukkit.inventory.RecipeChoice");
         } catch (ClassNotFoundException e) {
             System.err.println("------------------------------------------");
-            System.err.println("TransportPipes currently only works with Minecraft 1.13.1 and 1.13.2");
+            System.err.println("TransportPipes currently only works with Minecraft 1.15 and above.");
             System.err.println("------------------------------------------");
             Bukkit.getPluginManager().disablePlugin(this);
             return;

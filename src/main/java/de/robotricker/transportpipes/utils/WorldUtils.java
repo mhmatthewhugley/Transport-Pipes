@@ -1,5 +1,6 @@
 package de.robotricker.transportpipes.utils;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -13,7 +14,10 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 
-import com.comphenix.packetwrapper.WrapperPlayServerTitle;
+import com.comphenix.protocol.PacketType;
+import com.comphenix.protocol.ProtocolLibrary;
+import com.comphenix.protocol.ProtocolManager;
+import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.wrappers.EnumWrappers;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
 
@@ -29,6 +33,8 @@ import de.robotricker.transportpipes.location.BlockLocation;
 public class WorldUtils {
 
     private static Map<Player, Integer> hidingDuctsTimers = new HashMap<>();
+    
+    private static ProtocolManager protocolManager = ProtocolLibrary.getProtocolManager();
 
     /**
      * THREAD-SAFE
@@ -118,10 +124,16 @@ public class WorldUtils {
 
         task[0] = Bukkit.getScheduler().scheduleSyncRepeatingTask(transportPipes, () -> {
 
-            WrapperPlayServerTitle titlePacket = new WrapperPlayServerTitle();
-            titlePacket.setTitle(WrappedChatComponent.fromText(LangConf.Key.SHOW_HIDDEN_DUCTS.get(hidingDuctsTimers.get(p))));
-            titlePacket.setAction(EnumWrappers.TitleAction.ACTIONBAR);
-            titlePacket.sendPacket(p);
+        	PacketContainer titleContainer = protocolManager.createPacket(PacketType.Play.Server.TITLE);
+        	titleContainer.getChatComponents().write(0, WrappedChatComponent.fromText(LangConf.Key.SHOW_HIDDEN_DUCTS.get(hidingDuctsTimers.get(p))));
+        	titleContainer.getTitleActions().write(0, EnumWrappers.TitleAction.ACTIONBAR);
+        	try {
+				protocolManager.sendServerPacket(p, titleContainer);
+			}
+			catch (InvocationTargetException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 
             if (hidingDuctsTimers.get(p) == 0) {
                 hidingDuctsTimers.remove(p);
