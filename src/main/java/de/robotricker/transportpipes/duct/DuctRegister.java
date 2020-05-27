@@ -13,7 +13,7 @@ import de.robotricker.transportpipes.duct.types.BaseDuctType;
 import de.robotricker.transportpipes.duct.types.DuctType;
 import de.robotricker.transportpipes.items.ItemManager;
 import de.robotricker.transportpipes.location.BlockLocation;
-import net.querz.nbt.CompoundTag;
+import net.querz.nbt.tag.CompoundTag;
 
 public class DuctRegister {
 

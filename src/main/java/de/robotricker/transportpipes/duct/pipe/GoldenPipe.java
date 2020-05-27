@@ -23,8 +23,8 @@ import de.robotricker.transportpipes.inventory.DuctSettingsInventory;
 import de.robotricker.transportpipes.items.ItemService;
 import de.robotricker.transportpipes.location.BlockLocation;
 import de.robotricker.transportpipes.location.TPDirection;
-import net.querz.nbt.CompoundTag;
-import net.querz.nbt.ListTag;
+import net.querz.nbt.tag.CompoundTag;
+import net.querz.nbt.tag.ListTag;
 
 public class GoldenPipe extends Pipe {
 

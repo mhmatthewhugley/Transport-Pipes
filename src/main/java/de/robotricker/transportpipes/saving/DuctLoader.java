@@ -13,8 +13,8 @@ import de.robotricker.transportpipes.duct.manager.GlobalDuctManager;
 import de.robotricker.transportpipes.duct.types.DuctType;
 import de.robotricker.transportpipes.items.ItemService;
 import de.robotricker.transportpipes.location.BlockLocation;
-import net.querz.nbt.CompoundTag;
-import net.querz.nbt.ListTag;
+import net.querz.nbt.tag.CompoundTag;
+import net.querz.nbt.tag.ListTag;
 
 public class DuctLoader {
 

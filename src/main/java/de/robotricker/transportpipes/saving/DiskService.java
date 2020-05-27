@@ -12,8 +12,8 @@ import org.bukkit.World;
 
 import de.robotricker.transportpipes.TransportPipes;
 import de.robotricker.transportpipes.log.SentryService;
-import net.querz.nbt.CompoundTag;
-import net.querz.nbt.NBTUtil;
+import net.querz.nbt.io.NBTUtil;
+import net.querz.nbt.tag.CompoundTag;
 
 public class DiskService {
 
@@ -30,7 +30,7 @@ public class DiskService {
             if (!Files.isRegularFile(p)) {
                 p = Paths.get(world.getWorldFolder().getAbsolutePath(), "pipes.dat");
             }
-            CompoundTag compoundTag = (CompoundTag) NBTUtil.readTag(p.toFile());
+            CompoundTag compoundTag = (CompoundTag) NBTUtil.read(p.toFile()).getTag();
             String version = compoundTag.getString("version");
             if(version == null || version.isEmpty()) {
                 version = compoundTag.getString("PluginVersion");

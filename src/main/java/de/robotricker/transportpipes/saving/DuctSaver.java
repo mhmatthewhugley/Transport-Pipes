@@ -14,9 +14,9 @@ import de.robotricker.transportpipes.duct.DuctRegister;
 import de.robotricker.transportpipes.duct.manager.GlobalDuctManager;
 import de.robotricker.transportpipes.items.ItemService;
 import de.robotricker.transportpipes.location.BlockLocation;
-import net.querz.nbt.CompoundTag;
-import net.querz.nbt.ListTag;
-import net.querz.nbt.NBTUtil;
+import net.querz.nbt.io.NBTUtil;
+import net.querz.nbt.tag.CompoundTag;
+import net.querz.nbt.tag.ListTag;
 
 public class DuctSaver {
 
@@ -54,7 +54,7 @@ public class DuctSaver {
             compoundTag.put("ducts", listTag);
             compoundTag.putString("version", transportPipes.getDescription().getVersion());
 
-            NBTUtil.writeTag(compoundTag, Paths.get(world.getWorldFolder().getAbsolutePath(), "ducts.dat").toFile(), false);
+            NBTUtil.write(compoundTag, Paths.get(world.getWorldFolder().getAbsolutePath(), "ducts.dat").toFile(), false);
         } catch (IOException e) {
             e.printStackTrace();
         }

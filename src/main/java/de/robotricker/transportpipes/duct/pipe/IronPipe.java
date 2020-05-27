@@ -1,7 +1,7 @@
 package de.robotricker.transportpipes.duct.pipe;
 
 import de.robotricker.transportpipes.duct.Duct;
-import net.querz.nbt.CompoundTag;
+import net.querz.nbt.tag.CompoundTag;
 
 import org.bukkit.Chunk;
 import org.bukkit.Material;

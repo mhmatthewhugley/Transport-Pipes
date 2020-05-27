@@ -265,7 +265,7 @@ public class DuctListener implements Listener {
                             Bukkit.getPluginManager().callEvent(event);
                             if (!event.isCancelled()) {
                             	
-	                            BlockData bd = interaction.item.getType().createBlockData();
+	                            BlockData bd = placeBlock.getBlockData();//interaction.item.getType().createBlockData();
 	                            setDirectionalBlockFace(placeBlock.getLocation(), bd, interaction.p);
 	                            placeBlock.setBlockData(bd, true);
 	

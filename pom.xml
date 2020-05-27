@@ -342,12 +342,6 @@
             <id>jitpack.io</id>
             <url>https://jitpack.io</url>
         </repository>
-
-        <!-- PaperMC Repo -->
-        <repository>
-            <id>papermc</id>
-            <url>https://papermc.io/repo/repository/maven-public/</url>
-        </repository>
     </repositories>
 
     <dependencies>
@@ -396,7 +390,7 @@
         <dependency>
             <groupId>com.comphenix.protocol</groupId>
             <artifactId>ProtocolLib</artifactId>
-            <version>4.5.1-SNAPSHOT</version>
+            <version>4.5.0</version>
             <scope>provided</scope>
             <exclusions>
                 <exclusion>
@@ -426,14 +420,6 @@
         </dependency>
         -->
 
-        <!-- LogisticsAPI, tech mechanics API for spigot plugins, https://github.com/LogisticsCraft/Logistics-API -->
-        <dependency>
-            <groupId>com.logisticscraft</groupId>
-            <artifactId>logistics-api</artifactId>
-            <version>0.0.5-SNAPSHOT</version>
-            <scope>provided</scope>
-        </dependency>
-
         <!-- Sentry, a library that collects exception data and reports them automatically -->
         <dependency>
             <groupId>io.sentry</groupId>
@@ -459,14 +445,14 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
-            <version>1.7.28</version>
+            <version>1.7.30</version>
             <optional>true</optional>
         </dependency>
 
         <dependency>
             <groupId>com.github.Querz</groupId>
             <artifactId>NBT</artifactId>
-            <version>3.0</version>
+            <version>5.4</version>
         </dependency>
 
         <dependency>

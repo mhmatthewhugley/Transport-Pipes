@@ -3,7 +3,6 @@ version: ${project.versionCode}
 authors: [RoboTricker, BlackBeltPanda]
 main: ${project.groupId}.${project.artifactId}.${project.name}
 depend: [ProtocolLib]
-softdepend: [LogisticsApi]
 api-version: 1.15
 permissions:
   transportpipes.*:

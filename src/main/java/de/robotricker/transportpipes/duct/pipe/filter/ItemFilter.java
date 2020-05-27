@@ -7,9 +7,9 @@ import org.bukkit.Bukkit;
 import org.bukkit.inventory.ItemStack;
 
 import de.robotricker.transportpipes.items.ItemService;
-import net.querz.nbt.CompoundTag;
-import net.querz.nbt.ListTag;
-import net.querz.nbt.StringTag;
+import net.querz.nbt.tag.CompoundTag;
+import net.querz.nbt.tag.ListTag;
+import net.querz.nbt.tag.StringTag;
 
 public class ItemFilter {
 
