@@ -26,7 +26,7 @@ public class DuctLoader {
     private ItemService itemService;
 
     public void loadDuctsSync(World world, CompoundTag compoundTag) {
-        ListTag<CompoundTag> listTag = (ListTag<CompoundTag>) compoundTag.getListTag("ducts");
+        ListTag<CompoundTag> listTag = compoundTag.getListTag("ducts").asCompoundTagList();
 
         synchronized (globalDuctManager.getDucts()) {
             Map<Duct, CompoundTag> ductCompoundTagMap = new HashMap<>();

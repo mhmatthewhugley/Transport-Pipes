@@ -17,9 +17,9 @@ import de.robotricker.transportpipes.protocol.ArmorStandData;
 
 public abstract class RenderSystem {
 
-    private BaseDuctType baseDuctType;
+    private BaseDuctType<? extends Duct> baseDuctType;
 
-    public RenderSystem(BaseDuctType baseDuctType) {
+    public RenderSystem(BaseDuctType<? extends Duct> baseDuctType) {
         this.baseDuctType = baseDuctType;
     }
 
@@ -60,7 +60,7 @@ public abstract class RenderSystem {
     //  MISC
     // ***************************************************************
 
-    public BaseDuctType getBaseDuctType() {
+    public BaseDuctType<? extends Duct> getBaseDuctType() {
         return baseDuctType;
     }
 
@@ -74,7 +74,7 @@ public abstract class RenderSystem {
         return null;
     }
 
-    public static RenderSystem getRenderSystem(String renderSystemName, BaseDuctType baseDuctType) {
+    public static RenderSystem getRenderSystem(String renderSystemName, BaseDuctType<? extends Duct> baseDuctType) {
         if (baseDuctType.getVanillaRenderSystem() != null && VanillaRenderSystem.getDisplayName().equalsIgnoreCase(renderSystemName)) {
             return baseDuctType.getVanillaRenderSystem();
         }

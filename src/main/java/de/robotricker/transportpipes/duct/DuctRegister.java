@@ -49,6 +49,7 @@ public class DuctRegister {
         return baseDuctTypes;
     }
 
+    @SuppressWarnings("unchecked")
     public <T extends Duct> BaseDuctType<T> baseDuctTypeOf(String displayName) {
         return (BaseDuctType<T>) baseDuctTypes().stream().filter(bdt -> bdt.getName().equalsIgnoreCase(displayName)).findAny().orElse(null);
     }
@@ -63,7 +64,7 @@ public class DuctRegister {
     }
 
     public DuctType loadDuctTypeFromNBTTag(CompoundTag ductTag) {
-        BaseDuctType bdt = baseDuctTypeOf(ductTag.getString("baseDuctType"));
+        BaseDuctType<? extends Duct> bdt = baseDuctTypeOf(ductTag.getString("baseDuctType"));
         if (bdt == null) {
             return null;
         }

@@ -5,9 +5,11 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.logging.Level;
 
 import javax.inject.Inject;
 
+import org.bukkit.Bukkit;
 import org.bukkit.World;
 
 import de.robotricker.transportpipes.TransportPipes;
@@ -39,6 +41,8 @@ public class DiskService {
             long versionLong = transportPipes.convertVersionToLong(version);
             DuctLoader ductLoader;
 
+            Bukkit.getLogger().log(Level.INFO, "Found version: " + versionLong);
+            Bukkit.getLogger().log(Level.INFO, "Compare version: " + transportPipes.convertVersionToLong("4.3.2"));
             //one more than the real version to handle all versions below
             if (versionLong <= transportPipes.convertVersionToLong("4.3.2")) {
                 ductLoader = transportPipes.getInjector().getSingleton(LegacyDuctLoader_v4_3_1.class);

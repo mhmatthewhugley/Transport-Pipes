@@ -34,6 +34,7 @@ import com.comphenix.protocol.wrappers.WrappedSignedProperty;
 import de.robotricker.transportpipes.TransportPipes;
 import de.robotricker.transportpipes.config.GeneralConf;
 import de.robotricker.transportpipes.config.LangConf;
+import de.robotricker.transportpipes.duct.Duct;
 import de.robotricker.transportpipes.duct.DuctRegister;
 import de.robotricker.transportpipes.duct.types.BaseDuctType;
 import de.robotricker.transportpipes.duct.types.DuctType;
@@ -150,7 +151,7 @@ public class ItemService {
     public DuctType readDuctNBTTags(ItemStack item, DuctRegister ductRegister) {
         String basicDuctTypeSerialized = (String) NMSUtils.readItemStackNBT(item, "basicDuctType", "String");
         if (basicDuctTypeSerialized != null && !basicDuctTypeSerialized.isEmpty()) {
-            BaseDuctType bdt = ductRegister.baseDuctTypeOf(basicDuctTypeSerialized);
+            BaseDuctType<? extends Duct> bdt = ductRegister.baseDuctTypeOf(basicDuctTypeSerialized);
             String ductTypeSerialized = (String) NMSUtils.readItemStackNBT(item, "ductType", "String");
             if (ductTypeSerialized != null && !ductTypeSerialized.isEmpty()) {
                 return bdt.ductTypeOf(ductTypeSerialized);
@@ -257,6 +258,7 @@ public class ItemService {
         return itemStack;
     }
 
+    @SuppressWarnings("unchecked")
     public ShapedRecipe createShapedRecipe(TransportPipes transportPipes, String recipeKey, ItemStack resultItem, String[] shape, Object... ingredientMap) {
         ShapedRecipe recipe = new ShapedRecipe(new NamespacedKey(transportPipes, recipeKey), resultItem);
         recipe.shape(shape);

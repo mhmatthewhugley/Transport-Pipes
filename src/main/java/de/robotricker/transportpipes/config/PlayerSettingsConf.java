@@ -3,6 +3,7 @@ package de.robotricker.transportpipes.config;
 import org.bukkit.entity.Player;
 
 import de.robotricker.transportpipes.TransportPipes;
+import de.robotricker.transportpipes.duct.Duct;
 import de.robotricker.transportpipes.duct.types.BaseDuctType;
 import de.robotricker.transportpipes.rendersystems.RenderSystem;
 
@@ -37,7 +38,7 @@ public class PlayerSettingsConf extends Conf {
         overrideAsync("render_system", name);
     }
 
-    public RenderSystem getRenderSystem(BaseDuctType baseDuctType) {
+    public RenderSystem getRenderSystem(BaseDuctType<? extends Duct> baseDuctType) {
         return RenderSystem.getRenderSystem(getRenderSystemName(), baseDuctType);
     }
 

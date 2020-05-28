@@ -73,6 +73,7 @@ public final class BaseDuctType<T extends Duct> {
         return ductTypes;
     }
 
+    @SuppressWarnings("unchecked")
     public <S extends DuctType> S ductTypeOf(String displayName) {
         for (DuctType dt : ductTypes) {
             if (dt.getName().equalsIgnoreCase(displayName)) {

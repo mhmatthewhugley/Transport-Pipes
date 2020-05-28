@@ -12,6 +12,7 @@ import org.bukkit.inventory.ItemStack;
 
 import de.robotricker.transportpipes.TransportPipes;
 import de.robotricker.transportpipes.config.LangConf;
+import de.robotricker.transportpipes.duct.Duct;
 import de.robotricker.transportpipes.duct.manager.DuctManager;
 import de.robotricker.transportpipes.duct.manager.GlobalDuctManager;
 import de.robotricker.transportpipes.duct.pipe.filter.FilterResponse;
@@ -80,7 +81,7 @@ public class GoldenPipe extends Pipe {
     }
 
     @Override
-    public List<ItemStack> destroyed(TransportPipes transportPipes, DuctManager ductManager, Player destroyer) {
+    public List<ItemStack> destroyed(TransportPipes transportPipes, DuctManager<? extends Duct> ductManager, Player destroyer) {
         List<ItemStack> drop = super.destroyed(transportPipes, ductManager, destroyer);
         for (Color gpc : Color.values()) {
             drop.addAll(getItemFilter(gpc).getAsItemStacks());
@@ -107,7 +108,7 @@ public class GoldenPipe extends Pipe {
     public void loadFromNBTTag(CompoundTag compoundTag, ItemService itemService) {
         super.loadFromNBTTag(compoundTag, itemService);
 
-        ListTag<CompoundTag> itemFiltersTag = (ListTag<CompoundTag>) compoundTag.getListTag("itemFilters");
+        ListTag<CompoundTag> itemFiltersTag = compoundTag.getListTag("itemFilters").asCompoundTagList();
         for (Color color : Color.values()) {
             ItemFilter itemFilter = new ItemFilter();
             itemFilter.loadFromNBTTag(itemFiltersTag.get(color.ordinal()), itemService);

@@ -114,7 +114,7 @@ public class ItemFilter {
     public void loadFromNBTTag(CompoundTag compoundTag, ItemService itemService) {
         filterMode = FilterMode.values()[compoundTag.getInt("filterMode")];
         filterStrictness = FilterStrictness.values()[compoundTag.getInt("filterStrictness")];
-        ListTag<StringTag> itemDataListTag = (ListTag<StringTag>) compoundTag.getListTag("filterItems");
+        ListTag<StringTag> itemDataListTag = compoundTag.getListTag("filterItems").asStringTagList();
         for (int i = 0; i < MAX_ITEMS_PER_ROW; i++) {
             if(i >= itemDataListTag.size()) {
                 filterItems[i] = null;

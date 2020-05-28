@@ -100,7 +100,7 @@ public class Pipe extends Duct {
 	}
 
 	@Override
-	public void tick(boolean bigTick, TransportPipes transportPipes, DuctManager ductManager) {
+	public void tick(boolean bigTick, TransportPipes transportPipes, DuctManager<? extends Duct> ductManager) {
 		super.tick(bigTick, transportPipes, ductManager);
 
 		// activate futureItems
@@ -130,7 +130,7 @@ public class Pipe extends Duct {
 	}
 
 	@Override
-	public void postTick(boolean bigTick, TransportPipes transportPipes, DuctManager ductManager, GeneralConf generalConf) {
+	public void postTick(boolean bigTick, TransportPipes transportPipes, DuctManager<? extends Duct> ductManager, GeneralConf generalConf) {
 		super.postTick(bigTick, transportPipes, ductManager, generalConf);
 
 		PipeManager pipeManager = (PipeManager) ductManager;
@@ -282,7 +282,7 @@ public class Pipe extends Duct {
 	}
 
 	@Override
-	public void syncBigTick(DuctManager ductManager) {
+	public void syncBigTick(DuctManager<? extends Duct> ductManager) {
 		super.syncBigTick(ductManager);
 
 		PipeManager pipeManager = (PipeManager) ductManager;
@@ -322,7 +322,7 @@ public class Pipe extends Duct {
 	}
 
 	@Override
-	public List<ItemStack> destroyed(TransportPipes transportPipes, DuctManager ductManager, Player destroyer) {
+	public List<ItemStack> destroyed(TransportPipes transportPipes, DuctManager<? extends Duct> ductManager, Player destroyer) {
 		List<ItemStack> dropItems = super.destroyed(transportPipes, ductManager, destroyer);
 
 		synchronized (items) {
@@ -387,8 +387,8 @@ public class Pipe extends Duct {
 	public void loadFromNBTTag(CompoundTag compoundTag, ItemService itemService) {
 		super.loadFromNBTTag(compoundTag, itemService);
 
-		ListTag<CompoundTag> accumulatedItemsListTag = (ListTag<CompoundTag>) compoundTag.getListTag("pipeItems");
-		ListTag<CompoundTag> unloadedItemsListTag = (ListTag<CompoundTag>) compoundTag.getListTag("unloadedPipeItems");
+		ListTag<CompoundTag> accumulatedItemsListTag = compoundTag.getListTag("pipeItems").asCompoundTagList();
+		ListTag<CompoundTag> unloadedItemsListTag = compoundTag.getListTag("unloadedPipeItems").asCompoundTagList();
 
 		for (CompoundTag itemTag : accumulatedItemsListTag) {
 			PipeItem pipeItem = new PipeItem();

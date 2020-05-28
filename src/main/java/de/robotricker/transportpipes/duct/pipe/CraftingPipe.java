@@ -19,6 +19,7 @@ import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.ShapelessRecipe;
 
 import de.robotricker.transportpipes.TransportPipes;
+import de.robotricker.transportpipes.duct.Duct;
 import de.robotricker.transportpipes.duct.manager.DuctManager;
 import de.robotricker.transportpipes.duct.manager.GlobalDuctManager;
 import de.robotricker.transportpipes.duct.manager.PipeManager;
@@ -49,7 +50,7 @@ public class CraftingPipe extends Pipe {
     }
 
     @Override
-    public void tick(boolean bigTick, TransportPipes transportPipes, DuctManager ductManager) {
+    public void tick(boolean bigTick, TransportPipes transportPipes, DuctManager<? extends Duct> ductManager) {
         super.tick(bigTick, transportPipes, ductManager);
         if (bigTick) {
             performCrafting((PipeManager) ductManager, transportPipes);
@@ -262,7 +263,7 @@ public class CraftingPipe extends Pipe {
 
         outputDir = compoundTag.getInt("outputDir") != -1 ? TPDirection.values()[compoundTag.getInt("outputDir")] : null;
 
-        ListTag<StringTag> recipeItemsListTag = (ListTag<StringTag>) compoundTag.getListTag("recipeItems");
+        ListTag<StringTag> recipeItemsListTag = compoundTag.getListTag("recipeItems").asStringTagList();
         for (int i = 0; i < 9; i++) {
             if (i >= recipeItemsListTag.size()) {
                 recipeItems[i] = null;
@@ -273,7 +274,7 @@ public class CraftingPipe extends Pipe {
         }
 
         cachedItems.clear();
-        ListTag<StringTag> cachedItemsListTag = (ListTag<StringTag>) compoundTag.getListTag("cachedItems");
+        ListTag<StringTag> cachedItemsListTag = compoundTag.getListTag("cachedItems").asStringTagList();
         for (int i = 0; i < cachedItemsListTag.size(); i++) {
             ItemStack deserialized = itemService.deserializeItemStack(cachedItemsListTag.get(i).getValue());
             if (deserialized != null)
@@ -285,7 +286,7 @@ public class CraftingPipe extends Pipe {
     }
 
     @Override
-    public List<ItemStack> destroyed(TransportPipes transportPipes, DuctManager ductManager, Player destroyer) {
+    public List<ItemStack> destroyed(TransportPipes transportPipes, DuctManager<? extends Duct> ductManager, Player destroyer) {
         List<ItemStack> items = super.destroyed(transportPipes, ductManager, destroyer);
         for (int i = 0; i < 9; i++) {
             ItemData id = recipeItems[i];

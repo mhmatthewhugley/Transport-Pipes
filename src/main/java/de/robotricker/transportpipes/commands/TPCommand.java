@@ -22,7 +22,6 @@ import co.aikar.commands.annotation.Syntax;
 import de.robotricker.transportpipes.ThreadService;
 import de.robotricker.transportpipes.duct.Duct;
 import de.robotricker.transportpipes.duct.manager.GlobalDuctManager;
-import de.robotricker.transportpipes.duct.pipe.Pipe;
 import de.robotricker.transportpipes.inventory.CreativeInventory;
 import de.robotricker.transportpipes.inventory.PlayerSettingsInventory;
 import de.robotricker.transportpipes.location.BlockLocation;
@@ -70,7 +69,6 @@ public class TPCommand extends BaseCommand {
                 Map<BlockLocation, Duct> ductMap = globalDuctManager.getDucts(world);
                 for (Duct duct : ductMap.values()) {
                     if (duct.getDuctType().getBaseDuctType().is("Pipe")) {
-                        Pipe pipe = (Pipe) duct;
                         worldPipes++;
                         worldItems += 0;
                     }

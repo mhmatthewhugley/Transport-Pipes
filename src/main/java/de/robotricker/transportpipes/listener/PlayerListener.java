@@ -56,7 +56,7 @@ public class PlayerListener implements Listener {
     public void onJoin(PlayerJoinEvent event) {
         if (generalConf.isCraftingEnabled()) {
             List<NamespacedKey> keys = new ArrayList<>();
-            for (BaseDuctType bdt : ductRegister.baseDuctTypes()) {
+            for (BaseDuctType<? extends Duct> bdt : ductRegister.baseDuctTypes()) {
                 for (Object type : bdt.ductTypes()) {
                     DuctType dt = (DuctType) type;
                     if (dt.getDuctRecipe() != null) {
@@ -78,7 +78,7 @@ public class PlayerListener implements Listener {
             return;
         }
         Player p = (Player) e.getInventory().getViewers().get(0);
-        for (BaseDuctType bdt : ductRegister.baseDuctTypes()) {
+        for (BaseDuctType<? extends Duct> bdt : ductRegister.baseDuctTypes()) {
             for (Object dt : bdt.ductTypes()) {
                 if (e.getRecipe().getResult().isSimilar(bdt.getItemManager().getItem((DuctType) dt))) {
                     if (!((DuctType) dt).hasPlayerCraftingPermission(p)) {

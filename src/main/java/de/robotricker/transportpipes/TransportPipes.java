@@ -54,6 +54,7 @@ public class TransportPipes extends JavaPlugin {
     private ThreadService thread;
     private DiskService diskService;
 
+    @SuppressWarnings("deprecation")
     @Override
     public void onEnable() {
 
@@ -217,7 +218,7 @@ public class TransportPipes extends JavaPlugin {
         }
         playerSettingsConf.setRenderSystemName(newRenderSystemName);
 
-        for (BaseDuctType baseDuctType : ductRegister.baseDuctTypes()) {
+        for (BaseDuctType<? extends Duct> baseDuctType : ductRegister.baseDuctTypes()) {
             RenderSystem oldRenderSystem = RenderSystem.getRenderSystem(oldRenderSystemName, baseDuctType);
 
             // switch render system

@@ -60,7 +60,6 @@ public class DuctListener implements Listener {
     private GlobalDuctManager globalDuctManager;
     private TPContainerListener tpContainerListener;
     private GeneralConf generalConf;
-    private SentryService sentry;
     private TransportPipes transportPipes;
     private ThreadService threadService;
     private PlayerSettingsService playerSettingsService;
@@ -72,7 +71,6 @@ public class DuctListener implements Listener {
         this.globalDuctManager = globalDuctManager;
         this.tpContainerListener = tpContainerListener;
         this.generalConf = generalConf;
-        this.sentry = sentry;
         this.transportPipes = transportPipes;
         this.threadService = threadService;
         this.playerSettingsService = playerSettingsService;

@@ -42,7 +42,7 @@ public class LegacyDuctLoader_v4_3_1 extends DuctLoader {
 
     @Override
     public void loadDuctsSync(World world, CompoundTag compoundTag) {
-        ListTag<CompoundTag> listTag = (ListTag<CompoundTag>) compoundTag.getListTag("Ducts");
+        ListTag<CompoundTag> listTag = compoundTag.getListTag("Ducts").asCompoundTagList();
 
         synchronized (globalDuctManager.getDucts()) {
             Map<Duct, CompoundTag> ductCompoundTagMap = new HashMap<>();

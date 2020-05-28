@@ -26,12 +26,12 @@ public class HitboxUtils {
         LINE_OF_SIGHT_SET.add(Material.AIR);
         // add transprant blocks, so that when you look only a little above the hitbox
         // of e.g. a grass,
-        // you will neverless click on the pipe unless you really click on the hitbox of
+        // you will nevertheless click on the pipe unless you really click on the hitbox of
         // the grass.
         // without this code, the line of sight will stop at this transparent block and
         // won't recognize the pipe behind it.
         for (Material m : Material.values()) {
-            if (m.isTransparent()) {
+            if (!m.isOccluding()) {
                 LINE_OF_SIGHT_SET.add(m);
             }
         }

@@ -15,6 +15,7 @@ import org.bukkit.inventory.ItemStack;
 
 import de.robotricker.transportpipes.TransportPipes;
 import de.robotricker.transportpipes.api.TransportPipesContainer;
+import de.robotricker.transportpipes.duct.Duct;
 import de.robotricker.transportpipes.duct.manager.DuctManager;
 import de.robotricker.transportpipes.duct.manager.GlobalDuctManager;
 import de.robotricker.transportpipes.duct.manager.PipeManager;
@@ -46,7 +47,7 @@ public class ExtractionPipe extends Pipe {
     }
 
     @Override
-    public void syncBigTick(DuctManager ductManager) {
+    public void syncBigTick(DuctManager<? extends Duct> ductManager) {
         super.syncBigTick(ductManager);
 
         PipeManager pipeManager = (PipeManager) ductManager;
@@ -144,7 +145,7 @@ public class ExtractionPipe extends Pipe {
 	}
 
     @Override
-    public List<ItemStack> destroyed(TransportPipes transportPipes, DuctManager ductManager, Player destroyer) {
+    public List<ItemStack> destroyed(TransportPipes transportPipes, DuctManager<? extends Duct> ductManager, Player destroyer) {
         List<ItemStack> drop = super.destroyed(transportPipes, ductManager, destroyer);
         drop.addAll(itemFilter.getAsItemStacks());
         return drop;

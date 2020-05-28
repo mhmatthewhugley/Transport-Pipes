@@ -2,12 +2,13 @@ package de.robotricker.transportpipes.rendersystems;
 
 import org.bukkit.inventory.ItemStack;
 
+import de.robotricker.transportpipes.duct.Duct;
 import de.robotricker.transportpipes.duct.DuctRegister;
 import de.robotricker.transportpipes.duct.types.BaseDuctType;
 
 public abstract class VanillaRenderSystem extends RenderSystem {
 
-    public VanillaRenderSystem(BaseDuctType baseDuctType) {
+    public VanillaRenderSystem(BaseDuctType<? extends Duct> baseDuctType) {
         super(baseDuctType);
     }
 

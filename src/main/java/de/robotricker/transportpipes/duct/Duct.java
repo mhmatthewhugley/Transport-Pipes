@@ -97,15 +97,15 @@ public abstract class Duct {
         this.obfuscatedWith = obfuscatedWith;
     }
 
-    public void tick(boolean bigTick, TransportPipes transportPipes, DuctManager ductManager) {
+    public void tick(boolean bigTick, TransportPipes transportPipes, DuctManager<? extends Duct> ductManager) {
 
     }
 
-    public void postTick(boolean bigTick, TransportPipes transportPipes, DuctManager ductManager, GeneralConf generalConf) {
+    public void postTick(boolean bigTick, TransportPipes transportPipes, DuctManager<? extends Duct> ductManager, GeneralConf generalConf) {
 
     }
 
-    public void syncBigTick(DuctManager ductManager) {
+    public void syncBigTick(DuctManager<? extends Duct> ductManager) {
 
     }
 
@@ -124,7 +124,7 @@ public abstract class Duct {
     /**
      * just for the purpose of dropping inside items or other baseDuctType specific stuff
      */
-    public List<ItemStack> destroyed(TransportPipes transportPipes, DuctManager ductManager, Player destroyer) {
+    public List<ItemStack> destroyed(TransportPipes transportPipes, DuctManager<? extends Duct> ductManager, Player destroyer) {
         List<ItemStack> dropItems = new ArrayList<>();
         if (destroyer == null || destroyer.getGameMode() != GameMode.CREATIVE) {
             dropItems.add(getDuctType().getBaseDuctType().getItemManager().getClonedItem(getDuctType()));
