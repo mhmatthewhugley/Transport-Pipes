@@ -241,7 +241,7 @@ public class CraftingPipe extends Pipe {
         for (int i = 0; i < 9; i++) {
             ItemData itemData = recipeItems[i];
             if (itemData == null) {
-                recipeItemsListTag.add(new StringTag(null));
+                recipeItemsListTag.add(new StringTag());
             } else {
                 recipeItemsListTag.addString(itemService.serializeItemStack(itemData.toItemStack()));
             }

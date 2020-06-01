@@ -62,19 +62,17 @@ public class TPCommand extends BaseCommand {
         cs.sendMessage(MessageUtils.formatColoredMsg("&6TransportPipes &7v" + plugin.getDescription().getVersion()));
         cs.sendMessage(MessageUtils.formatColoredMsg("&6TPS: " + tpsColor + tps + " &6/ &2" + pref_tps));
 
-        synchronized (globalDuctManager.getDucts()) {
-            for (World world : Bukkit.getWorlds()) {
-                int worldPipes = 0;
-                int worldItems = 0;
-                Map<BlockLocation, Duct> ductMap = globalDuctManager.getDucts(world);
-                for (Duct duct : ductMap.values()) {
-                    if (duct.getDuctType().getBaseDuctType().is("Pipe")) {
-                        worldPipes++;
-                        worldItems += 0;
-                    }
+        for (World world : Bukkit.getWorlds()) {
+            int worldPipes = 0;
+            int worldItems = 0;
+            Map<BlockLocation, Duct> ductMap = globalDuctManager.getDucts(world);
+            for (Duct duct : ductMap.values()) {
+                if (duct.getDuctType().getBaseDuctType().is("Pipe")) {
+                    worldPipes++;
+                    worldItems += 0;
                 }
-                cs.sendMessage(MessageUtils.formatColoredMsg("&6" + world.getName() + ": &e" + worldPipes + " &6" + "pipes, &e" + worldItems + " &6items"));
             }
+            cs.sendMessage(MessageUtils.formatColoredMsg("&6" + world.getName() + ": &e" + worldPipes + " &6" + "pipes, &e" + worldItems + " &6items"));
         }
     }
 

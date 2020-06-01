@@ -2,7 +2,7 @@ package de.robotricker.transportpipes.saving;
 
 import java.io.IOException;
 import java.nio.file.Paths;
-import java.util.Map;
+import java.util.concurrent.ConcurrentSkipListMap;
 
 import javax.inject.Inject;
 
@@ -31,21 +31,19 @@ public class DuctSaver {
 
     public void saveDuctsSync(World world) {
         ListTag<CompoundTag> listTag = new ListTag<>(CompoundTag.class);
-        synchronized (globalDuctManager.getDucts()) {
-            Map<BlockLocation, Duct> ducts = globalDuctManager.getDucts(world);
-            for (BlockLocation bl : ducts.keySet()) {
-                Duct duct = ducts.get(bl);
-                CompoundTag ductTag = new CompoundTag();
+        ConcurrentSkipListMap<BlockLocation, Duct> ducts = globalDuctManager.getDucts(world);
+        for (BlockLocation bl : ducts.keySet()) {
+            Duct duct = ducts.get(bl);
+            CompoundTag ductTag = new CompoundTag();
 
-                ductRegister.saveDuctTypeToNBTTag(duct.getDuctType(), ductTag);
-                ductRegister.saveBlockLocToNBTTag(duct.getBlockLoc(), ductTag);
-                duct.saveToNBTTag(ductTag, itemService);
+            ductRegister.saveDuctTypeToNBTTag(duct.getDuctType(), ductTag);
+            ductRegister.saveBlockLocToNBTTag(duct.getBlockLoc(), ductTag);
+            duct.saveToNBTTag(ductTag, itemService);
 
-                listTag.add(ductTag);
-            }
-            if (listTag.size() == 0) {
-                return;
-            }
+            listTag.add(ductTag);
+        }
+        if (listTag.size() == 0) {
+            return;
         }
 
         try {

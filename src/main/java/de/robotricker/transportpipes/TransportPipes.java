@@ -222,13 +222,11 @@ public class TransportPipes extends JavaPlugin {
             RenderSystem oldRenderSystem = RenderSystem.getRenderSystem(oldRenderSystemName, baseDuctType);
 
             // switch render system
-            synchronized (globalDuctManager.getPlayerDucts(p)) {
-                Iterator<Duct> ductIt = globalDuctManager.getPlayerDucts(p).iterator();
-                while (ductIt.hasNext()) {
-                    Duct nextDuct = ductIt.next();
-                    protocolService.removeASD(p, oldRenderSystem.getASDForDuct(nextDuct));
-                    ductIt.remove();
-                }
+            Iterator<Duct> ductIt = globalDuctManager.getPlayerDucts(p).iterator();
+            while (ductIt.hasNext()) {
+                Duct nextDuct = ductIt.next();
+                protocolService.removeASD(p, oldRenderSystem.getASDForDuct(nextDuct));
+                ductIt.remove();
             }
 
         }

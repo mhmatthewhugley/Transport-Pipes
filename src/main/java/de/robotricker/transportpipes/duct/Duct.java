@@ -1,12 +1,10 @@
 package de.robotricker.transportpipes.duct;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
@@ -15,6 +13,7 @@ import org.bukkit.Material;
 import org.bukkit.Particle;
 import org.bukkit.World;
 import org.bukkit.block.data.BlockData;
+import org.bukkit.craftbukkit.v1_15_R1.CraftWorld;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -36,16 +35,18 @@ public abstract class Duct {
     private DuctType ductType;
     private BlockLocation blockLoc;
     private World world;
-    private Chunk chunk;
-    private Map<TPDirection, Duct> connectedDucts;
+    private int chunkX;
+    private int chunkZ;
+    private ConcurrentHashMap<TPDirection, Duct> connectedDucts;
     private BlockData obfuscatedWith;
 
     public Duct(DuctType ductType, BlockLocation blockLoc, World world, Chunk chunk, DuctSettingsInventory settingsInv, GlobalDuctManager globalDuctManager) {
         this.ductType = ductType;
         this.blockLoc = blockLoc;
         this.world = world;
-        this.chunk = chunk;
-        this.connectedDucts = Collections.synchronizedMap(new HashMap<>());
+        chunkX = chunk.getX();
+        chunkZ = chunk.getZ();
+        this.connectedDucts = new ConcurrentHashMap<>();
         this.settingsInv = settingsInv;
         this.globalDuctManager = globalDuctManager;
     }
@@ -80,7 +81,7 @@ public abstract class Duct {
     }
 
     public boolean isInLoadedChunk() {
-        return chunk.isLoaded();
+        return ((CraftWorld) world).getHandle().getChunkProvider().isLoaded(chunkX, chunkZ);
     }
 
     public void notifyConnectionChange() {
@@ -109,7 +110,7 @@ public abstract class Duct {
 
     }
 
-    public Map<TPDirection, Duct> getDuctConnections() {
+    public ConcurrentHashMap<TPDirection, Duct> getDuctConnections() {
         return connectedDucts;
     }
 

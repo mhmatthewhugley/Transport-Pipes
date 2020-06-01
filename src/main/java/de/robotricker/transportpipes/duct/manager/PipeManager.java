@@ -1,13 +1,11 @@
 package de.robotricker.transportpipes.duct.manager;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentSkipListMap;
 
 import javax.inject.Inject;
 
@@ -51,12 +49,12 @@ public class PipeManager extends DuctManager<Pipe> {
     /**
      * ThreadSafe
      **/
-    private Map<World, Map<BlockLocation, TransportPipesContainer>> containers;
+    private ConcurrentHashMap<World, ConcurrentSkipListMap<BlockLocation, TransportPipesContainer>> containers;
 
     /**
      * THREAD-SAFE
      */
-    private Map<Player, Set<PipeItem>> playerItems;
+    private ConcurrentHashMap<Player, Set<PipeItem>> playerItems;
 
     private ShapedRecipe wrenchRecipe;
 
@@ -67,17 +65,17 @@ public class PipeManager extends DuctManager<Pipe> {
         super(transportPipes, ductRegister, globalDuctManager, protocolService, itemService);
         this.playerSettingsService = playerSettingsService;
         this.generalConf = generalConf;
-        playerItems = Collections.synchronizedMap(new HashMap<>());
-        containers = Collections.synchronizedMap(new HashMap<>());
+        playerItems = new ConcurrentHashMap<>();
+        containers = new ConcurrentHashMap<>();
         tickCounter = 0;
     }
 
-    public Map<World, Map<BlockLocation, TransportPipesContainer>> getContainers() {
+    public ConcurrentHashMap<World, ConcurrentSkipListMap<BlockLocation, TransportPipesContainer>> getContainers() {
         return containers;
     }
 
-    public Map<BlockLocation, TransportPipesContainer> getContainers(World world) {
-        return containers.computeIfAbsent(world, v -> Collections.synchronizedMap(new TreeMap<>()));
+    public ConcurrentSkipListMap<BlockLocation, TransportPipesContainer> getContainers(World world) {
+        return containers.computeIfAbsent(world, v -> new ConcurrentSkipListMap<BlockLocation, TransportPipesContainer>());
     }
 
     public TransportPipesContainer getContainerAtLoc(World world, BlockLocation blockLoc) {
@@ -199,14 +197,12 @@ public class PipeManager extends DuctManager<Pipe> {
         if(bigTick) {
             transportPipes.runTaskSync(() -> {
                 Set<World> worlds = globalDuctManager.getDucts().keySet();
-                synchronized (globalDuctManager.getDucts()) {
-                    for (World world : worlds) {
-                        Map<BlockLocation, Duct> ductMap = globalDuctManager.getDucts().get(world);
-                        if (ductMap != null) {
-                            for (Duct duct : ductMap.values()) {
-                                if (duct instanceof Pipe && duct.isInLoadedChunk()) {
-                                    duct.syncBigTick(this);
-                                }
+                for (World world : worlds) {
+                    ConcurrentSkipListMap<BlockLocation, Duct> ductMap = globalDuctManager.getDucts().get(world);
+                    if (ductMap != null) {
+                        for (Duct duct : ductMap.values()) {
+                            if (duct instanceof Pipe && duct.isInLoadedChunk()) {
+                                duct.syncBigTick(this);
                             }
                         }
                     }
@@ -215,19 +211,17 @@ public class PipeManager extends DuctManager<Pipe> {
         }
 
         Set<World> worlds = globalDuctManager.getDucts().keySet();
-        synchronized (globalDuctManager.getDucts()) {
-            for (World world : worlds) {
-                Map<BlockLocation, Duct> ductMap = globalDuctManager.getDucts().get(world);
-                if (ductMap != null) {
-                    for (Duct duct : ductMap.values()) {
-                        if (duct instanceof Pipe && duct.isInLoadedChunk()) {
-                            duct.tick(bigTick, transportPipes, this);
-                        }
+        for (World world : worlds) {
+            ConcurrentSkipListMap<BlockLocation, Duct> ductMap = globalDuctManager.getDucts().get(world);
+            if (ductMap != null) {
+                for (Duct duct : ductMap.values()) {
+                    if (duct instanceof Pipe && duct.isInLoadedChunk()) {
+                        duct.tick(bigTick, transportPipes, this);
                     }
-                    for (Duct duct : ductMap.values()) {
-                        if (duct instanceof Pipe && duct.isInLoadedChunk()) {
-                            duct.postTick(bigTick, transportPipes, this, generalConf);
-                        }
+                }
+                for (Duct duct : ductMap.values()) {
+                    if (duct instanceof Pipe && duct.isInLoadedChunk()) {
+                        duct.postTick(bigTick, transportPipes, this, generalConf);
                     }
                 }
             }
@@ -236,7 +230,7 @@ public class PipeManager extends DuctManager<Pipe> {
     }
 
     public Set<PipeItem> getPlayerPipeItems(Player player) {
-        return playerItems.computeIfAbsent(player, p -> Collections.synchronizedSet(new HashSet<>()));
+        return playerItems.computeIfAbsent(player, p -> ConcurrentHashMap.newKeySet());
     }
 
     public void spawnPipeItem(PipeItem pipeItem) {

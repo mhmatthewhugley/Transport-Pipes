@@ -103,18 +103,16 @@ public class WorldUtils {
         }
         Set<Duct> showingDucts = new HashSet<>();
         Map<BlockLocation, Duct> ductMap = globalDuctManager.getDucts(p.getWorld());
-        synchronized (globalDuctManager.getDucts()) {
-            for (BlockLocation bl : ductMap.keySet()) {
-                Duct duct = ductMap.get(bl);
-                Block ductBlock = duct.getBlockLoc().toBlock(duct.getWorld());
-                if (ductBlock.getLocation().distance(p.getLocation()) > renderDistance) {
-                    continue;
-                }
-                if (duct.obfuscatedWith() != null && ductBlock.getBlockData().getMaterial() != Material.BARRIER) {
-                    showingDucts.add(duct);
-                    ductBlock.setBlockData(Material.BARRIER.createBlockData(), false);
-                    threadService.tickDuctSpawnAndDespawn(duct);
-                }
+        for (BlockLocation bl : ductMap.keySet()) {
+            Duct duct = ductMap.get(bl);
+            Block ductBlock = duct.getBlockLoc().toBlock(duct.getWorld());
+            if (ductBlock.getLocation().distance(p.getLocation()) > renderDistance) {
+                continue;
+            }
+            if (duct.obfuscatedWith() != null && ductBlock.getBlockData().getMaterial() != Material.BARRIER) {
+                showingDucts.add(duct);
+                ductBlock.setBlockData(Material.BARRIER.createBlockData(), false);
+                threadService.tickDuctSpawnAndDespawn(duct);
             }
         }
 

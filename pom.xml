@@ -224,10 +224,6 @@
                     <!-- Relocate shaded libraries that might cause class conflicts with other plugins -->
                     <relocations>
                         <relocation>
-                            <pattern>com.comphenix.packetwrapper</pattern>
-                            <shadedPattern>de.robotricker.transportpipes.libs.com.comphenix.packetwrapper</shadedPattern>
-                        </relocation>
-                        <relocation>
                             <pattern>net.querz.nbt</pattern>
                             <shadedPattern>de.robotricker.transportpipes.libs.net.querz.nbt</shadedPattern>
                         </relocation>
@@ -254,6 +250,10 @@
                         <relocation>
                             <pattern>co.aikar.commands</pattern>
                             <shadedPattern>de.robotricker.transportpipes.libs.co.aikar.commands</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>co.aikar.taskchain</pattern>
+                            <shadedPattern>de.robotricker.transportpipes.libs.co.aikar.taskchain</shadedPattern>
                         </relocation>
                         <!--
                         <relocation>
@@ -376,21 +376,14 @@
                 </exclusion>
             </exclusions>
         </dependency>
-
-        <!--<dependency>
+        
+        <dependency>
             <groupId>org.bukkit</groupId>
             <artifactId>craftbukkit</artifactId>
             <version>1.15.2-R0.1-SNAPSHOT</version>
-            <scope>provided</scope>
-        </dependency>-->
-
-        <!-- PaperMC, https://github.com/PaperMC/Paper
-        <dependency>
-            <groupId>com.destroystokyo.paper</groupId>
-            <artifactId>paper-api</artifactId>
-            <version>1.15.2-R0.1-SNAPSHOT</version>
-            <scope>provided</scope>
-        </dependency>-->
+            <scope>system</scope>
+            <systemPath>${project.basedir}/resources/craftbukkit-1.15.2-R0.1-SNAPSHOT.jar</systemPath>
+        </dependency>
 
         <!-- ProtocolLib, spigot packet manipulation library, https://github.com/dmulloy2/ProtocolLib -->
         <dependency>
@@ -417,14 +410,6 @@
             <version>1.0</version>
             <optional>true</optional>
         </dependency>
-
-        <!--
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-lang3</artifactId>
-            <version>3.8</version>
-        </dependency>
-        -->
 
         <!-- Sentry, a library that collects exception data and reports them automatically -->
         <dependency>

@@ -28,24 +28,22 @@ public class DuctLoader {
     public void loadDuctsSync(World world, CompoundTag compoundTag) {
         ListTag<CompoundTag> listTag = compoundTag.getListTag("ducts").asCompoundTagList();
 
-        synchronized (globalDuctManager.getDucts()) {
-            Map<Duct, CompoundTag> ductCompoundTagMap = new HashMap<>();
-            for (CompoundTag ductTag : listTag) {
-                DuctType ductType = ductRegister.loadDuctTypeFromNBTTag(ductTag);
-                BlockLocation blockLoc = ductRegister.loadBlockLocFromNBTTag(ductTag);
-                if (ductType == null || blockLoc == null) {
-                    continue;
-                }
-                Duct duct = globalDuctManager.createDuctObject(ductType, blockLoc, world, blockLoc.toLocation(world).getChunk());
-                globalDuctManager.registerDuct(duct);
-                ductCompoundTagMap.put(duct, ductTag);
+        Map<Duct, CompoundTag> ductCompoundTagMap = new HashMap<>();
+        for (CompoundTag ductTag : listTag) {
+            DuctType ductType = ductRegister.loadDuctTypeFromNBTTag(ductTag);
+            BlockLocation blockLoc = ductRegister.loadBlockLocFromNBTTag(ductTag);
+            if (ductType == null || blockLoc == null) {
+                continue;
             }
-            // load duct specific nbt stuff later in order to be able to access other ducts inside this load process
-            for (Duct duct : ductCompoundTagMap.keySet()) {
-                globalDuctManager.updateDuctConnections(duct);
-                duct.loadFromNBTTag(ductCompoundTagMap.get(duct), itemService);
-                globalDuctManager.registerDuctInRenderSystems(duct, false);
-            }
+            Duct duct = globalDuctManager.createDuctObject(ductType, blockLoc, world, blockLoc.toLocation(world).getChunk());
+            globalDuctManager.registerDuct(duct);
+            ductCompoundTagMap.put(duct, ductTag);
+        }
+        // load duct specific nbt stuff later in order to be able to access other ducts inside this load process
+        for (Duct duct : ductCompoundTagMap.keySet()) {
+            globalDuctManager.updateDuctConnections(duct);
+            duct.loadFromNBTTag(ductCompoundTagMap.get(duct), itemService);
+            globalDuctManager.registerDuctInRenderSystems(duct, false);
         }
     }
 

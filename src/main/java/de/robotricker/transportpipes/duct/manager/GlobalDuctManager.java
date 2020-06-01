@@ -1,13 +1,10 @@
 package de.robotricker.transportpipes.duct.manager;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentSkipListMap;
 
 import javax.inject.Inject;
 
@@ -41,11 +38,11 @@ public class GlobalDuctManager {
     /**
      * ThreadSafe
      **/
-    private Map<World, Map<BlockLocation, Duct>> ducts;
+    private ConcurrentHashMap<World, ConcurrentSkipListMap<BlockLocation, Duct>> ducts;
     /**
      * ThreadSafe
      **/
-    private Map<Player, Set<Duct>> playerDucts;
+    private ConcurrentHashMap<Player, Set<Duct>> playerDucts;
 
     @Inject
     public GlobalDuctManager(TransportPipes transportPipes, ProtocolService protocolService, DuctRegister ductRegister, PlayerSettingsService playerSettingsService) {
@@ -53,21 +50,20 @@ public class GlobalDuctManager {
         this.protocolService = protocolService;
         this.ductRegister = ductRegister;
         this.playerSettingsService = playerSettingsService;
-        this.ducts = Collections.synchronizedMap(new HashMap<>());
-        this.playerDucts = Collections.synchronizedMap(new HashMap<>());
+        this.ducts = new ConcurrentHashMap<>();
+        this.playerDucts = new ConcurrentHashMap<>();
     }
 
-    public Map<World, Map<BlockLocation, Duct>> getDucts() {
+    public ConcurrentHashMap<World, ConcurrentSkipListMap<BlockLocation, Duct>> getDucts() {
         return ducts;
     }
 
-    public Map<BlockLocation, Duct> getDucts(World world) {
-        return ducts.computeIfAbsent(world, v -> Collections.synchronizedMap(new TreeMap<>()));
+    public ConcurrentSkipListMap<BlockLocation, Duct> getDucts(World world) {
+        return ducts.computeIfAbsent(world, v -> new ConcurrentSkipListMap<>());
     }
 
     public Duct getDuctAtLoc(World world, BlockLocation blockLoc) {
-        Map<BlockLocation, Duct> ductMap = getDucts(world);
-        return ductMap.get(blockLoc);
+        return getDucts(world).get(blockLoc);
     }
 
     public Duct getDuctAtLoc(Location location) {
@@ -75,7 +71,7 @@ public class GlobalDuctManager {
     }
 
     public Set<Duct> getPlayerDucts(Player player) {
-        return playerDucts.computeIfAbsent(player, p -> Collections.synchronizedSet(new HashSet<>()));
+        return playerDucts.computeIfAbsent(player, p -> ConcurrentHashMap.newKeySet());
     }
 
     public RenderSystem getPlayerRenderSystem(Player player, BaseDuctType<? extends Duct> baseDuctType) {

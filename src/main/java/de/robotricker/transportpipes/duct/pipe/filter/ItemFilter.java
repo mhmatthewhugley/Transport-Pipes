@@ -103,7 +103,7 @@ public class ItemFilter {
         for (int i = 0; i < MAX_ITEMS_PER_ROW; i++) {
             ItemData itemData = filterItems[i];
             if (itemData == null) {
-                itemDataListTag.add(new StringTag(null));
+                itemDataListTag.add(new StringTag());
             } else {
                 itemDataListTag.addString(itemService.serializeItemStack(itemData.toItemStack()));
             }
