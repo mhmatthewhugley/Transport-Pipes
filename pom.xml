@@ -251,10 +251,6 @@
                             <pattern>co.aikar.commands</pattern>
                             <shadedPattern>de.robotricker.transportpipes.libs.co.aikar.commands</shadedPattern>
                         </relocation>
-                        <relocation>
-                            <pattern>co.aikar.taskchain</pattern>
-                            <shadedPattern>de.robotricker.transportpipes.libs.co.aikar.taskchain</shadedPattern>
-                        </relocation>
                         <!--
                         <relocation>
                             <pattern>org.apache.commons</pattern>
@@ -381,8 +377,7 @@
             <groupId>org.bukkit</groupId>
             <artifactId>craftbukkit</artifactId>
             <version>1.15.2-R0.1-SNAPSHOT</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/resources/craftbukkit-1.15.2-R0.1-SNAPSHOT.jar</systemPath>
+            <scope>provided</scope>
         </dependency>
 
         <!-- ProtocolLib, spigot packet manipulation library, https://github.com/dmulloy2/ProtocolLib -->
