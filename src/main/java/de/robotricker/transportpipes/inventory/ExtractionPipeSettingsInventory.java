@@ -114,6 +114,7 @@ public class ExtractionPipeSettingsInventory extends DuctSettingsInventory {
         if (rawSlot == 18) {
             if (ct == ClickType.LEFT || ct == ClickType.SHIFT_LEFT) {
                 pipe.getItemFilter().setFilterMode(pipe.getItemFilter().getFilterMode().next());
+                if (pipe.getItemFilter().getFilterMode() == FilterMode.BLOCK_ALL) pipe.getItemFilter().setFilterMode(pipe.getItemFilter().getFilterMode().next());
             } else if (ct == ClickType.RIGHT || ct == ClickType.SHIFT_RIGHT) {
                 pipe.getItemFilter().setFilterStrictness(pipe.getItemFilter().getFilterStrictness().next());
             }
