@@ -21,6 +21,7 @@ public class PipeItem {
 	private ItemStack item;
 	private World world;
 	private BlockLocation blockLoc;
+	private BlockLocation sourceLoc = null;
 	private RelativeLocation oldRelativeLocation;
 	private RelativeLocation relativeLocation;
 	private TPDirection movingDir;
@@ -35,6 +36,14 @@ public class PipeItem {
 		this.movingDir = movingDir;
 		init(world, true);
 	}
+	
+    public PipeItem(ItemStack item, World world, BlockLocation blockLoc, TPDirection movingDir, BlockLocation sourceLoc) {
+        this.item = item;
+        this.blockLoc = blockLoc;
+        this.movingDir = movingDir;
+        this.sourceLoc = sourceLoc;
+        init(world, true);
+    }
 
 	public PipeItem(ItemStack item, World world, BlockLocation blockLoc, RelativeLocation relLoc, TPDirection movingDir) {
 		this.item = item;
@@ -68,9 +77,17 @@ public class PipeItem {
 		return blockLoc;
 	}
 
+    public BlockLocation getSourceLoc() {
+        return sourceLoc;
+    }
+
 	public void setBlockLoc(BlockLocation blockLoc) {
 		this.blockLoc = blockLoc;
 	}
+
+    public void setSourceLoc(BlockLocation sourceLoc) {
+        this.sourceLoc = sourceLoc;
+    }
 
 	public RelativeLocation getOldRelativeLocation() {
 		return oldRelativeLocation;

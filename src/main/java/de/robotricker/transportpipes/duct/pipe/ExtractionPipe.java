@@ -1,11 +1,9 @@
 package de.robotricker.transportpipes.duct.pipe;
 
-import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
-
 import org.bukkit.Chunk;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -67,7 +65,7 @@ public class ExtractionPipe extends Pipe {
             }
             ItemStack item = container.extractItem(extractDirection, extractAmount.getAmount(), itemFilter);
             if (item != null) {
-                PipeItem pipeItem = new PipeItem(item, getWorld(), getBlockLoc(), extractDirection.getOpposite());
+                PipeItem pipeItem = new PipeItem(item, getWorld(), getBlockLoc(), extractDirection.getOpposite(), getBlockLoc());
                 pipeManager.spawnPipeItem(pipeItem);
                 pipeManager.putPipeItemInPipe(pipeItem);
             }
@@ -134,13 +132,28 @@ public class ExtractionPipe extends Pipe {
     
     @Override
     protected Map<TPDirection, Integer> calculateItemDistribution(PipeItem pipeItem, TPDirection movingDir, List<TPDirection> dirs, TransportPipes transportPipes) {
-    	BlockLocation location = getBlockLoc();
-    	List<TPDirection> newDirs = dirs.stream().filter(dir -> pipeItem.hasMovedDirs(location) && !pipeItem.getMovedDirs(location).contains(dir)).collect(Collectors.toList());
-    	if (newDirs.isEmpty()) {
-    		newDirs = pipeItem.hasSourceDir(location) ? Arrays.asList(pipeItem.getSourceDir(location)) : dirs;
+    	List<TPDirection> newDirs = dirs;
+    	
+    	// If there's a container to insert into, make sure we don't insert into containers that we didn't pull from
+    	Iterator<TPDirection> iterator = newDirs.iterator();
+    	while (iterator.hasNext()) {
+    	    TPDirection direction = iterator.next();
+            TransportPipesContainer transportPipesContainer = getContainerConnections().get(direction);
+            if (transportPipesContainer != null) {
+                BlockLocation sourceLoc = pipeItem.getSourceLoc();
+                if (sourceLoc != null && sourceLoc != getBlockLoc()) {
+                    iterator.remove();
+                }
+            }
     	}
+    	
+    	// If we have more than one direction option, make sure we remove the opposite direction to prevent backtracking when possible
+    	if (newDirs.contains(movingDir.getOpposite()) && newDirs.size() > 1) {
+    	    newDirs.remove(movingDir.getOpposite());
+    	}
+    	
 		Map<TPDirection, Integer> absWeights = new HashMap<>();
-		newDirs.stream().filter(dir -> !dir.equals(movingDir.getOpposite())).forEach(dir -> absWeights.put(dir, 1));
+		newDirs.stream().forEach(dir -> absWeights.put(dir, 1));
 		return itemDistributor.splitPipeItem(pipeItem.getItem(), absWeights, this);
 	}
 
