@@ -127,6 +127,10 @@ public class PipeItem {
 		return movedDirs.containsKey(location);
 	}
 	
+	public void removeMovedDir(BlockLocation location) {
+	    movedDirs.remove(location);
+	}
+	
 	public TPDirection getSourceDir(BlockLocation location) {
 		return sourceDirs.get(location);
 	}

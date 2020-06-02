@@ -9,7 +9,6 @@ import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.ConcurrentLinkedQueue;
-
 import org.bukkit.Chunk;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
@@ -161,23 +160,30 @@ public class Pipe extends Duct {
 				List<TPDirection> possibleMovingDirs = new ArrayList<>(getAllConnections());
 
 				Map<TPDirection, Integer> distribution = calculateItemDistribution(pipeItem, pipeItem.getMovingDir(), possibleMovingDirs, transportPipes);
-				TransportPipesContainer transportPipesContainer = getContainerConnections().get(pipeItem.getMovingDir());
 
 				if (distribution == null || distribution.isEmpty()) {
-					items.remove(pipeItem);
-					pipeManager.despawnPipeItem(pipeItem);
 					if (distribution != null) {
-						// drop item
 						transportPipes.runTaskSync(() -> {
 
-							if (transportPipesContainer != null) {
-								pipeItem.setMovingDir(pipeItem.getMovingDir().getOpposite());
-								pipeManager.putPipeItemInPipe(pipeItem);
-							}
-							else pipeItem.getWorld().dropItem(pipeItem.getBlockLoc().toLocation(pipeItem.getWorld()), pipeItem.getItem());
+                            pipeItem.removeMovedDir(getBlockLoc());
+                            Map<TPDirection, Integer> newDistribution = calculateItemDistribution(pipeItem, pipeItem.getMovingDir(), possibleMovingDirs, transportPipes);
+                            if (newDistribution.isEmpty()) {
+                                pipeItem.setMovingDir(pipeItem.getMovingDir().getOpposite());
+                            }
+                            else {
+                                pipeItem.addMovedDir(getBlockLoc(), pipeItem.getMovingDir().getOpposite());
+                            }
 						});
 					}
-					continue;
+					else {
+                        items.remove(pipeItem);
+                        pipeManager.despawnPipeItem(pipeItem);
+                        // drop item
+                        transportPipes.runTaskSync(() -> {
+                            pipeItem.getWorld().dropItem(pipeItem.getBlockLoc().getNeighbor(pipeItem.getMovingDir()).toLocation(pipeItem.getWorld()), pipeItem.getItem());
+                        });
+    					continue;
+					}
 				}
 
 				ItemStack itemStack = pipeItem.getItem().clone();
