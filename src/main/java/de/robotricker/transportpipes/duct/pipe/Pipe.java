@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
+import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -75,8 +75,8 @@ public class Pipe extends Duct {
 	}
 
 	@Override
-	public Set<TPDirection> getAllConnections() {
-		Set<TPDirection> allConnections = super.getAllConnections();
+	public TreeSet<TPDirection> getAllConnections() {
+	    TreeSet<TPDirection> allConnections = super.getAllConnections();
 		allConnections.addAll(getContainerConnections().keySet());
 		return allConnections;
 	}

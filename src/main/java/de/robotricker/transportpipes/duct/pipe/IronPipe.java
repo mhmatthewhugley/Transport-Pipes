@@ -1,11 +1,11 @@
 package de.robotricker.transportpipes.duct.pipe;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import org.bukkit.Chunk;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -31,24 +31,6 @@ public class IronPipe extends Pipe {
     public IronPipe(DuctType ductType, BlockLocation blockLoc, World world, Chunk chunk, DuctSettingsInventory settingsInv, GlobalDuctManager globalDuctManager, ItemDistributorService itemDistributor) {
         super(ductType, blockLoc, world, chunk, settingsInv, globalDuctManager, itemDistributor);
         currentOutputDirection = TPDirection.UP;
-    }
-    
-    @Override
-    public Set<TPDirection> getAllConnections() {
-        Set<TPDirection> connections = new HashSet<>();
-        // Avoid connections between iron pipes
-        for(Map.Entry<TPDirection, Duct> entry : getDuctConnections().entrySet()) {
-            if (entry.getValue() instanceof IronPipe) {
-                IronPipe other = (IronPipe) entry.getValue();
-                TPDirection otherDirection = other.getCurrentOutputDirection();
-                if (entry.getKey() == otherDirection.getOpposite()) {
-                    continue;
-                }
-            }
-            connections.add(entry.getKey());
-        }
-        connections.addAll(getContainerConnections().keySet());
-        return connections;
     }
 
     @Override
@@ -76,24 +58,36 @@ public class IronPipe extends Pipe {
     }
 
     private void cycleOutputDirection() {
-        Set<TPDirection> allConns = getAllConnections();
-        if (allConns.isEmpty()) {
+        ArrayList<TPDirection> allConnections = new ArrayList<TPDirection>(getAllConnections());
+        if (allConnections.isEmpty()) {
             return;
         }
-
+        
         TPDirection oldOutputDirection = currentOutputDirection;
-        int dirId;
-        do {
-            dirId = currentOutputDirection.ordinal();
-            dirId++;
-            dirId %= TPDirection.values().length;
-            currentOutputDirection = TPDirection.values()[dirId];
-        } while (!allConns.contains(currentOutputDirection));
-
+        
+        if (getAllConnections().contains(currentOutputDirection)) {
+            Collections.rotate(allConnections, -getAllConnections().headSet(currentOutputDirection).size());
+        }
+            
+        for (TPDirection direction : allConnections) {
+            if (direction == currentOutputDirection) {
+                continue;
+            }
+            if (getDuctConnections().containsKey(direction)) {
+                Duct duct = getDuctConnections().get(direction);
+                if (duct instanceof IronPipe) {
+                    if (direction == ((IronPipe) duct).getCurrentOutputDirection().getOpposite()) {
+                        continue;
+                    }
+                }
+            }
+            currentOutputDirection = direction;
+            break;
+        }
+        
         if (oldOutputDirection != currentOutputDirection) {
             globalDuctManager.updateDuctInRenderSystems(this, true);
         }
-
     }
 
     @Override

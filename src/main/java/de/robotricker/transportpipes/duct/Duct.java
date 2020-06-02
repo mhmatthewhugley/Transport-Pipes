@@ -1,9 +1,8 @@
 package de.robotricker.transportpipes.duct;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
+import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.bukkit.Bukkit;
@@ -114,8 +113,8 @@ public abstract class Duct {
         return connectedDucts;
     }
 
-    public Set<TPDirection> getAllConnections() {
-        return new HashSet<>(getDuctConnections().keySet());
+    public TreeSet<TPDirection> getAllConnections() {
+        return new TreeSet<>(getDuctConnections().keySet());
     }
 
     public Material getBreakParticleData() {
