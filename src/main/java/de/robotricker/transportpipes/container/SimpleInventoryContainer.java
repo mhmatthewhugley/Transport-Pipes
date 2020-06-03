@@ -47,9 +47,9 @@ public class SimpleInventoryContainer extends BlockContainer {
                 int amountBefore = itemTaken != null ? itemTaken.getAmount() : 0;
                 if (itemTaken == null) {
                     itemTaken = cachedInv.getItem(i).clone();
-                    itemTaken.setAmount(Math.min(amount, itemTaken.getAmount()));
+                    itemTaken.setAmount(Math.min(Math.min(amount, itemTaken.getAmount()), itemTaken.getMaxStackSize()));
                 } else if (itemTaken.isSimilar(cachedInv.getItem(i))) {
-                    itemTaken.setAmount(Math.min(amount, amountBefore + cachedInv.getItem(i).getAmount()));
+                    itemTaken.setAmount(Math.min(Math.min(amount, amountBefore + cachedInv.getItem(i).getAmount()), itemTaken.getMaxStackSize()));
                 }
                 ItemStack invItem = cachedInv.getItem(i);
                 invItem.setAmount(invItem.getAmount() - (itemTaken.getAmount() - amountBefore));
