@@ -82,7 +82,9 @@ public class LangConf extends Conf {
         EXTRACT_AMOUNT_EXTRACT_16("extract_amount.extract_16"),
         EXTRACT_MODE_DIRECT("extract_mode.direct"),
         EXTRACT_MODE_ROUND("extract_mode.round"),
-        SHOW_HIDDEN_DUCTS("show_hidden_ducts");
+        SHOW_HIDDEN_DUCTS("show_hidden_ducts"),
+        CONNECTION_BLOCKED("block_connection.block"),
+        CONNECTION_UNBLOCKED("block_connection.unblock");
 
         private String key;
 
@@ -105,8 +107,8 @@ public class LangConf extends Conf {
             return Arrays.asList(get(replacements).split("\\\\n"));
         }
 
-        public void sendMessage(Player p) {
-            for (String line : getLines()) {
+        public void sendMessage(Player p, Object... replacements) {
+            for (String line : getLines(replacements)) {
                 p.sendMessage(line);
             }
         }

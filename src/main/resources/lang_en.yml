@@ -79,3 +79,6 @@ extract_mode:
   direct: 'Direct'
   round: 'Round Robin'
 show_hidden_ducts: '&6Showing nearby hidden ducts for &b%1% &6more seconds'
+block_connection:
+  block: '&6Connections on &b%1% &6side are now &cblocked'
+  unblock: '&6Connections on &b%1% &6side are now &aunblocked'

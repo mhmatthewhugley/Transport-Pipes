@@ -1,6 +1,7 @@
 package de.robotricker.transportpipes.saving;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -13,6 +14,7 @@ import de.robotricker.transportpipes.duct.manager.GlobalDuctManager;
 import de.robotricker.transportpipes.duct.types.DuctType;
 import de.robotricker.transportpipes.items.ItemService;
 import de.robotricker.transportpipes.location.BlockLocation;
+import de.robotricker.transportpipes.location.TPDirection;
 import net.querz.nbt.tag.CompoundTag;
 import net.querz.nbt.tag.ListTag;
 
@@ -32,10 +34,12 @@ public class DuctLoader {
         for (CompoundTag ductTag : listTag) {
             DuctType ductType = ductRegister.loadDuctTypeFromNBTTag(ductTag);
             BlockLocation blockLoc = ductRegister.loadBlockLocFromNBTTag(ductTag);
+            List<TPDirection> blockedConnections = ductRegister.loadBlockedConnectionsFromNBTTag(ductTag); 
             if (ductType == null || blockLoc == null) {
                 continue;
             }
             Duct duct = globalDuctManager.createDuctObject(ductType, blockLoc, world, blockLoc.toLocation(world).getChunk());
+            duct.getBlockedConnections().addAll(blockedConnections);
             globalDuctManager.registerDuct(duct);
             ductCompoundTagMap.put(duct, ductTag);
         }

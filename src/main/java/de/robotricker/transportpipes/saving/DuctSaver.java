@@ -38,6 +38,7 @@ public class DuctSaver {
 
             ductRegister.saveDuctTypeToNBTTag(duct.getDuctType(), ductTag);
             ductRegister.saveBlockLocToNBTTag(duct.getBlockLoc(), ductTag);
+            ductRegister.saveDuctBlockedConnectionsToNBTTag(duct.getBlockedConnections(), ductTag);
             duct.saveToNBTTag(ductTag, itemService);
 
             listTag.add(ductTag);

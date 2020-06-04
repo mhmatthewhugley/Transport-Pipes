@@ -179,7 +179,8 @@ public class GlobalDuctManager {
         duct.getDuctConnections().clear();
         for (TPDirection tpDir : TPDirection.values()) {
             Duct neighborDuct = getDuctAtLoc(duct.getWorld(), duct.getBlockLoc().getNeighbor(tpDir));
-            if (neighborDuct != null && duct.getDuctType().connectsTo(neighborDuct.getDuctType())) {
+            if (neighborDuct != null && duct.getDuctType().connectsTo(neighborDuct.getDuctType()) && !duct.getBlockedConnections().contains(tpDir)
+                    && !neighborDuct.getBlockedConnections().contains(tpDir.getOpposite())) {
                 duct.getDuctConnections().put(tpDir, neighborDuct);
             }
         }

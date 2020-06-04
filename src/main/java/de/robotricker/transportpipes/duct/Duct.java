@@ -37,6 +37,7 @@ public abstract class Duct {
     private int chunkX;
     private int chunkZ;
     private ConcurrentHashMap<TPDirection, Duct> connectedDucts;
+    private List<TPDirection> blockedConnections;
     private BlockData obfuscatedWith;
 
     public Duct(DuctType ductType, BlockLocation blockLoc, World world, Chunk chunk, DuctSettingsInventory settingsInv, GlobalDuctManager globalDuctManager) {
@@ -45,7 +46,8 @@ public abstract class Duct {
         this.world = world;
         chunkX = chunk.getX();
         chunkZ = chunk.getZ();
-        this.connectedDucts = new ConcurrentHashMap<>();
+        this.connectedDucts = new ConcurrentHashMap<TPDirection, Duct>();
+        this.blockedConnections = new ArrayList<TPDirection>();
         this.settingsInv = settingsInv;
         this.globalDuctManager = globalDuctManager;
     }
@@ -115,6 +117,10 @@ public abstract class Duct {
 
     public TreeSet<TPDirection> getAllConnections() {
         return new TreeSet<>(getDuctConnections().keySet());
+    }
+    
+    public List<TPDirection> getBlockedConnections() {
+        return blockedConnections;
     }
 
     public Material getBreakParticleData() {

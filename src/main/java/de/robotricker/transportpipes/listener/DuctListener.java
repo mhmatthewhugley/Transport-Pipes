@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
 import javax.inject.Inject;
 
 import org.bukkit.Bukkit;
@@ -148,8 +147,39 @@ public class DuctListener implements Listener {
                 	return;
                 }
 
+                // ********************** WRENCH SNEAK DUCT CLICK ****************************
+                if (clickedDuct != null && itemDuctType == null && itemService.isWrench(interaction.item) && interaction.p.isSneaking()) {
+                    // Wrench sneak click
+                    Block ductBlock = clickedDuct.getBlockLoc().toBlock(interaction.p.getWorld());
+                    if (buildAllowed(interaction.p, ductBlock)) {
+                        Block relativeBlock = HitboxUtils.getRelativeBlockOfDuct(globalDuctManager, interaction.p, ductBlock);
+                        TPDirection clickedDir = TPDirection.fromBlockFace(ductBlock.getFace(relativeBlock));
+                        Duct relativeDuct = clickedDuct.getDuctConnections().get(clickedDir);
+                        if (clickedDuct.getBlockedConnections().contains(clickedDir)) {
+                            clickedDuct.getBlockedConnections().remove(clickedDir);
+                            LangConf.Key.CONNECTION_UNBLOCKED.sendMessage(interaction.p, clickedDir.toString());
+                        }
+                        else {
+                            clickedDuct.getBlockedConnections().add(clickedDir);
+                            LangConf.Key.CONNECTION_BLOCKED.sendMessage(interaction.p, clickedDir.toString());
+                        }
+                        globalDuctManager.updateDuctConnections(clickedDuct);
+                        globalDuctManager.updateDuctInRenderSystems(clickedDuct, true);
+                        relativeDuct = relativeDuct != null ? relativeDuct : clickedDuct.getDuctConnections().get(clickedDir);
+                        if (relativeDuct != null) {
+                            globalDuctManager.updateDuctConnections(relativeDuct);
+                            globalDuctManager.updateDuctInRenderSystems(relativeDuct, true);
+                        }
+                    }
+                    
+                    interaction.cancel = true;
+                    interaction.successful = true;
+                    return;
+                }
+
                 // ********************** WRENCH DUCT CLICK ****************************
-                if (clickedDuct != null && itemDuctType == null && (itemService.isWrench(interaction.item) || (!generalConf.getWrenchRequired() && !canBeUsedToObfuscate(interaction.item.getType())))) {
+                if (clickedDuct != null && itemDuctType == null && !manualPlaceable
+                        && (itemService.isWrench(interaction.item) || (!generalConf.getWrenchRequired() && !canBeUsedToObfuscate(interaction.item.getType())))) {
                     //wrench click
                     if (buildAllowed(interaction.p, clickedDuct.getBlockLoc().toBlock(interaction.p.getWorld()))) {
                         clickedDuct.notifyClick(interaction.p, interaction.p.isSneaking());

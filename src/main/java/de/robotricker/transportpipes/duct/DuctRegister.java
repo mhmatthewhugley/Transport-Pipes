@@ -2,7 +2,6 @@ package de.robotricker.transportpipes.duct;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.inject.Inject;
 
 import de.robotricker.transportpipes.TransportPipes;
@@ -13,7 +12,10 @@ import de.robotricker.transportpipes.duct.types.BaseDuctType;
 import de.robotricker.transportpipes.duct.types.DuctType;
 import de.robotricker.transportpipes.items.ItemManager;
 import de.robotricker.transportpipes.location.BlockLocation;
+import de.robotricker.transportpipes.location.TPDirection;
 import net.querz.nbt.tag.CompoundTag;
+import net.querz.nbt.tag.ListTag;
+import net.querz.nbt.tag.StringTag;
 
 public class DuctRegister {
 
@@ -62,6 +64,14 @@ public class DuctRegister {
     public void saveBlockLocToNBTTag(BlockLocation blockLoc, CompoundTag ductTag) {
         ductTag.putString("blockLoc", blockLoc.toString());
     }
+    
+    public void saveDuctBlockedConnectionsToNBTTag(List<TPDirection> blockedConnections, CompoundTag ductTag) {
+        ListTag<StringTag> blockedConnectionsListTag = new ListTag<>(StringTag.class);
+        for (TPDirection direction : blockedConnections) {
+            blockedConnectionsListTag.addString(direction.toString());
+        }
+        ductTag.put("blockedConnections", blockedConnectionsListTag);
+    }
 
     public DuctType loadDuctTypeFromNBTTag(CompoundTag ductTag) {
         BaseDuctType<? extends Duct> bdt = baseDuctTypeOf(ductTag.getString("baseDuctType"));
@@ -73,6 +83,15 @@ public class DuctRegister {
 
     public BlockLocation loadBlockLocFromNBTTag(CompoundTag ductTag) {
         return BlockLocation.fromString(ductTag.getString("blockLoc"));
+    }
+    
+    public List<TPDirection> loadBlockedConnectionsFromNBTTag(CompoundTag ductTag) {
+        List<TPDirection> blockedConnectionsList = new ArrayList<TPDirection>(); 
+        ListTag<StringTag> blockedConnectionsListTag = ductTag.getListTag("blockedConnections").asStringTagList();
+        for (StringTag directionStringTag : blockedConnectionsListTag) {
+            blockedConnectionsList.add(TPDirection.valueOf(directionStringTag.getValue()));
+        }
+        return blockedConnectionsList;
     }
 
 }
