@@ -12,7 +12,6 @@ import org.bukkit.World;
 
 import de.robotricker.transportpipes.TransportPipes;
 import de.robotricker.transportpipes.duct.manager.GlobalDuctManager;
-import de.robotricker.transportpipes.duct.pipe.extractionpipe.ExtractMode;
 import de.robotricker.transportpipes.duct.pipe.filter.ItemDistributorService;
 import de.robotricker.transportpipes.duct.pipe.items.PipeItem;
 import de.robotricker.transportpipes.duct.types.DuctType;
@@ -47,9 +46,6 @@ public class IcePipe extends Pipe {
         // If we have more than one direction option, make sure we remove the opposite direction to prevent backtracking when possible
         if (newDirs.contains(movingDir.getOpposite()) && newDirs.size() > 1) {
             newDirs.remove(movingDir.getOpposite());
-        }
-        if (pipeItem.getExtractMode() == ExtractMode.DIRECT && newDirs.size() > 1) {
-            newDirs.stream().limit(1).collect(Collectors.toCollection(TreeSet::new));
         }
         
         TreeMap<TPDirection, Integer> absWeights = new TreeMap<TPDirection, Integer>();
