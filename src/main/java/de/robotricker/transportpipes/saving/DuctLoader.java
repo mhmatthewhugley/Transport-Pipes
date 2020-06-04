@@ -39,7 +39,7 @@ public class DuctLoader {
                 continue;
             }
             Duct duct = globalDuctManager.createDuctObject(ductType, blockLoc, world, blockLoc.toLocation(world).getChunk());
-            duct.getBlockedConnections().addAll(blockedConnections);
+            if (blockedConnections != null) duct.getBlockedConnections().addAll(blockedConnections);
             globalDuctManager.registerDuct(duct);
             ductCompoundTagMap.put(duct, ductTag);
         }

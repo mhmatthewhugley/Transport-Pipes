@@ -86,8 +86,12 @@ public class DuctRegister {
     }
     
     public List<TPDirection> loadBlockedConnectionsFromNBTTag(CompoundTag ductTag) {
-        List<TPDirection> blockedConnectionsList = new ArrayList<TPDirection>(); 
-        ListTag<StringTag> blockedConnectionsListTag = ductTag.getListTag("blockedConnections").asStringTagList();
+        List<TPDirection> blockedConnectionsList = new ArrayList<TPDirection>();
+        ListTag<?> listTag = ductTag.getListTag("blockedConnections");
+        if (listTag == null) {
+            return null;
+        }
+        ListTag<StringTag> blockedConnectionsListTag = listTag.asStringTagList();
         for (StringTag directionStringTag : blockedConnectionsListTag) {
             blockedConnectionsList.add(TPDirection.valueOf(directionStringTag.getValue()));
         }
