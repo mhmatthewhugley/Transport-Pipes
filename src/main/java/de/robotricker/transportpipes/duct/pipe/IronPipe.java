@@ -54,7 +54,7 @@ public class IronPipe extends Pipe {
         if (dirs.contains(getCurrentOutputDirection())) {
             absWeights.put(getCurrentOutputDirection(), 1);
         }
-        return itemDistributor.splitPipeItem(pipeItem.getItem(), absWeights, this);
+        return itemDistributor.splitPipeItem(pipeItem, absWeights, this);
     }
 
     private void cycleOutputDirection() {

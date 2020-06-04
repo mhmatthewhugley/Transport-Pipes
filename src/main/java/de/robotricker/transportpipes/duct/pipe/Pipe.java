@@ -317,7 +317,7 @@ public class Pipe extends Duct {
 	protected Map<TPDirection, Integer> calculateItemDistribution(PipeItem pipeItem, TPDirection movingDir, List<TPDirection> dirs, TransportPipes transportPipes) {
 		Map<TPDirection, Integer> absWeights = new HashMap<>();
 		dirs.stream().filter(dir -> !dir.equals(movingDir.getOpposite())).forEach(dir -> absWeights.put(dir, 1));
-		return itemDistributor.splitPipeItem(pipeItem.getItem(), absWeights, this);
+		return itemDistributor.splitPipeItem(pipeItem, absWeights, this);
 	}
 
 	@Override

@@ -55,6 +55,7 @@ duct_inventory:
     extractdirection: '&7Extract Direction: &c%1%\n\n&8Click to change extract direction'
     extractcondition: '&7Extract Condition: &c%1%\n\n&8Click to change extract condition'
     extractamount: '&7Extract Amount: &c%1%\n\n&8Click to change extract amount'
+    extractmode: '&7Extract Mode: &c%1%\n\n&8Click to change extract mode'
     filtertitle: '&6Extraction Filter'
   craftingpipe:
     outputdirection: '&7Output direction: &c%1%\n\n&8Click to change output direction'
@@ -74,4 +75,7 @@ extract_condition:
 extract_amount:
   extract_1: '1'
   extract_16: '16'
+extract_mode:
+  direct: 'Direct'
+  round: 'Round Robin'
 show_hidden_ducts: '&6Showing nearby hidden ducts for &b%1% &6more seconds'

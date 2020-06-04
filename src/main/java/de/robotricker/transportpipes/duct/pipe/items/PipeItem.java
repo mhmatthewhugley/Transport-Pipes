@@ -1,13 +1,12 @@
 package de.robotricker.transportpipes.duct.pipe.items;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
-
+import java.util.LinkedHashSet;
 import org.bukkit.World;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
+import de.robotricker.transportpipes.duct.pipe.extractionpipe.ExtractMode;
 import de.robotricker.transportpipes.items.ItemService;
 import de.robotricker.transportpipes.location.BlockLocation;
 import de.robotricker.transportpipes.location.RelativeLocation;
@@ -25,7 +24,9 @@ public class PipeItem {
 	private RelativeLocation oldRelativeLocation;
 	private RelativeLocation relativeLocation;
 	private TPDirection movingDir;
-	private HashMap<BlockLocation, List<TPDirection>> movedDirs = new HashMap<BlockLocation, List<TPDirection>>();
+	private ExtractMode extractMode = ExtractMode.ROUND;
+	private LinkedHashSet<BlockLocation> visitedPipes = new LinkedHashSet<BlockLocation>(); 
+	private HashMap<BlockLocation, LinkedHashSet<TPDirection>> movedDirs = new HashMap<BlockLocation, LinkedHashSet<TPDirection>>();
 	private HashMap<BlockLocation, TPDirection> sourceDirs = new HashMap<BlockLocation, TPDirection>();
 
 	public PipeItem() {}
@@ -37,11 +38,12 @@ public class PipeItem {
 		init(world, true);
 	}
 	
-    public PipeItem(ItemStack item, World world, BlockLocation blockLoc, TPDirection movingDir, BlockLocation sourceLoc) {
+    public PipeItem(ItemStack item, World world, BlockLocation blockLoc, TPDirection movingDir, BlockLocation sourceLoc, ExtractMode extractMode) {
         this.item = item;
         this.blockLoc = blockLoc;
         this.movingDir = movingDir;
         this.sourceLoc = sourceLoc;
+        this.extractMode = extractMode;
         init(world, true);
     }
 
@@ -113,12 +115,12 @@ public class PipeItem {
 		this.movingDir = movingDir;
 	}
 	
-	public List<TPDirection> getMovedDirs(BlockLocation location) {
+	public LinkedHashSet<TPDirection> getMovedDirs(BlockLocation location) {
 		return movedDirs.get(location);
 	}
 	
 	public void addMovedDir(BlockLocation location, TPDirection movedDir) {
-		List<TPDirection> dirs = movedDirs.containsKey(location) ? movedDirs.get(location) : new ArrayList<TPDirection>();
+	    LinkedHashSet<TPDirection> dirs = movedDirs.containsKey(location) ? movedDirs.get(location) : new LinkedHashSet<TPDirection>();
 		dirs.add(movedDir);
 		movedDirs.put(location, dirs);
 	}
@@ -141,6 +143,26 @@ public class PipeItem {
 	
 	public boolean hasSourceDir(BlockLocation location) {
 		return sourceDirs.containsKey(location);
+	}
+	
+	public ExtractMode getExtractMode() {
+	    return extractMode;
+	}
+	
+	public void setExtractMode(ExtractMode extractMode) {
+	    this.extractMode = extractMode;
+	}
+	
+	public LinkedHashSet<BlockLocation> getVisitedPipes() {
+	    return visitedPipes;
+	}
+	
+	public void addVisitedPipe(BlockLocation blockLocation) {
+	    visitedPipes.add(blockLocation);
+	}
+	
+	public void removeVisitedPipe(BlockLocation blockLocation) {
+	    visitedPipes.remove(blockLocation);
 	}
 
 	public void saveToNBTTag(CompoundTag compoundTag, ItemService itemService) {

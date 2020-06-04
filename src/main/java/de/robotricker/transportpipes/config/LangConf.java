@@ -65,6 +65,7 @@ public class LangConf extends Conf {
         DUCT_INVENTORY_EXTRACTIONPIPE_EXTRACTDIRECTION("duct_inventory.extractionpipe.extractdirection"),
         DUCT_INVENTORY_EXTRACTIONPIPE_EXTRACTCONDITION("duct_inventory.extractionpipe.extractcondition"),
         DUCT_INVENTORY_EXTRACTIONPIPE_EXTRACTAMOUNT("duct_inventory.extractionpipe.extractamount"),
+        DUCT_INVENTORY_EXTRACTIONPIPE_EXTRACTMODE("duct_inventory.extractionpipe.extractmode"),
         DUCT_INVENTORY_EXTRACTIONPIPE_FILTERTITLE("duct_inventory.extractionpipe.filtertitle"),
         DUCT_INVENTORY_CRAFTINGPIPE_OUTPUTDIRECTION("duct_inventory.craftingpipe.outputdirection"),
         DUCT_INVENTORY_CRAFTINGPIPE_RETRIEVECACHEDITEMS("duct_inventory.craftingpipe.retrievecacheditems"),
@@ -79,6 +80,8 @@ public class LangConf extends Conf {
         EXTRACT_CONDITION_NEVER_EXTRACT("extract_condition.never_extract"),
         EXTRACT_AMOUNT_EXTRACT_1("extract_amount.extract_1"),
         EXTRACT_AMOUNT_EXTRACT_16("extract_amount.extract_16"),
+        EXTRACT_MODE_DIRECT("extract_mode.direct"),
+        EXTRACT_MODE_ROUND("extract_mode.round"),
         SHOW_HIDDEN_DUCTS("show_hidden_ducts");
 
         private String key;

@@ -6,7 +6,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import javax.inject.Inject;
 
 import org.bukkit.inventory.ItemStack;
@@ -19,6 +18,8 @@ import de.robotricker.transportpipes.duct.manager.GlobalDuctManager;
 import de.robotricker.transportpipes.duct.manager.PipeManager;
 import de.robotricker.transportpipes.duct.pipe.CraftingPipe;
 import de.robotricker.transportpipes.duct.pipe.Pipe;
+import de.robotricker.transportpipes.duct.pipe.extractionpipe.ExtractMode;
+import de.robotricker.transportpipes.duct.pipe.items.PipeItem;
 import de.robotricker.transportpipes.location.BlockLocation;
 import de.robotricker.transportpipes.location.TPDirection;
 
@@ -86,9 +87,11 @@ public class ItemDistributorService {
         return freeSpaceMap;
     }
 
-    public Map<TPDirection, Integer> splitPipeItem(ItemStack item, Map<TPDirection, Integer> absWeights, Pipe pipe) {
+    public Map<TPDirection, Integer> splitPipeItem(PipeItem pipeItem, Map<TPDirection, Integer> absWeights, Pipe pipe) {
+        ItemStack item = pipeItem.getItem();
         Map<TPDirection, Integer> splitMap = new HashMap<>();
         Map<TPDirection, Integer> freeSpaceMap = calculateFreeSpaceForAllDirections(item, absWeights.keySet(), pipe);
+        
         reduceAbsWeights(absWeights);
 
         List<TPDirection> weightsDirectionList = new ArrayList<>();
@@ -110,23 +113,30 @@ public class ItemDistributorService {
 
         int distributionCounter = pipeItemDistributionCounter.getOrDefault(pipe, 0);
 
-        for (int i = 0; i < item.getAmount(); i++) {
-            distributionCounter %= weightsDirectionList.size();
-
-            TPDirection outputDir = weightsDirectionList.get(distributionCounter);
-            if (splitMap.containsKey(outputDir)) {
-                splitMap.put(outputDir, splitMap.get(outputDir) + 1);
-            } else {
-                splitMap.put(outputDir, 1);
+        if (pipeItem.getExtractMode() == ExtractMode.DIRECT) {
+            splitMap.put(weightsDirectionList.get(0), item.getAmount());
+        }
+        else {
+            for (int i = 0; i < item.getAmount(); i++) {
+                distributionCounter %= weightsDirectionList.size();
+    
+                TPDirection outputDir = weightsDirectionList.get(distributionCounter);
+                if (splitMap.containsKey(outputDir)) {
+                    splitMap.put(outputDir, splitMap.get(outputDir) + 1);
+                } else {
+                    splitMap.put(outputDir, 1);
+                }
+    
+                distributionCounter++;
             }
-
-            distributionCounter++;
         }
 
-        pipeItemDistributionCounter.put(pipe, distributionCounter);
+        if (!pipeItem.getVisitedPipes().contains(pipe.getBlockLoc())) {
+            pipeItemDistributionCounter.put(pipe, distributionCounter);
+            pipeItem.addVisitedPipe(pipe.getBlockLoc());
+        }
 
         return splitMap;
-
     }
 
 }

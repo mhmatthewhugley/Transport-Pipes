@@ -41,6 +41,7 @@ public class ExtractionPipeSettingsInventory extends DuctSettingsInventory {
         ItemStack extractDirection = itemService.changeDisplayNameAndLoreConfig(new ItemStack(Material.TRIPWIRE_HOOK), LangConf.Key.DUCT_INVENTORY_EXTRACTIONPIPE_EXTRACTDIRECTION.getLines(extractDir != null ? extractDir.getDisplayName() : LangConf.Key.DIRECTIONS_NONE.get()));
         ItemStack extractCondition = itemService.changeDisplayNameAndLoreConfig(pipe.getExtractCondition().getDisplayItem(), LangConf.Key.DUCT_INVENTORY_EXTRACTIONPIPE_EXTRACTCONDITION.getLines(pipe.getExtractCondition().getDisplayName()));
         ItemStack extractAmount = itemService.changeDisplayNameAndLoreConfig(pipe.getExtractAmount().getDisplayItem(), LangConf.Key.DUCT_INVENTORY_EXTRACTIONPIPE_EXTRACTAMOUNT.getLines(pipe.getExtractAmount().getDisplayName()));
+        ItemStack extractMode = itemService.changeDisplayNameAndLoreConfig(pipe.getExtractMode().getDisplayItem(), LangConf.Key.DUCT_INVENTORY_EXTRACTIONPIPE_EXTRACTMODE.getLines(pipe.getExtractMode().getDisplayName()));
 
         ItemStack wool = itemService.changeDisplayNameAndLoreConfig(new ItemStack(Material.WHITE_WOOL), LangConf.Key.DUCT_INVENTORY_EXTRACTIONPIPE_FILTERTITLE.get(), LangConf.Key.DUCT_INVENTORY_FILTER_MODE_AND_STRICTNESS.getLines(pipe.getItemFilter().getFilterMode().getDisplayName(), pipe.getItemFilter().getFilterStrictness().getDisplayName()));
         ItemStack scrollLeft = itemService.changeDisplayName(itemService.createHeadItem("69b9a08d-4e89-4878-8be8-551caeacbf2a", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvM2ViZjkwNzQ5NGE5MzVlOTU1YmZjYWRhYjgxYmVhZmI5MGZiOWJlNDljNzAyNmJhOTdkNzk4ZDVmMWEyMyJ9fX0=", null), LangConf.Key.DUCT_INVENTORY_LEFTARROW.get());
@@ -48,12 +49,14 @@ public class ExtractionPipeSettingsInventory extends DuctSettingsInventory {
 
         // basic settings
         for (int i = 0; i < 18; i++) {
-            if (i == 2) {
+            if (i == 1) {
                 inv.setItem(i, extractDirection);
-            } else if (i == 4) {
+            } else if (i == 3) {
                 inv.setItem(i, extractAmount);
-            } else if (i == 6) {
+            } else if (i == 5) {
                 inv.setItem(i, extractCondition);
+            } else if (i == 7) {
+                inv.setItem(i, extractMode);
             } else {
                 inv.setItem(i, itemService.createWildcardItem(Material.GRAY_STAINED_GLASS_PANE));
             }
@@ -88,14 +91,14 @@ public class ExtractionPipeSettingsInventory extends DuctSettingsInventory {
         ExtractionPipe pipe = (ExtractionPipe) duct;
 
         // clicked change extract direction
-        if (rawSlot == 2) {
+        if (rawSlot == 1) {
             save(p);
             pipe.updateExtractDirection(true);
             return true;
         }
 
         // clicked change extract amount
-        if (rawSlot == 4) {
+        if (rawSlot == 3) {
             save(p);
             pipe.setExtractAmount(pipe.getExtractAmount().next());
             populate();
@@ -103,9 +106,17 @@ public class ExtractionPipeSettingsInventory extends DuctSettingsInventory {
         }
 
         // clicked change extract condition
-        if (rawSlot == 6) {
+        if (rawSlot == 5) {
             save(p);
             pipe.setExtractCondition(pipe.getExtractCondition().next());
+            populate();
+            return true;
+        }
+
+        // clicked change extract mode
+        if (rawSlot == 7) {
+            save(p);
+            pipe.setExtractMode(pipe.getExtractMode().next());
             populate();
             return true;
         }

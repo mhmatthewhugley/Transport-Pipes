@@ -1,8 +1,9 @@
 package de.robotricker.transportpipes.duct.pipe;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 import org.bukkit.Chunk;
@@ -11,6 +12,7 @@ import org.bukkit.World;
 
 import de.robotricker.transportpipes.TransportPipes;
 import de.robotricker.transportpipes.duct.manager.GlobalDuctManager;
+import de.robotricker.transportpipes.duct.pipe.extractionpipe.ExtractMode;
 import de.robotricker.transportpipes.duct.pipe.filter.ItemDistributorService;
 import de.robotricker.transportpipes.duct.pipe.items.PipeItem;
 import de.robotricker.transportpipes.duct.types.DuctType;
@@ -37,19 +39,23 @@ public class IcePipe extends Pipe {
     @Override
     protected Map<TPDirection, Integer> calculateItemDistribution(PipeItem pipeItem, TPDirection movingDir, List<TPDirection> dirs, TransportPipes transportPipes) {
         BlockLocation location = getBlockLoc();
-        List<TPDirection> newDirs = dirs.stream().filter(dir -> pipeItem.hasMovedDirs(location) && !pipeItem.getMovedDirs(location).contains(dir)).collect(Collectors.toList());
+        TreeSet<TPDirection> newDirs = dirs.stream().filter(dir -> pipeItem.hasMovedDirs(location) && !pipeItem.getMovedDirs(location).contains(dir)).collect(Collectors.toCollection(TreeSet::new));
         if (newDirs.isEmpty()) {
-            newDirs = dirs;
+            newDirs = new TreeSet<TPDirection>(dirs);
         }
         
         // If we have more than one direction option, make sure we remove the opposite direction to prevent backtracking when possible
         if (newDirs.contains(movingDir.getOpposite()) && newDirs.size() > 1) {
             newDirs.remove(movingDir.getOpposite());
         }
+        if (pipeItem.getExtractMode() == ExtractMode.DIRECT && newDirs.size() > 1) {
+            newDirs.stream().limit(1).collect(Collectors.toCollection(TreeSet::new));
+        }
         
-        Map<TPDirection, Integer> absWeights = new HashMap<>();
+        TreeMap<TPDirection, Integer> absWeights = new TreeMap<TPDirection, Integer>();
         newDirs.stream().forEach(dir -> absWeights.put(dir, 1));
-        return itemDistributor.splitPipeItem(pipeItem.getItem(), absWeights, this);
+        
+        return itemDistributor.splitPipeItem(pipeItem, absWeights, this);
 	}
 
 }

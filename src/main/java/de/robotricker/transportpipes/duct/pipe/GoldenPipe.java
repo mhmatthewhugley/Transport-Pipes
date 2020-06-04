@@ -63,16 +63,16 @@ public class GoldenPipe extends Pipe {
             }
         }
         if (!dirAmtWithItems.isEmpty()) {
-        	Map<TPDirection, Integer> splitMap = itemDistributor.splitPipeItem(pipeItem.getItem(), dirAmtWithItems, this);
+        	Map<TPDirection, Integer> splitMap = itemDistributor.splitPipeItem(pipeItem, dirAmtWithItems, this);
         	if (splitMap.isEmpty()) {
         		dirAmtWithItems.putAll(dirAmtWithoutItems);
-        		return itemDistributor.splitPipeItem(pipeItem.getItem(), dirAmtWithItems, this);
+        		return itemDistributor.splitPipeItem(pipeItem, dirAmtWithItems, this);
         	}
         	else {
         		return splitMap;
         	}
         }
-        return itemDistributor.splitPipeItem(pipeItem.getItem(), dirAmtWithoutItems, this);
+        return itemDistributor.splitPipeItem(pipeItem, dirAmtWithoutItems, this);
     }
 
     @Override

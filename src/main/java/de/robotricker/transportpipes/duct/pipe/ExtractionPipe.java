@@ -19,6 +19,7 @@ import de.robotricker.transportpipes.duct.manager.GlobalDuctManager;
 import de.robotricker.transportpipes.duct.manager.PipeManager;
 import de.robotricker.transportpipes.duct.pipe.extractionpipe.ExtractAmount;
 import de.robotricker.transportpipes.duct.pipe.extractionpipe.ExtractCondition;
+import de.robotricker.transportpipes.duct.pipe.extractionpipe.ExtractMode;
 import de.robotricker.transportpipes.duct.pipe.filter.ItemDistributorService;
 import de.robotricker.transportpipes.duct.pipe.filter.ItemFilter;
 import de.robotricker.transportpipes.duct.pipe.items.PipeItem;
@@ -34,6 +35,7 @@ public class ExtractionPipe extends Pipe {
     private TPDirection extractDirection;
     private ExtractCondition extractCondition;
     private ExtractAmount extractAmount;
+    private ExtractMode extractMode;
     private ItemFilter itemFilter;
 
     public ExtractionPipe(DuctType ductType, BlockLocation blockLoc, World world, Chunk chunk, DuctSettingsInventory settingsInv, GlobalDuctManager globalDuctManager, ItemDistributorService itemDistributor) {
@@ -41,6 +43,7 @@ public class ExtractionPipe extends Pipe {
         this.extractDirection = null;
         this.extractCondition = ExtractCondition.ALWAYS_EXTRACT;
         this.extractAmount = ExtractAmount.EXTRACT_1;
+        this.extractMode = ExtractMode.ROUND;
         this.itemFilter = new ItemFilter();
     }
 
@@ -65,7 +68,7 @@ public class ExtractionPipe extends Pipe {
             }
             ItemStack item = container.extractItem(extractDirection, extractAmount.getAmount(), itemFilter);
             if (item != null) {
-                PipeItem pipeItem = new PipeItem(item, getWorld(), getBlockLoc(), extractDirection.getOpposite(), getBlockLoc());
+                PipeItem pipeItem = new PipeItem(item, getWorld(), getBlockLoc(), extractDirection.getOpposite(), getBlockLoc(), extractMode);
                 pipeManager.spawnPipeItem(pipeItem);
                 pipeManager.putPipeItemInPipe(pipeItem);
             }
@@ -116,6 +119,14 @@ public class ExtractionPipe extends Pipe {
     public void setExtractAmount(ExtractAmount extractAmount) {
         this.extractAmount = extractAmount;
     }
+    
+    public ExtractMode getExtractMode() {
+        return extractMode;
+    }
+    
+    public void setExtractMode(ExtractMode extractMode) {
+        this.extractMode = extractMode;
+    }
 
     public ItemFilter getItemFilter() {
         return itemFilter;
@@ -154,7 +165,7 @@ public class ExtractionPipe extends Pipe {
     	
 		Map<TPDirection, Integer> absWeights = new HashMap<>();
 		newDirs.stream().forEach(dir -> absWeights.put(dir, 1));
-		return itemDistributor.splitPipeItem(pipeItem.getItem(), absWeights, this);
+		return itemDistributor.splitPipeItem(pipeItem, absWeights, this);
 	}
 
     @Override
@@ -177,6 +188,7 @@ public class ExtractionPipe extends Pipe {
         compoundTag.putInt("extractDir", extractDirection != null ? extractDirection.ordinal() : -1);
         compoundTag.putInt("extractCondition", extractCondition.ordinal());
         compoundTag.putInt("extractAmount", extractAmount.ordinal());
+        compoundTag.putInt("extractMode", extractMode.ordinal());
         CompoundTag itemFilterTag = new CompoundTag();
         itemFilter.saveToNBTTag(itemFilterTag, itemService);
         compoundTag.put("itemFilter", itemFilterTag);
@@ -190,6 +202,7 @@ public class ExtractionPipe extends Pipe {
         extractDirection = compoundTag.getInt("extractDir") != -1 ? TPDirection.values()[compoundTag.getInt("extractDir")] : null;
         extractCondition = ExtractCondition.values()[compoundTag.getInt("extractCondition")];
         extractAmount = ExtractAmount.values()[compoundTag.getInt("extractAmount")];
+        extractMode = ExtractMode.values()[compoundTag.getInt("extractMode")];
         itemFilter = new ItemFilter();
         itemFilter.loadFromNBTTag(compoundTag.getCompoundTag("itemFilter"), itemService);
 
