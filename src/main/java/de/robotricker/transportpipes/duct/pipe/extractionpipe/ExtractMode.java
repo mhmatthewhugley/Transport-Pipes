@@ -7,8 +7,8 @@ import de.robotricker.transportpipes.config.LangConf;
 
 public enum ExtractMode {
 
-    DIRECT(LangConf.Key.EXTRACT_MODE_DIRECT.get(), Material.REPEATER),
-    ROUND(LangConf.Key.EXTRACT_MODE_ROUND.get(), Material.COMPARATOR);
+    ROUND(LangConf.Key.EXTRACT_MODE_ROUND.get(), Material.COMPARATOR),
+    DIRECT(LangConf.Key.EXTRACT_MODE_DIRECT.get(), Material.REPEATER);
 
     private String displayName;
     private ItemStack displayItem;
