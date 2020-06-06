@@ -19,6 +19,7 @@ import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.ShapelessRecipe;
 
 import de.robotricker.transportpipes.TransportPipes;
+import de.robotricker.transportpipes.config.GeneralConf;
 import de.robotricker.transportpipes.duct.Duct;
 import de.robotricker.transportpipes.duct.manager.DuctManager;
 import de.robotricker.transportpipes.duct.manager.GlobalDuctManager;
@@ -50,8 +51,8 @@ public class CraftingPipe extends Pipe {
     }
 
     @Override
-    public void tick(boolean bigTick, TransportPipes transportPipes, DuctManager<? extends Duct> ductManager) {
-        super.tick(bigTick, transportPipes, ductManager);
+    public void tick(boolean bigTick, TransportPipes transportPipes, DuctManager<? extends Duct> ductManager, GeneralConf generalConf) {
+        super.tick(bigTick, transportPipes, ductManager, generalConf);
         if (bigTick) {
             performCrafting((PipeManager) ductManager, transportPipes);
         }

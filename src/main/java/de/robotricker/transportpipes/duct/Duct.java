@@ -99,7 +99,7 @@ public abstract class Duct {
         this.obfuscatedWith = obfuscatedWith;
     }
 
-    public void tick(boolean bigTick, TransportPipes transportPipes, DuctManager<? extends Duct> ductManager) {
+    public void tick(boolean bigTick, TransportPipes transportPipes, DuctManager<? extends Duct> ductManager, GeneralConf generalConf) {
 
     }
 

@@ -18,3 +18,4 @@ wrench:
   required: false
 language: en
 show_hidden_ducts_time: 5
+merge_same_pipe_items: false

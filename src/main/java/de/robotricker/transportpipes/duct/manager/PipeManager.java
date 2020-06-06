@@ -216,7 +216,7 @@ public class PipeManager extends DuctManager<Pipe> {
             if (ductMap != null) {
                 for (Duct duct : ductMap.values()) {
                     if (duct instanceof Pipe && duct.isInLoadedChunk()) {
-                        duct.tick(bigTick, transportPipes, this);
+                        duct.tick(bigTick, transportPipes, this, generalConf);
                     }
                 }
                 for (Duct duct : ductMap.values()) {

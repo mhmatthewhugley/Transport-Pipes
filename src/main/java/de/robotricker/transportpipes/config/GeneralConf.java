@@ -64,6 +64,10 @@ public class GeneralConf extends Conf {
     public int getShowHiddenDuctsTime() {
         return (int) read("show_hidden_ducts_time");
     }
+    
+    public boolean getMergePipeItems() {
+        return (boolean) read("merge_same_pipe_items");
+    }
 
     public ResourcepackService.ResourcepackMode getResourcepackMode() {
         String url = (String) read("resourcepack_mode");

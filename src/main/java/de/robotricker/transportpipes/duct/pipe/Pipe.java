@@ -101,13 +101,23 @@ public class Pipe extends Duct {
 	}
 
 	@Override
-	public void tick(boolean bigTick, TransportPipes transportPipes, DuctManager<? extends Duct> ductManager) {
-		super.tick(bigTick, transportPipes, ductManager);
+	public void tick(boolean bigTick, TransportPipes transportPipes, DuctManager<? extends Duct> ductManager, GeneralConf generalConf) {
+		super.tick(bigTick, transportPipes, ductManager, generalConf);
 
         // activate futureItems
         Iterator<PipeItem> futureItemsIt = getFutureItems().iterator();
         while (futureItemsIt.hasNext()) {
             PipeItem futureItem = futureItemsIt.next();
+            if (generalConf.getMergePipeItems()) {
+                for (PipeItem nextPipeItem : getItems()) {
+                    if (nextPipeItem.getItem().isSimilar(futureItem.getItem()) && nextPipeItem.getMovingDir() == futureItem.getMovingDir()) {
+                        nextPipeItem.getItem().setAmount(nextPipeItem.getItem().getAmount() + futureItem.getItem().getAmount());
+                        futureItemsIt.remove();
+                        ((PipeManager) ductManager).despawnPipeItem(futureItem);
+                        return;
+                    }
+                }
+            }
             getItems().add(futureItem);
             futureItemsIt.remove();
         }
@@ -129,7 +139,7 @@ public class Pipe extends Duct {
 	@Override
 	public void postTick(boolean bigTick, TransportPipes transportPipes, DuctManager<? extends Duct> ductManager, GeneralConf generalConf) {
 		super.postTick(bigTick, transportPipes, ductManager, generalConf);
-
+        
 		PipeManager pipeManager = (PipeManager) ductManager;
 		if (items.size() > generalConf.getMaxItemsPerPipe()) {
 			transportPipes.runTaskAsync(() -> {
@@ -142,7 +152,7 @@ public class Pipe extends Duct {
 			return;
 		}
 
-		List<PipeItem> copiedItems = new ArrayList<>(items);
+        List<PipeItem> copiedItems = new ArrayList<PipeItem>(items);
 
 		for (int i = copiedItems.size() - 1; i >= 0; i--) {
 			PipeItem pipeItem = copiedItems.get(i);
