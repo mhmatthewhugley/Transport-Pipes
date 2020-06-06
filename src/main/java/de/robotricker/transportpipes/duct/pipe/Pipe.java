@@ -106,15 +106,22 @@ public class Pipe extends Duct {
 
         // activate futureItems
         Iterator<PipeItem> futureItemsIt = getFutureItems().iterator();
-        while (futureItemsIt.hasNext()) {
+        outer: while (futureItemsIt.hasNext()) {
             PipeItem futureItem = futureItemsIt.next();
             if (generalConf.getMergePipeItems()) {
                 for (PipeItem nextPipeItem : getItems()) {
                     if (nextPipeItem.getItem().isSimilar(futureItem.getItem()) && nextPipeItem.getMovingDir() == futureItem.getMovingDir()) {
                         nextPipeItem.getItem().setAmount(nextPipeItem.getItem().getAmount() + futureItem.getItem().getAmount());
-                        futureItemsIt.remove();
-                        ((PipeManager) ductManager).despawnPipeItem(futureItem);
-                        return;
+                        int difference = nextPipeItem.getItem().getAmount() - nextPipeItem.getItem().getMaxStackSize();
+                        if (difference <= 0) {
+                            ((PipeManager) ductManager).despawnPipeItem(futureItem);
+                            futureItemsIt.remove();
+                            continue outer;
+                        }
+                        else {
+                            nextPipeItem.getItem().setAmount(nextPipeItem.getItem().getMaxStackSize());
+                            futureItem.getItem().setAmount(difference);
+                        }
                     }
                 }
             }
