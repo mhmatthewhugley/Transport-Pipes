@@ -86,8 +86,11 @@ public class ItemDistributorService {
 
         return freeSpaceMap;
     }
-
     public Map<TPDirection, Integer> splitPipeItem(PipeItem pipeItem, Map<TPDirection, Integer> absWeights, Pipe pipe) {
+        return splitPipeItem(pipeItem, absWeights, pipe, null);
+    }
+
+    public Map<TPDirection, Integer> splitPipeItem(PipeItem pipeItem, Map<TPDirection, Integer> absWeights, Pipe pipe, Map<TPDirection, Integer> origWeights) {
         ItemStack item = pipeItem.getItem();
         Map<TPDirection, Integer> splitMap = new HashMap<>();
         Map<TPDirection, Integer> freeSpaceMap = calculateFreeSpaceForAllDirections(item, absWeights.keySet(), pipe);
@@ -108,7 +111,12 @@ public class ItemDistributorService {
         if (weightsDirectionList.isEmpty()) {
             // return empty map so the item will be dropped
             // if null would be returned, no item will be dropped
-            return splitMap;
+            if (origWeights != null) {
+                return splitPipeItem(pipeItem, origWeights, pipe, null);
+            }
+            else {
+                return splitMap;
+            }
         }
 
         int distributionCounter = pipeItemDistributionCounter.getOrDefault(pipe, 0);

@@ -45,9 +45,11 @@ public class ColoredPipe extends Pipe {
         }
         
 		TreeMap<TPDirection, Integer> absWeights = new TreeMap<TPDirection, Integer>();
+        TreeMap<TPDirection, Integer> origWeights = new TreeMap<TPDirection, Integer>();
 		newDirs.stream().forEach(dir -> absWeights.put(dir, 1));
+		dirs.stream().forEach(dir -> { if (dir != movingDir.getOpposite()) origWeights.put(dir, 1); });
 		
-		return itemDistributor.splitPipeItem(pipeItem, absWeights, this);
+		return itemDistributor.splitPipeItem(pipeItem, absWeights, this, origWeights);
 	}
 
 }
