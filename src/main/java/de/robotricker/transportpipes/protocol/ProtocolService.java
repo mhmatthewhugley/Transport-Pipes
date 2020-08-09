@@ -5,11 +5,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
-
 import javax.inject.Inject;
 
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
@@ -18,8 +18,9 @@ import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.wrappers.EnumWrappers;
 import com.comphenix.protocol.wrappers.WrappedDataWatcher;
 import com.comphenix.protocol.wrappers.WrappedWatchableObject;
+import com.comphenix.protocol.wrappers.EnumWrappers.ItemSlot;
+import com.comphenix.protocol.wrappers.Pair;
 
-import de.robotricker.transportpipes.TransportPipes;
 import de.robotricker.transportpipes.duct.pipe.items.PipeItem;
 import de.robotricker.transportpipes.location.BlockLocation;
 import de.robotricker.transportpipes.location.RelativeLocation;
@@ -32,18 +33,14 @@ public class ProtocolService {
     private WrappedDataWatcher.Serializer BOOLEAN_SERIALIZER;
     
     private ProtocolManager protocolManager;
-    
-    private TransportPipes plugin;
 
     @Inject
-    public ProtocolService(TransportPipes plugin) {
+    public ProtocolService() {
         BYTE_SERIALIZER = WrappedDataWatcher.Registry.get(Byte.class);
         VECTOR_SERIALIZER = WrappedDataWatcher.Registry.get(NMSUtils.getVector3fClass());
         BOOLEAN_SERIALIZER = WrappedDataWatcher.Registry.get(Boolean.class);
         
         protocolManager = ProtocolLibrary.getProtocolManager();
-        
-        this.plugin = plugin;
     }
 
     private int nextEntityID = 99999;
@@ -92,7 +89,7 @@ public class ProtocolService {
             spawnEntityLivingContainer.getIntegers().write(2, 0); // Optional Velocity Y
             spawnEntityLivingContainer.getIntegers().write(3, 0); // Optional Velocity Z
             spawnEntityLivingContainer.getIntegers().write(4, 0); // Pitch
-            spawnEntityLivingContainer.getIntegers().write(5, (int)(yaw * 256.0F / 360.0F)); // Data (No velocity)
+            spawnEntityLivingContainer.getIntegers().write(5, (int)(yaw * 256.0f / 360.0f)); // Yaw
             spawnEntityLivingContainer.getEntityTypeModifier().write(0, EntityType.ARMOR_STAND);
             spawnEntityLivingContainer.getDoubles().write(0, blockLoc.getX() + asd.getRelLoc().getDoubleX() + offset.getDoubleX()); // X Location
             spawnEntityLivingContainer.getDoubles().write(1, blockLoc.getY() + asd.getRelLoc().getDoubleY() + offset.getDoubleY()); // Y Location
@@ -100,6 +97,12 @@ public class ProtocolService {
             spawnEntityLivingContainer.getUUIDs().write(0, uuid); // Entity UUID
             
             protocolManager.sendServerPacket(p, spawnEntityLivingContainer);
+            
+            PacketContainer entityHeadRotationContainer = protocolManager.createPacket(PacketType.Play.Server.ENTITY_HEAD_ROTATION);
+            entityHeadRotationContainer.getIntegers().write(0, asd.getEntityID());
+            entityHeadRotationContainer.getBytes().write(0, (byte)(yaw * 256.0f / 360.0f));
+            
+            protocolManager.sendServerPacket(p, entityHeadRotationContainer);
 
             // ENTITYMETADATA
             
@@ -109,7 +112,7 @@ public class ProtocolService {
             byte bitMask = (byte) ((asd.isSmall() ? 0x01 : 0x00) | 0x04 | 0x08 | 0x10); // Is Small + Has Arms + No BasePlate + Marker
 
             List<WrappedWatchableObject> metaList = new ArrayList<>();
-            metaList.add(new WrappedWatchableObject(new WrappedDataWatcher.WrappedDataWatcherObject(0, BYTE_SERIALIZER), (byte) (0x20))); // Invisible
+            metaList.add(new WrappedWatchableObject(new WrappedDataWatcher.WrappedDataWatcherObject(0, BYTE_SERIALIZER), (byte) (0x01 | 0x20))); // Invisible and On Fire to fix lighting issues
             metaList.add(new WrappedWatchableObject(new WrappedDataWatcher.WrappedDataWatcherObject(3, BOOLEAN_SERIALIZER), false)); // Custom Name Visible
             metaList.add(new WrappedWatchableObject(new WrappedDataWatcher.WrappedDataWatcherObject(serverVersion <= 404 ? 11 : 14, BYTE_SERIALIZER), bitMask)); // Armor Stand Data
             metaList.add(new WrappedWatchableObject(new WrappedDataWatcher.WrappedDataWatcherObject(serverVersion <= 404 ? 12 : 15, VECTOR_SERIALIZER), NMSUtils.createVector3f((float) asd.getHeadRotation().getX(), (float) asd.getHeadRotation().getY(), (float) asd.getHeadRotation().getZ()))); // Head Rotation
@@ -122,34 +125,21 @@ public class ProtocolService {
             // ENTITYEQUIPMENT
             PacketContainer entityEquipmentContainer = protocolManager.createPacket(PacketType.Play.Server.ENTITY_EQUIPMENT);
             entityEquipmentContainer.getIntegers().write(0, asd.getEntityID()); // Entity ID
+            List<Pair<ItemSlot, ItemStack>> itemList = new ArrayList<Pair<ItemSlot, ItemStack>>();
             // Set Hand Item
             if (asd.getHandItem() != null) {
-            	entityEquipmentContainer.getItemSlots().write(0, EnumWrappers.ItemSlot.MAINHAND);
-            	entityEquipmentContainer.getItemModifier().write(0, asd.getHandItem());
+            	itemList.add(new Pair<ItemSlot, ItemStack>(EnumWrappers.ItemSlot.MAINHAND, asd.getHandItem()));
             }
             // Set Head Item
             if (asd.getHeadItem() != null) {
-            	entityEquipmentContainer.getItemSlots().write(0, EnumWrappers.ItemSlot.HEAD);
-            	entityEquipmentContainer.getItemModifier().write(0, asd.getHeadItem());
+                itemList.add(new Pair<ItemSlot, ItemStack>(EnumWrappers.ItemSlot.HEAD, asd.getHeadItem()));
+            }
+            // Apply items
+            if (!itemList.isEmpty()) {
+                entityEquipmentContainer.getSlotStackPairLists().write(0, itemList);
             }
             
             protocolManager.sendServerPacket(p, entityEquipmentContainer);
-
-            // ENTITYMETADATA 2 (fire)
-            PacketContainer entityMetadata2 = protocolManager.createPacket(PacketType.Play.Server.ENTITY_METADATA);
-            entityMetadata2.getIntegers().write(0, asd.getEntityID());
-            List<WrappedWatchableObject> meta2List = new ArrayList<>();
-            meta2List.add(new WrappedWatchableObject(new WrappedDataWatcher.WrappedDataWatcherObject(0, BYTE_SERIALIZER), (byte) (0x01 | 0x20))); // On Fire to fix lighting issues
-            entityMetadata2.getWatchableCollectionModifier().write(0, meta2List);
-
-            plugin.runTaskAsync(() -> {
-                try {
-                    protocolManager.sendServerPacket(p, entityMetadata2);
-                    protocolManager.sendServerPacket(p, entityEquipmentContainer);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }, 1);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -170,7 +160,6 @@ public class ProtocolService {
 			protocolManager.sendServerPacket(p, entityDestroyContainer);
 		}
 		catch (InvocationTargetException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
     }

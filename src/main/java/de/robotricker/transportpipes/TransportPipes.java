@@ -58,7 +58,7 @@ public class TransportPipes extends JavaPlugin {
     @Override
     public void onEnable() {
 
-    	if (Bukkit.getVersion().contains("1.15")) {
+    	if (Bukkit.getVersion().contains("1.15") || Bukkit.getVersion().contains("1.16")) {
     		LegacyUtils.setInstance(new LegacyUtils_1_15());
     	} else {
             System.err.println("------------------------------------------");

@@ -17,6 +17,7 @@ import de.robotricker.transportpipes.rendersystems.pipe.vanilla.model.data.Vanil
 public abstract class VanillaPipeModel {
 
     static ItemStack ITEM_BLAZE_ROD = new ItemStack(Material.BLAZE_ROD);
+    static ItemStack ITEM_STICK = new ItemStack(Material.STICK);
     static ItemStack ITEM_CARPET_WHITE = new ItemStack(Material.WHITE_CARPET);
     static ItemStack ITEM_CARPET_YELLOW = new ItemStack(Material.YELLOW_CARPET);
     static Map<PipeType, ItemStack> pipeBlocks;
