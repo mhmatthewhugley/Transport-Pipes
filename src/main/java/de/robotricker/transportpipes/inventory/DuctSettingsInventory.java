@@ -1,7 +1,6 @@
 package de.robotricker.transportpipes.inventory;
 
 import java.util.Set;
-
 import javax.inject.Inject;
 
 import org.bukkit.entity.Player;

@@ -29,6 +29,7 @@ import de.robotricker.transportpipes.duct.manager.PipeManager;
 import de.robotricker.transportpipes.duct.pipe.Pipe;
 import de.robotricker.transportpipes.duct.types.BaseDuctType;
 import de.robotricker.transportpipes.inventory.PlayerSettingsInventory;
+import de.robotricker.transportpipes.items.ItemService;
 import de.robotricker.transportpipes.items.PipeItemManager;
 import de.robotricker.transportpipes.listener.DuctListener;
 import de.robotricker.transportpipes.listener.PlayerListener;
@@ -58,11 +59,11 @@ public class TransportPipes extends JavaPlugin {
     @Override
     public void onEnable() {
 
-    	if (Bukkit.getVersion().contains("1.15") || Bukkit.getVersion().contains("1.16")) {
+    	if (Bukkit.getVersion().contains("1.16")) {
     		LegacyUtils.setInstance(new LegacyUtils_1_15());
     	} else {
             System.err.println("------------------------------------------");
-            System.err.println("TransportPipes currently only works with Minecraft 1.15 and above.");
+            System.err.println("TransportPipes currently only works with Minecraft 1.16 and above.");
             System.err.println("------------------------------------------");
             Bukkit.getPluginManager().disablePlugin(this);
             return;
@@ -115,6 +116,8 @@ public class TransportPipes extends JavaPlugin {
         //Initialize thread
         thread = injector.getSingleton(ThreadService.class);
         thread.start();
+        
+        injector.getSingleton(ItemService.class);
 
         //Register pipe
         BaseDuctType<Pipe> baseDuctType = injector.getSingleton(DuctRegister.class).registerBaseDuctType("Pipe", PipeManager.class, PipeFactory.class, PipeItemManager.class);

@@ -27,6 +27,7 @@ import org.bukkit.inventory.ShapelessRecipe;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
+import org.bukkit.persistence.PersistentDataType;
 
 import com.comphenix.protocol.wrappers.WrappedGameProfile;
 import com.comphenix.protocol.wrappers.WrappedSignedProperty;
@@ -44,15 +45,18 @@ public class ItemService {
 
     private ItemStack wrench;
     private YamlConfiguration tempConf;
+    private TransportPipes transportPipes;
 
     @Inject
-    public ItemService(GeneralConf generalConf) {
+    public ItemService(GeneralConf generalConf, TransportPipes transportPipes) {
         Material wrenchMaterial = Material.getMaterial(generalConf.getWrenchItem().toUpperCase(Locale.ENGLISH));
         Objects.requireNonNull(wrenchMaterial, "The material for the wrench item set in the config file is not valid.");
 
         wrench = generalConf.getWrenchGlowing() ? createGlowingItem(wrenchMaterial) : new ItemStack(wrenchMaterial);
         wrench = changeDisplayNameAndLoreConfig(wrench, LangConf.Key.WRENCH.getLines());
         tempConf = new YamlConfiguration();
+        
+        this.transportPipes = transportPipes;
     }
 
     public ItemStack getWrench() {
@@ -203,11 +207,18 @@ public class ItemService {
 
     public ItemStack createWildcardItem(Material material) {
         ItemStack glassPane = new ItemStack(material);
+        ItemMeta meta = glassPane.getItemMeta();
+        meta.getPersistentDataContainer().set(new NamespacedKey(transportPipes, "wildcard"), PersistentDataType.INTEGER, 1);
+        glassPane.setItemMeta(meta);
         return changeDisplayNameAndLore(glassPane, ChatColor.RESET.toString());
     }
 
     public ItemStack createBarrierItem() {
-        return changeDisplayNameAndLore(new ItemStack(Material.BARRIER), ChatColor.RESET.toString());
+        ItemStack barrier = new ItemStack(Material.BARRIER);
+        ItemMeta meta = barrier.getItemMeta();
+        meta.getPersistentDataContainer().set(new NamespacedKey(transportPipes, "barrier"), PersistentDataType.INTEGER, 1);
+        barrier.setItemMeta(meta);
+        return changeDisplayNameAndLore(barrier, ChatColor.RESET.toString());
     }
 
     public boolean isItemWildcardOrBarrier(ItemStack item) {
@@ -231,7 +242,8 @@ public class ItemService {
                 case PURPLE_STAINED_GLASS_PANE:
                 case BARRIER:
                     if (item.hasItemMeta() && item.getItemMeta().hasDisplayName()) {
-                        return item.getItemMeta().getDisplayName().equals(ChatColor.RESET.toString());
+                        return item.getItemMeta().getPersistentDataContainer().has(new NamespacedKey(transportPipes, "wildcard"), PersistentDataType.INTEGER)
+                                || item.getItemMeta().getPersistentDataContainer().has(new NamespacedKey(transportPipes,  "barrier"), PersistentDataType.INTEGER);
                     }
                 default:
                     return false;
