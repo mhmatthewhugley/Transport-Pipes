@@ -34,6 +34,8 @@ import org.bukkit.util.Vector;
 import de.robotricker.transportpipes.PlayerSettingsService;
 import de.robotricker.transportpipes.ThreadService;
 import de.robotricker.transportpipes.TransportPipes;
+import de.robotricker.transportpipes.api.DuctBreakEvent;
+import de.robotricker.transportpipes.api.DuctPlaceEvent;
 import de.robotricker.transportpipes.config.GeneralConf;
 import de.robotricker.transportpipes.config.LangConf;
 import de.robotricker.transportpipes.duct.Duct;
@@ -279,6 +281,9 @@ public class DuctListener implements Listener {
                                 globalDuctManager.updateNeighborDuctsInRenderSystems(duct, true);
 
                                 decreaseHandItem(interaction.p, interaction.hand);
+                                
+                                DuctPlaceEvent event = new DuctPlaceEvent(interaction.p);
+                                Bukkit.getPluginManager().callEvent(event);
                             } else {
                                 LangConf.Key.PROTECTED_BLOCK.sendMessage(interaction.p);
                             }
@@ -321,6 +326,9 @@ public class DuctListener implements Listener {
                     globalDuctManager.updateNeighborDuctsConnections(clickedDuct);
                     globalDuctManager.updateNeighborDuctsInRenderSystems(clickedDuct, true);
                     globalDuctManager.playDuctDestroyActions(clickedDuct, interaction.p);
+                    
+                    DuctBreakEvent event = new DuctBreakEvent(interaction.p);
+                    Bukkit.getPluginManager().callEvent(event);
                 }
 
                 interaction.cancel = true;
