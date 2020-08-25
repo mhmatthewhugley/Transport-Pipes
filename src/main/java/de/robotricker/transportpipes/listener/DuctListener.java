@@ -2,9 +2,13 @@ package de.robotricker.transportpipes.listener;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
+
 import javax.inject.Inject;
 
 import org.bukkit.Bukkit;
@@ -16,19 +20,25 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.block.data.Directional;
 import org.bukkit.block.data.type.Stairs;
+import org.bukkit.craftbukkit.libs.org.apache.commons.lang3.text.translate.UnicodeUnpairedSurrogateRemover;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
+import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.player.PlayerDropItemEvent;
+import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.RegisteredListener;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
 
 import de.robotricker.transportpipes.PlayerSettingsService;
@@ -55,6 +65,7 @@ public class DuctListener implements Listener {
 
     //makes sure that "callInteraction" is called with the mainHand and with the offHand every single time
     private Map<Player, Interaction> interactions = new HashMap<>();
+    private Set<UUID> noClick = new HashSet<>();
 
     private ItemService itemService;
     private DuctRegister ductRegister;
@@ -94,16 +105,55 @@ public class DuctListener implements Listener {
             events.remove();
         }
     }
+    
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+    public void onDrop(PlayerDropItemEvent event) {
+        UUID uuid = event.getPlayer().getUniqueId();
+        noClick.add(uuid);
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                if (noClick.contains(uuid)) noClick.remove(uuid);
+            }
+        }.runTaskLater(transportPipes, 2L);
+    }
+    
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+    public void onEntityClick(PlayerInteractEntityEvent event) {
+        UUID uuid = event.getPlayer().getUniqueId();
+        noClick.add(uuid);
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                if (noClick.contains(uuid)) noClick.remove(uuid);
+            }
+        }.runTaskLater(transportPipes, 2L);
+    }
 
     @EventHandler(priority = EventPriority.LOW)
     public void onInteract(PlayerInteractEvent e) {
         Player p = e.getPlayer();
         Block clickedBlock = e.getClickedBlock();
+        UUID uuid = p.getUniqueId();
 
         if (e.getAction() == Action.PHYSICAL) {
             return;
         }
 
+        if (e.getAction() == Action.LEFT_CLICK_AIR) {
+            if (noClick.contains(uuid)) {
+                return;
+            }
+        }
+        
+        noClick.add(uuid);
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                if (noClick.contains(uuid)) noClick.remove(uuid);
+            }
+        }.runTaskLater(transportPipes, 3L);
+        
         if (e.getHand() == EquipmentSlot.HAND) {
             Interaction offHandInteraction = new Interaction(p, EquipmentSlot.OFF_HAND, p.getInventory().getItemInOffHand(), clickedBlock, e.getBlockFace(), e.getAction());
             interactions.put(p, offHandInteraction);
@@ -115,14 +165,16 @@ public class DuctListener implements Listener {
             if (mainHandInteraction.successful) {
                 interactions.put(p, null);
             }
-        } else if (e.getHand() == EquipmentSlot.OFF_HAND) {
+        }
+        else if (e.getHand() == EquipmentSlot.OFF_HAND) {
             if (interactions.containsKey(p) && interactions.get(p) == null) {
                 e.setCancelled(true);
                 return;
             }
             if (interactions.containsKey(p)) {
                 interactions.remove(p);
-            } else {
+            }
+            else {
                 Interaction mainHandInteraction = new Interaction(p, EquipmentSlot.HAND, p.getInventory().getItemInMainHand(), clickedBlock, e.getBlockFace(), e.getAction());
                 callInteraction(mainHandInteraction);
                 if (mainHandInteraction.successful) {

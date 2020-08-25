@@ -1,5 +1,7 @@
 package de.robotricker.transportpipes.api;
 
+import java.util.concurrent.ConcurrentSkipListMap;
+
 import javax.inject.Inject;
 
 import org.bukkit.Chunk;
@@ -39,6 +41,10 @@ public class TransportPipesAPI {
 
     public TransportPipesAPI() {
         instance = this;
+    }
+    
+    public ConcurrentSkipListMap<BlockLocation, Duct> getDuctsInWorld(World world) {
+        return globalDuctManager.getDucts(world);
     }
 
     public void buildDuct(String baseDuctTypeName, String ductTypeName, BlockLocation blockLocation, World world, Chunk chunk) throws Exception {
