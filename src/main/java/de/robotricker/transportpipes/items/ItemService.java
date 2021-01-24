@@ -54,6 +54,9 @@ public class ItemService {
 
         wrench = generalConf.getWrenchGlowing() ? createGlowingItem(wrenchMaterial) : new ItemStack(wrenchMaterial);
         wrench = changeDisplayNameAndLoreConfig(wrench, LangConf.Key.WRENCH.getLines());
+        ItemMeta meta = wrench.getItemMeta();
+        meta.setCustomModelData(133744);
+        wrench.setItemMeta(meta);
         tempConf = new YamlConfiguration();
         
         this.transportPipes = transportPipes;
@@ -64,21 +67,30 @@ public class ItemService {
     }
 
     public boolean isWrench(ItemStack item) {
-        if (item == null || !item.hasItemMeta() || !item.getItemMeta().hasDisplayName()) {
-            return false;
+        if (item != null && item.hasItemMeta()) {
+            ItemMeta meta = item.getItemMeta();
+            if (meta.hasDisplayName() && meta.getDisplayName().equals(LangConf.Key.WRENCH.getLines().get(0))) {
+                if (!meta.hasCustomModelData() || meta.getCustomModelData() != 133744) {
+                    meta.setCustomModelData(133744);
+                    item.setItemMeta(meta);
+                }
+                return true;
+            }
         }
-        return item.getItemMeta().getDisplayName().equals(LangConf.Key.WRENCH.getLines().get(0));
+        return false;
     }
 
     public ItemStack createModelledItem(int damage) {
-        ItemStack woodenPickage = new ItemStack(Material.WOODEN_PICKAXE);
-        ItemMeta meta = woodenPickage.getItemMeta();
+        ItemStack woodenPickaxe = new ItemStack(Material.WOODEN_PICKAXE);
+        ItemMeta meta = woodenPickaxe.getItemMeta();
+        
+        meta.setCustomModelData(133700 + damage);
 
         ((Damageable) meta).setDamage(damage);
         meta.setUnbreakable(true);
-        woodenPickage.setItemMeta(meta);
+        woodenPickaxe.setItemMeta(meta);
 
-        return woodenPickage;
+        return woodenPickaxe;
     }
 
     public ItemStack createGlowingItem(Material material) {

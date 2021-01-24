@@ -27,7 +27,7 @@ import de.robotricker.transportpipes.rendersystems.VanillaRenderSystem;
 
 public class ResourcepackService implements Listener {
 
-    private static String URL = "https://raw.githubusercontent.com/RoboTricker/Transport-Pipes/master/src/main/resources/wiki/resourcepack.zip";
+    private static String URL = "https://raw.githubusercontent.com/BlackBeltPanda/Transport-Pipes/master/src/main/resources/wiki/resourcepack.zip";
 
     private SentryService sentry;
     private TransportPipes transportPipes;
