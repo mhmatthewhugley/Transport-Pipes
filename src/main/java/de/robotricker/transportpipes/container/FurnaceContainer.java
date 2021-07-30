@@ -18,7 +18,7 @@ public class FurnaceContainer extends BlockContainer {
     private final Chunk chunk;
     private Furnace cachedFurnace;
     private FurnaceInventory cachedInv;
-    private final BlockState cachedBlockState;
+    private BlockState cachedBlockState;
 
     public FurnaceContainer(Block block) {
         super(block);
@@ -120,6 +120,7 @@ public class FurnaceContainer extends BlockContainer {
     public void updateBlock() {
         this.cachedFurnace = ((Furnace) block.getState());
         this.cachedInv = cachedFurnace.getInventory();
+        this.cachedBlockState = block.getState();
     }
 
 }
