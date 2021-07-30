@@ -3,6 +3,7 @@ package de.robotricker.transportpipes.container;
 import de.robotricker.transportpipes.items.ItemService;
 import org.bukkit.Chunk;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockState;
 import org.bukkit.block.Furnace;
 import org.bukkit.inventory.FurnaceInventory;
 import org.bukkit.inventory.ItemStack;
@@ -17,12 +18,14 @@ public class FurnaceContainer extends BlockContainer {
     private final Chunk chunk;
     private Furnace cachedFurnace;
     private FurnaceInventory cachedInv;
+    private final BlockState cachedBlockState;
 
     public FurnaceContainer(Block block) {
         super(block);
         this.chunk = block.getChunk();
         this.cachedFurnace = (Furnace) block.getState();
         this.cachedInv = cachedFurnace.getInventory();
+        this.cachedBlockState = block.getState();
     }
 
     @Override
@@ -62,7 +65,7 @@ public class FurnaceContainer extends BlockContainer {
             return insertion;
         }
         if (insertDirection == TPDirection.DOWN) {
-            if (ItemService.isFurnaceBurnableItem(insertion)) {
+            if (ItemService.isFurnaceBurnableItem(cachedBlockState, insertion)) {
                 ItemStack oldSmelting = cachedInv.getSmelting();
                 cachedInv.setSmelting(accumulateItems(oldSmelting, insertion));
                 if (insertion == null || insertion.getAmount() == 0) {
@@ -78,7 +81,7 @@ public class FurnaceContainer extends BlockContainer {
                 }
             }
         } else {
-            if (ItemService.isFurnaceBurnableItem(insertion)) {
+            if (ItemService.isFurnaceBurnableItem(cachedBlockState, insertion)) {
                 ItemStack oldSmelting = cachedInv.getSmelting();
                 cachedInv.setSmelting(accumulateItems(oldSmelting, insertion));
                 if (insertion == null || insertion.getAmount() == 0) {
@@ -101,7 +104,7 @@ public class FurnaceContainer extends BlockContainer {
         if (isInvLocked(cachedFurnace)) {
             return 0;
         }
-        if (ItemService.isFurnaceBurnableItem(insertion)) {
+        if (ItemService.isFurnaceBurnableItem(cachedBlockState, insertion)) {
             if (insertDirection.isSide() || insertDirection == TPDirection.DOWN) {
                 return spaceForItem(cachedInv.getSmelting(), insertion);
             } else if (ItemService.isFurnaceFuelItem(insertion)) {

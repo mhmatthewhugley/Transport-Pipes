@@ -13,6 +13,9 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
+import org.bukkit.block.BlastFurnace;
+import org.bukkit.block.BlockState;
+import org.bukkit.block.Smoker;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.enchantments.Enchantment;
@@ -269,15 +272,23 @@ public class ItemService {
         return (item.getType().isFuel());
     }
 
-    public static boolean isFurnaceBurnableItem(ItemStack item) {
+    public static boolean isFurnaceBurnableItem(BlockState blockState, ItemStack item) {
 
         Iterator<Recipe> recipeIt = Bukkit.recipeIterator();
         while (recipeIt.hasNext()) {
             Recipe recipe = recipeIt.next();
-            if (!(recipe instanceof FurnaceRecipe))
-                continue;
-            if(!((FurnaceRecipe) recipe).getInputChoice().test(item))
-                continue;
+            if (blockState instanceof BlastFurnace) {
+                if (!(recipe instanceof BlastingRecipe)) continue;
+                if (!((BlastingRecipe) recipe).getInputChoice().test(item)) continue;
+            }
+            else if (blockState instanceof Smoker) {
+                if (!(recipe instanceof SmokingRecipe)) continue;
+                if (!((SmokingRecipe) recipe).getInputChoice().test(item)) continue;
+            }
+            else {
+                if (!(recipe instanceof FurnaceRecipe)) continue;
+                if(!((FurnaceRecipe) recipe).getInputChoice().test(item)) continue;
+            }
             return true;
         }
 

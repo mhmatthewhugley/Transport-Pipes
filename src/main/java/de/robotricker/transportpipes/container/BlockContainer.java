@@ -1,6 +1,7 @@
 package de.robotricker.transportpipes.container;
 
 import org.bukkit.block.Block;
+import org.bukkit.block.Lockable;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 
@@ -8,19 +9,7 @@ import de.robotricker.transportpipes.api.TransportPipesContainer;
 
 public abstract class BlockContainer implements TransportPipesContainer {
 
-    private static boolean vanillaLockableExists;
-
-    static {
-        try {
-            Class.forName("org.bukkit.block.Lockable");
-            vanillaLockableExists = true;
-        } catch (ClassNotFoundException e) {
-            vanillaLockableExists = false;
-        }
-    }
-
-
-    protected Block block;
+    protected final Block block;
 
     public BlockContainer(Block block) {
         this.block = block;
@@ -75,8 +64,8 @@ public abstract class BlockContainer implements TransportPipesContainer {
     protected boolean isInvLocked(InventoryHolder ih) {
         try {
             // check vanilla lock
-            if (vanillaLockableExists && ih instanceof org.bukkit.block.Lockable) {
-                if (((org.bukkit.block.Lockable) ih).isLocked()) {
+            if (ih instanceof Lockable) {
+                if (((Lockable) ih).isLocked()) {
                     return true;
                 }
             }

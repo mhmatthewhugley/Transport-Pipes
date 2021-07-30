@@ -3,11 +3,7 @@ package de.robotricker.transportpipes.listener;
 import javax.inject.Inject;
 
 import org.bukkit.Chunk;
-import org.bukkit.block.Block;
-import org.bukkit.block.BlockState;
-import org.bukkit.block.BrewingStand;
-import org.bukkit.block.DoubleChest;
-import org.bukkit.block.Furnace;
+import org.bukkit.block.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -168,11 +164,12 @@ public class TPContainerListener implements Listener {
     }
 
     public TransportPipesContainer createContainerFromBlock(Block block) {
-        if (block.getState() instanceof Furnace) {
+        BlockState blockState = block.getState();
+        if (blockState instanceof Furnace) {
             return new FurnaceContainer(block);
-        } else if (block.getState() instanceof BrewingStand) {
+        } else if (blockState instanceof BrewingStand) {
             return new BrewingStandContainer(block);
-        } else if (block.getState() instanceof InventoryHolder) {
+        } else if (blockState instanceof InventoryHolder) {
             return new SimpleInventoryContainer(block);
         }
         return null;
