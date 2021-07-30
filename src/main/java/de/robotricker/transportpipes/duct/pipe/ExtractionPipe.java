@@ -143,10 +143,9 @@ public class ExtractionPipe extends Pipe {
     
     @Override
     protected Map<TPDirection, Integer> calculateItemDistribution(PipeItem pipeItem, TPDirection movingDir, List<TPDirection> dirs, TransportPipes transportPipes) {
-    	List<TPDirection> newDirs = dirs;
-    	
-    	// If there's a container to insert into, make sure we don't insert into containers that we didn't pull from
-    	Iterator<TPDirection> iterator = newDirs.iterator();
+
+        // If there's a container to insert into, make sure we don't insert into containers that we didn't pull from
+    	Iterator<TPDirection> iterator = dirs.iterator();
     	while (iterator.hasNext()) {
     	    TPDirection direction = iterator.next();
             TransportPipesContainer transportPipesContainer = getContainerConnections().get(direction);
@@ -159,12 +158,12 @@ public class ExtractionPipe extends Pipe {
     	}
     	
     	// If we have more than one direction option, make sure we remove the opposite direction to prevent backtracking when possible
-    	if (newDirs.contains(movingDir.getOpposite()) && newDirs.size() > 1) {
-    	    newDirs.remove(movingDir.getOpposite());
+    	if (dirs.contains(movingDir.getOpposite()) && dirs.size() > 1) {
+    	    dirs.remove(movingDir.getOpposite());
     	}
     	
 		Map<TPDirection, Integer> absWeights = new HashMap<>();
-		newDirs.stream().forEach(dir -> absWeights.put(dir, 1));
+		dirs.forEach(dir -> absWeights.put(dir, 1));
 		return itemDistributor.splitPipeItem(pipeItem, absWeights, this);
 	}
 

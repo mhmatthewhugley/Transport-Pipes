@@ -1,5 +1,6 @@
 package de.robotricker.transportpipes.api;
 
+import java.util.Objects;
 import java.util.concurrent.ConcurrentSkipListMap;
 
 import javax.inject.Inject;
@@ -55,7 +56,7 @@ public class TransportPipesAPI {
 
         DuctType ductType = ductRegister.baseDuctTypeOf(baseDuctTypeName).ductTypeOf(ductTypeName);
 
-        if (ductType.getBaseDuctType().is("pipe")) {
+        if (Objects.requireNonNull(ductType).getBaseDuctType().is("pipe")) {
             for (TPDirection dir : TPDirection.values()) {
                 if (WorldUtils.lwcProtection(blockLocation.toBlock(world).getRelative(dir.getBlockFace()))) {
                     throw new Exception("Cannot place duct next to protected container block");

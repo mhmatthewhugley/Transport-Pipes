@@ -10,8 +10,8 @@ public enum ExtractAmount {
     EXTRACT_1(LangConf.Key.EXTRACT_AMOUNT_EXTRACT_1.get(), 1),
     EXTRACT_16(LangConf.Key.EXTRACT_AMOUNT_EXTRACT_16.get(), 16);
 
-    private String displayName;
-    private ItemStack displayItem;
+    private final String displayName;
+    private final ItemStack displayItem;
 
     ExtractAmount(String displayName, int amount) {
         this.displayName = displayName;

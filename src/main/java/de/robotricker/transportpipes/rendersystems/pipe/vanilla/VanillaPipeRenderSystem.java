@@ -27,12 +27,12 @@ import de.robotricker.transportpipes.rendersystems.pipe.vanilla.model.data.Vanil
 
 public class VanillaPipeRenderSystem extends VanillaRenderSystem {
 
-    private VanillaPipeModel midModel = new VanillaPipeModelMID();
-    private VanillaPipeModel ewModel = new VanillaPipeModelEW();
-    private VanillaPipeModel nsModel = new VanillaPipeModelNS();
-    private VanillaPipeModel udModel = new VanillaPipeModelUD();
+    private final VanillaPipeModel midModel = new VanillaPipeModelMID();
+    private final VanillaPipeModel ewModel = new VanillaPipeModelEW();
+    private final VanillaPipeModel nsModel = new VanillaPipeModelNS();
+    private final VanillaPipeModel udModel = new VanillaPipeModelUD();
 
-    private Map<Pipe, List<ArmorStandData>> pipeASD = new HashMap<>();
+    private final Map<Pipe, List<ArmorStandData>> pipeASD = new HashMap<>();
 
     @Inject
     public VanillaPipeRenderSystem(DuctRegister ductRegister) {

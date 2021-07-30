@@ -10,7 +10,7 @@ import de.robotricker.transportpipes.duct.types.DuctType;
 
 public abstract class ItemManager<T extends Duct> {
 
-    protected Map<DuctType, ItemStack> items;
+    protected final Map<DuctType, ItemStack> items;
 
     public ItemManager() {
         this.items = new HashMap<>();

@@ -17,7 +17,7 @@ public class PlayerSettingsService {
     @Inject
     private GeneralConf generalConf;
 
-    private Map<Player, PlayerSettingsConf> cachedSettingsConfs;
+    private final Map<Player, PlayerSettingsConf> cachedSettingsConfs;
 
     public PlayerSettingsService() {
         this.cachedSettingsConfs = new HashMap<>();

@@ -6,7 +6,7 @@ import de.robotricker.transportpipes.location.TPDirection;
 
 public class ModelledExtractionPipeConnectionModelData extends ModelledPipeConnectionModelData {
 
-    private boolean extractionSide;
+    private final boolean extractionSide;
 
     public ModelledExtractionPipeConnectionModelData(BaseDuctType<? extends Duct> baseDuctType, TPDirection connectionDir, boolean extractionSide) {
         super(baseDuctType.ductTypeOf("Extraction"), connectionDir);

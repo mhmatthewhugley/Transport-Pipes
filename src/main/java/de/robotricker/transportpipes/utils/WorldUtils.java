@@ -1,26 +1,5 @@
 package de.robotricker.transportpipes.utils;
 
-import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.bukkit.Bukkit;
-import org.bukkit.Material;
-import org.bukkit.World;
-import org.bukkit.block.Block;
-import org.bukkit.entity.Player;
-
-import com.comphenix.protocol.PacketType;
-import com.comphenix.protocol.ProtocolLibrary;
-import com.comphenix.protocol.ProtocolManager;
-import com.comphenix.protocol.events.PacketContainer;
-import com.comphenix.protocol.wrappers.EnumWrappers;
-import com.comphenix.protocol.wrappers.WrappedChatComponent;
-
 import de.robotricker.transportpipes.PlayerSettingsService;
 import de.robotricker.transportpipes.ThreadService;
 import de.robotricker.transportpipes.TransportPipes;
@@ -29,12 +8,19 @@ import de.robotricker.transportpipes.config.LangConf;
 import de.robotricker.transportpipes.duct.Duct;
 import de.robotricker.transportpipes.duct.manager.GlobalDuctManager;
 import de.robotricker.transportpipes.location.BlockLocation;
+import net.md_5.bungee.api.ChatMessageType;
+import net.md_5.bungee.api.chat.TextComponent;
+import org.bukkit.Bukkit;
+import org.bukkit.Material;
+import org.bukkit.World;
+import org.bukkit.block.Block;
+import org.bukkit.entity.Player;
+
+import java.util.*;
 
 public class WorldUtils {
 
-    private static Map<Player, Integer> hidingDuctsTimers = new HashMap<>();
-    
-    private static ProtocolManager protocolManager = ProtocolLibrary.getProtocolManager();
+    private static final Map<Player, Integer> hidingDuctsTimers = new HashMap<>();
 
     /**
      * THREAD-SAFE
@@ -43,7 +29,7 @@ public class WorldUtils {
         // Bukkit.getOnlinePlayers is the only thread safe playerlist getter
         List<Player> playerList = new ArrayList<>();
         for (Player p : Bukkit.getOnlinePlayers()) {
-            if (p.getLocation().getWorld().equals(world)) {
+            if (Objects.equals(p.getLocation().getWorld(), world)) {
                 playerList.add(p);
             }
         }
@@ -51,35 +37,10 @@ public class WorldUtils {
     }
 
     public static boolean isContainerBlock(Material material) {
-        switch (material) {
-            case DISPENSER:
-            case CHEST:
-            case FURNACE:
-            case TRAPPED_CHEST:
-            case DROPPER:
-            case HOPPER:
-            case BREWING_STAND:
-            case SHULKER_BOX:
-            case WHITE_SHULKER_BOX:
-            case BLACK_SHULKER_BOX:
-            case BLUE_SHULKER_BOX:
-            case GRAY_SHULKER_BOX:
-            case BROWN_SHULKER_BOX:
-            case CYAN_SHULKER_BOX:
-            case GREEN_SHULKER_BOX:
-            case LIGHT_BLUE_SHULKER_BOX:
-            case LIGHT_GRAY_SHULKER_BOX:
-            case LIME_SHULKER_BOX:
-            case MAGENTA_SHULKER_BOX:
-            case ORANGE_SHULKER_BOX:
-            case PINK_SHULKER_BOX:
-            case PURPLE_SHULKER_BOX:
-            case RED_SHULKER_BOX:
-            case YELLOW_SHULKER_BOX:
-                return true;
-            default:
-                return false;
-        }
+        return switch (material) {
+            case DISPENSER, CHEST, FURNACE, TRAPPED_CHEST, DROPPER, HOPPER, BREWING_STAND, SHULKER_BOX, WHITE_SHULKER_BOX, BLACK_SHULKER_BOX, BLUE_SHULKER_BOX, GRAY_SHULKER_BOX, BROWN_SHULKER_BOX, CYAN_SHULKER_BOX, GREEN_SHULKER_BOX, LIGHT_BLUE_SHULKER_BOX, LIGHT_GRAY_SHULKER_BOX, LIME_SHULKER_BOX, MAGENTA_SHULKER_BOX, ORANGE_SHULKER_BOX, PINK_SHULKER_BOX, PURPLE_SHULKER_BOX, RED_SHULKER_BOX, YELLOW_SHULKER_BOX -> true;
+            default -> false;
+        };
     }
 
     public static boolean lwcProtection(Block b) {
@@ -94,19 +55,19 @@ public class WorldUtils {
         return false;
     }
 
-    public static void startShowHiddenDuctsProcess(Player p, GlobalDuctManager globalDuctManager, ThreadService threadService, TransportPipes transportPipes, GeneralConf generalConf, PlayerSettingsService playerSettingsService) {
+    public static void startShowHiddenDuctsProcess(Player player, GlobalDuctManager globalDuctManager, ThreadService threadService, TransportPipes transportPipes, GeneralConf generalConf, PlayerSettingsService playerSettingsService) {
 
-        int renderDistance = playerSettingsService.getOrCreateSettingsConf(p).getRenderDistance();
+        int renderDistance = playerSettingsService.getOrCreateSettingsConf(player).getRenderDistance();
 
-        if (hidingDuctsTimers.containsKey(p)) {
+        if (hidingDuctsTimers.containsKey(player)) {
             return;
         }
         Set<Duct> showingDucts = new HashSet<>();
-        Map<BlockLocation, Duct> ductMap = globalDuctManager.getDucts(p.getWorld());
+        Map<BlockLocation, Duct> ductMap = globalDuctManager.getDucts(player.getWorld());
         for (BlockLocation bl : ductMap.keySet()) {
             Duct duct = ductMap.get(bl);
             Block ductBlock = duct.getBlockLoc().toBlock(duct.getWorld());
-            if (ductBlock.getLocation().distance(p.getLocation()) > renderDistance) {
+            if (ductBlock.getLocation().distance(player.getLocation()) > renderDistance) {
                 continue;
             }
             if (duct.obfuscatedWith() != null && ductBlock.getBlockData().getMaterial() != Material.BARRIER) {
@@ -118,23 +79,14 @@ public class WorldUtils {
 
         int duration = generalConf.getShowHiddenDuctsTime();
         int[] task = new int[]{0};
-        hidingDuctsTimers.put(p, duration);
+        hidingDuctsTimers.put(player, duration);
 
         task[0] = Bukkit.getScheduler().scheduleSyncRepeatingTask(transportPipes, () -> {
 
-        	PacketContainer titleContainer = protocolManager.createPacket(PacketType.Play.Server.TITLE);
-        	titleContainer.getChatComponents().write(0, WrappedChatComponent.fromText(LangConf.Key.SHOW_HIDDEN_DUCTS.get(hidingDuctsTimers.get(p))));
-        	titleContainer.getTitleActions().write(0, EnumWrappers.TitleAction.ACTIONBAR);
-        	try {
-				protocolManager.sendServerPacket(p, titleContainer);
-			}
-			catch (InvocationTargetException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+            player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(LangConf.Key.SHOW_HIDDEN_DUCTS.get(hidingDuctsTimers.get(player))));
 
-            if (hidingDuctsTimers.get(p) == 0) {
-                hidingDuctsTimers.remove(p);
+            if (hidingDuctsTimers.get(player) == 0) {
+                hidingDuctsTimers.remove(player);
                 for (Duct duct : showingDucts) {
                     if (globalDuctManager.getDuctAtLoc(duct.getWorld(), duct.getBlockLoc()) != duct) {
                         continue;
@@ -147,7 +99,7 @@ public class WorldUtils {
                 }
                 Bukkit.getScheduler().cancelTask(task[0]);
             } else {
-                hidingDuctsTimers.put(p, hidingDuctsTimers.get(p) - 1);
+                hidingDuctsTimers.put(player, hidingDuctsTimers.get(player) - 1);
             }
         }, 0L, 20L);
 

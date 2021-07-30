@@ -1,4 +1,4 @@
-# This is the general config file of transportpipes. You can read about the options and their values at the github wiki of the plugin
+# This is the general config file of transportpipes. You can read about the options and their values at the GitHub wiki of the plugin
 # https://github.com/RoboTricker/Transport-Pipes/wiki
 max_items_per_pipe: 20
 crafting_enabled: true

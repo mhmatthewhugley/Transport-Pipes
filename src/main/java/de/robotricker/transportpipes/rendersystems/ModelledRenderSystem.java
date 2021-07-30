@@ -16,6 +16,7 @@ public abstract class ModelledRenderSystem extends RenderSystem {
         return itemService.createModelledItem(25);
     }
 
+    @SuppressWarnings("SameReturnValue")
     public static String getDisplayName() {
         return "MODELLED";
     }

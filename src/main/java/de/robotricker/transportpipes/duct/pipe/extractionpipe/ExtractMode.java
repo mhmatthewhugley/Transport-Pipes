@@ -10,8 +10,8 @@ public enum ExtractMode {
     ROUND(LangConf.Key.EXTRACT_MODE_ROUND.get(), Material.COMPARATOR),
     DIRECT(LangConf.Key.EXTRACT_MODE_DIRECT.get(), Material.REPEATER);
 
-    private String displayName;
-    private ItemStack displayItem;
+    private final String displayName;
+    private final ItemStack displayItem;
 
     ExtractMode(String displayName, Material type) {
         this.displayName = displayName;

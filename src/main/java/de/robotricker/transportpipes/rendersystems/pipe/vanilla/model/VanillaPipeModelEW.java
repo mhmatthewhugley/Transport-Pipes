@@ -26,7 +26,7 @@ public class VanillaPipeModelEW extends VanillaPipeModel {
     private List<ArmorStandData> createSimplePipeASD(ItemStack block) {
         List<ArmorStandData> asd = new ArrayList<>();
 
-        asd.add(new ArmorStandData(new RelativeLocation(0.05f, -0.33f, 0.5f - 0.5f), false, new Vector(1, 0, 0), new Vector(0f, 0f, 0f), new Vector(-10f, 0f, 45f), null, ITEM_BLAZE_ROD)); // Top Left
+        asd.add(new ArmorStandData(new RelativeLocation(0.05f, -0.33f, 0.0f), false, new Vector(1, 0, 0), new Vector(0f, 0f, 0f), new Vector(-10f, 0f, 45f), null, ITEM_BLAZE_ROD)); // Top Left
         asd.add(new ArmorStandData(new RelativeLocation(0.05f, -1.09f, 0.5f - 0.89f), false, new Vector(1, 0, 0), new Vector(0f, 0f, 0f), new Vector(-10f, 0f, 135f), null, ITEM_BLAZE_ROD)); // Top Right
         asd.add(new ArmorStandData(new RelativeLocation(0.05f, -1.09f - 0.47f, 0.5f - 0.41f), false, new Vector(1, 0, 0), new Vector(0f, 0f, 0f), new Vector(-10f, 0f, 135f), null, ITEM_BLAZE_ROD)); // Bottom Left
         asd.add(new ArmorStandData(new RelativeLocation(0.05f, -0.33f - 0.47f, 0.5f - 0.99f), false, new Vector(1, 0, 0), new Vector(0f, 0f, 0f), new Vector(-10f, 0f, 45f), null, ITEM_BLAZE_ROD)); // Bottom Right

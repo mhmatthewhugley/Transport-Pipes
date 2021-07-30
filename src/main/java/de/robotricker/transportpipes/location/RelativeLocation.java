@@ -42,18 +42,16 @@ public class RelativeLocation implements Cloneable {
         return z / 1d / PRECISION;
     }
 
-    public RelativeLocation set(double x, double y, double z) {
+    public void set(double x, double y, double z) {
         this.x = (long) (x * PRECISION);
         this.y = (long) (y * PRECISION);
         this.z = (long) (z * PRECISION);
-        return this;
     }
 
-    public RelativeLocation set(long x, long y, long z) {
+    public void set(long x, long y, long z) {
         this.x = x;
         this.y = y;
         this.z = z;
-        return this;
     }
 
     public RelativeLocation add(double x, double y, double z) {
@@ -107,6 +105,7 @@ public class RelativeLocation implements Cloneable {
         return Objects.hash(x, y, z);
     }
 
+    @SuppressWarnings("MethodDoesntCallSuperMethod")
     @Override
     public RelativeLocation clone() {
         return new RelativeLocation(getDoubleX(), getDoubleY(), getDoubleZ());
@@ -128,7 +127,7 @@ public class RelativeLocation implements Cloneable {
                 long y = Long.parseLong(split[1]);
                 long z = Long.parseLong(split[2]);
                 return new RelativeLocation(x, y, z);
-            } catch (NumberFormatException e) {
+            } catch (NumberFormatException ignored) {
 
             }
         }

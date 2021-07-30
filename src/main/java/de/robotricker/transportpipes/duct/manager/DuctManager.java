@@ -12,11 +12,11 @@ import de.robotricker.transportpipes.protocol.ProtocolService;
 
 public abstract class DuctManager<T extends Duct> {
 
-    protected TransportPipes transportPipes;
-    protected DuctRegister ductRegister;
-    protected GlobalDuctManager globalDuctManager;
-    protected ProtocolService protocolService;
-    protected ItemService itemService;
+    protected final TransportPipes transportPipes;
+    protected final DuctRegister ductRegister;
+    protected final GlobalDuctManager globalDuctManager;
+    protected final ProtocolService protocolService;
+    protected final ItemService itemService;
 
     @Inject
     public DuctManager(TransportPipes transportPipes, DuctRegister ductRegister, GlobalDuctManager globalDuctManager, ProtocolService protocolService, ItemService itemService) {
@@ -43,7 +43,7 @@ public abstract class DuctManager<T extends Duct> {
     }
 
     /**
-     * called inside the bukkit thread whenever a duct gets outside of the visible range
+     * called inside the bukkit thread whenever a duct gets outside the visible range
      */
     public void notifyDuctHidden(Duct duct, Player p) {
         if (globalDuctManager.getPlayerDucts(p).remove(duct)) {

@@ -11,8 +11,8 @@ public enum ExtractCondition {
     ALWAYS_EXTRACT(LangConf.Key.EXTRACT_CONDITION_ALWAYS_EXTRACT.get(), Material.LIME_DYE),
     NEVER_EXTRACT(LangConf.Key.EXTRACT_CONDITION_NEVER_EXTRACT.get(), Material.BARRIER);
 
-    private String displayName;
-    private ItemStack displayItem;
+    private final String displayName;
+    private final ItemStack displayItem;
 
     ExtractCondition(String displayName, Material type) {
         this.displayName = displayName;

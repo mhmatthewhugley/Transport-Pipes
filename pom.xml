@@ -5,7 +5,7 @@
 
     <groupId>de.robotricker</groupId>
     <artifactId>transportpipes</artifactId>
-    <version>5.2.1-SNAPSHOT</version>
+    <version>5.2.2-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>TransportPipes</name>
@@ -51,7 +51,7 @@
         <!-- Environment properties -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <java.version>8</java.version>
+        <java.version>16</java.version>
 
         <!-- Versioning properties -->
         <project.buildNumber>CUSTOM</project.buildNumber>
@@ -112,6 +112,14 @@
             </build>
         </profile>
     </profiles>
+
+    <!-- Snapshot repo for maven -->
+    <pluginRepositories>
+        <pluginRepository>
+            <id>apache.snapshots</id>
+            <url>https://repository.apache.org/snapshots/</url>
+        </pluginRepository>
+    </pluginRepositories>
 
     <build>
         <defaultGoal>clean package</defaultGoal>
@@ -178,7 +186,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <version>3.2.0</version>
+                <version>3.3.0</version>
                 <configuration>
                     <finalName>${project.finalNameBase}</finalName>
                 </configuration>
@@ -212,7 +220,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>3.2.3</version>
+                <version>3.3.0-SNAPSHOT</version>
                 <configuration>
                     <!-- Don't create the reduced pom file, as we don't deploy the shaded jar -->
                     <createDependencyReducedPom>false</createDependencyReducedPom>
@@ -226,10 +234,6 @@
                         <relocation>
                             <pattern>net.querz.nbt</pattern>
                             <shadedPattern>de.robotricker.transportpipes.libs.net.querz.nbt</shadedPattern>
-                        </relocation>
-                        <relocation>
-                            <pattern>io.sentry</pattern>
-                            <shadedPattern>de.robotricker.transportpipes.libs.io.sentry</shadedPattern>
                         </relocation>
                         <relocation>
                             <pattern>com.fasterxml</pattern>
@@ -251,12 +255,6 @@
                             <pattern>co.aikar.commands</pattern>
                             <shadedPattern>de.robotricker.transportpipes.libs.co.aikar.commands</shadedPattern>
                         </relocation>
-                        <!--
-                        <relocation>
-                            <pattern>org.apache.commons</pattern>
-                            <shadedPattern>de.robotricker.transportpipes.libs.org.apache.commons</shadedPattern>
-                        </relocation>
-                        -->
                     </relocations>
 
                     <filters>
@@ -303,46 +301,40 @@
     </build>
 
     <repositories>
-        <!-- SpigotAPI Repo -->
+        <!-- ProtocolLib -->
+        <repository>
+            <id>dmulloy2-repo</id>
+            <url>https://repo.dmulloy2.net/content/groups/public/</url>
+        </repository>
+
+        <!-- SpigotAPI -->
         <repository>
             <id>spigotmc-repo</id>
             <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots</url>
         </repository>
 
-        <!-- CodeMC Repo -->
-        <repository>
-            <id>codemc-repo</id>
-            <url>https://repo.codemc.org/repository/maven-public</url>
-        </repository>
-
-        <!-- ProtocolLib Repo -->
-        <repository>
-            <id>dmulloy2-repo</id>
-            <url>http://repo.dmulloy2.net/content/groups/public</url>
-        </repository>
-
-        <!-- InventiveTalent Repo -->
-        <repository>
-            <id>inventive-repo</id>
-            <url>https://repo.inventivetalent.org/content/groups/public</url>
-        </repository>
-
-        <!-- Airkar Repo -->
+        <!-- ACF -->
         <repository>
             <id>aikar</id>
             <url>https://repo.aikar.co/content/groups/aikar/</url>
         </repository>
 
-        <!-- JitPack Repo -->
+        <!-- NBT -->
         <repository>
             <id>jitpack.io</id>
             <url>https://jitpack.io</url>
         </repository>
         
-        <!-- PaperMC Repo -->	
+        <!-- PaperMC -->
         <repository>	
             <id>papermc</id>	
             <url>https://papermc.io/repo/repository/maven-public/</url>	
+        </repository>
+
+        <!-- LWC -->
+        <repository>
+            <id>ender-zone-repo</id>
+            <url>https://ci.ender.zone/plugin/repository/everything/</url>
         </repository>
     </repositories>
 
@@ -351,7 +343,7 @@
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
-            <version>1.16.1-R0.1-SNAPSHOT</version>
+            <version>1.17.1-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
             <exclusions>
                 <exclusion>
@@ -376,7 +368,7 @@
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot</artifactId>
-            <version>1.16.1-R0.1-SNAPSHOT</version>
+            <version>1.17.1-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
 
@@ -384,7 +376,7 @@
         <dependency>
             <groupId>com.comphenix.protocol</groupId>
             <artifactId>ProtocolLib</artifactId>
-            <version>4.6.0-SNAPSHOT</version>
+            <version>4.7.0</version>
             <scope>provided</scope>
             <exclusions>
                 <exclusion>
@@ -406,18 +398,11 @@
             <optional>true</optional>
         </dependency>
 
-        <!-- Sentry, a library that collects exception data and reports them automatically -->
+        <!-- https://mvnrepository.com/artifact/org.jetbrains/annotations -->
         <dependency>
-            <groupId>io.sentry</groupId>
-            <artifactId>sentry</artifactId>
-            <version>1.7.27</version>
-            <optional>true</optional>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>slf4j-api</artifactId>
-                </exclusion>
-            </exclusions>
+            <groupId>org.jetbrains</groupId>
+            <artifactId>annotations</artifactId>
+            <version>21.0.1</version>
         </dependency>
 
         <!-- ACF -->
@@ -431,27 +416,20 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
-            <version>1.7.30</version>
+            <version>1.7.32</version>
             <optional>true</optional>
         </dependency>
 
         <dependency>
             <groupId>com.github.Querz</groupId>
             <artifactId>NBT</artifactId>
-            <version>5.4</version>
+            <version>6.1</version>
         </dependency>
 
         <dependency>
             <groupId>com.griefcraft.lwc</groupId>
-            <artifactId>Modern-LWC</artifactId>
-            <version>2.1.5</version>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>fr.xephi</groupId>
-            <artifactId>authme</artifactId>
-            <version>5.6.0-SNAPSHOT</version>
+            <artifactId>LWCX</artifactId>
+            <version>2.2.6</version>
             <scope>provided</scope>
         </dependency>
 

@@ -6,7 +6,7 @@ import de.robotricker.transportpipes.location.TPDirection;
 
 public class ModelledIronPipeConnectionModelData extends ModelledPipeConnectionModelData {
 
-    private boolean outputSide;
+    private final boolean outputSide;
 
     public ModelledIronPipeConnectionModelData(BaseDuctType<? extends Duct> baseDuctType, TPDirection connectionDir, boolean outputSide) {
         super(baseDuctType.ductTypeOf("Iron"), connectionDir);

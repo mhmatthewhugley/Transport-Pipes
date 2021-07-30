@@ -1,9 +1,6 @@
 package de.robotricker.transportpipes.duct.manager;
 
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentSkipListMap;
 
@@ -37,24 +34,23 @@ import de.robotricker.transportpipes.location.BlockLocation;
 import de.robotricker.transportpipes.location.TPDirection;
 import de.robotricker.transportpipes.protocol.ProtocolService;
 import de.robotricker.transportpipes.utils.WorldUtils;
-import de.robotricker.transportpipes.utils.legacy.LegacyUtils;
 
 public class PipeManager extends DuctManager<Pipe> {
 
     private static final long BIG_TICK_COUNT = 10;
 
-    private PlayerSettingsService playerSettingsService;
-    private GeneralConf generalConf;
+    private final PlayerSettingsService playerSettingsService;
+    private final GeneralConf generalConf;
 
     /**
      * ThreadSafe
      **/
-    private ConcurrentHashMap<World, ConcurrentSkipListMap<BlockLocation, TransportPipesContainer>> containers;
+    private final ConcurrentHashMap<World, ConcurrentSkipListMap<BlockLocation, TransportPipesContainer>> containers;
 
     /**
      * THREAD-SAFE
      */
-    private ConcurrentHashMap<Player, Set<PipeItem>> playerItems;
+    private final ConcurrentHashMap<Player, Set<PipeItem>> playerItems;
 
     private ShapedRecipe wrenchRecipe;
 
@@ -75,7 +71,7 @@ public class PipeManager extends DuctManager<Pipe> {
     }
 
     public ConcurrentSkipListMap<BlockLocation, TransportPipesContainer> getContainers(World world) {
-        return containers.computeIfAbsent(world, v -> new ConcurrentSkipListMap<BlockLocation, TransportPipesContainer>());
+        return containers.computeIfAbsent(world, v -> new ConcurrentSkipListMap<>());
     }
 
     public TransportPipesContainer getContainerAtLoc(World world, BlockLocation blockLoc) {
@@ -99,22 +95,23 @@ public class PipeManager extends DuctManager<Pipe> {
         }
     }
 
+    @SuppressWarnings("ConstantConditions")
     @Override
     public void registerDuctTypes() {
         PipeType pipeType;
         BaseDuctType<Pipe> pipeBaseDuctType = ductRegister.baseDuctTypeOf("pipe");
 
-        pipeType = new ColoredPipeType(pipeBaseDuctType, "White", LangConf.Key.PIPES_WHITE.get(), Material.BONE_MEAL, "transportpipes.craft.coloredpipe");
+        pipeType = new ColoredPipeType(pipeBaseDuctType, "White", LangConf.Key.PIPES_WHITE.get(), Material.WHITE_DYE, "transportpipes.craft.coloredpipe");
         pipeBaseDuctType.registerDuctType(pipeType);
-        pipeType = new ColoredPipeType(pipeBaseDuctType, "Blue", LangConf.Key.PIPES_BLUE.get(), Material.LAPIS_LAZULI, "transportpipes.craft.coloredpipe");
+        pipeType = new ColoredPipeType(pipeBaseDuctType, "Blue", LangConf.Key.PIPES_BLUE.get(), Material.BLUE_DYE, "transportpipes.craft.coloredpipe");
         pipeBaseDuctType.registerDuctType(pipeType);
-        pipeType = new ColoredPipeType(pipeBaseDuctType, "Red", LangConf.Key.PIPES_RED.get(), LegacyUtils.getInstance().getRedDye(), "transportpipes.craft.coloredpipe");
+        pipeType = new ColoredPipeType(pipeBaseDuctType, "Red", LangConf.Key.PIPES_RED.get(), Material.RED_DYE, "transportpipes.craft.coloredpipe");
         pipeBaseDuctType.registerDuctType(pipeType);
-        pipeType = new ColoredPipeType(pipeBaseDuctType, "Yellow", LangConf.Key.PIPES_YELLOW.get(), LegacyUtils.getInstance().getYellowDye(), "transportpipes.craft.coloredpipe");
+        pipeType = new ColoredPipeType(pipeBaseDuctType, "Yellow", LangConf.Key.PIPES_YELLOW.get(), Material.YELLOW_DYE, "transportpipes.craft.coloredpipe");
         pipeBaseDuctType.registerDuctType(pipeType);
-        pipeType = new ColoredPipeType(pipeBaseDuctType, "Green", LangConf.Key.PIPES_GREEN.get(), LegacyUtils.getInstance().getGreenDye(), "transportpipes.craft.coloredpipe");
+        pipeType = new ColoredPipeType(pipeBaseDuctType, "Green", LangConf.Key.PIPES_GREEN.get(), Material.GREEN_DYE, "transportpipes.craft.coloredpipe");
         pipeBaseDuctType.registerDuctType(pipeType);
-        pipeType = new ColoredPipeType(pipeBaseDuctType, "Black", LangConf.Key.PIPES_BLACK.get(), Material.INK_SAC, "transportpipes.craft.coloredpipe");
+        pipeType = new ColoredPipeType(pipeBaseDuctType, "Black", LangConf.Key.PIPES_BLACK.get(), Material.BLACK_DYE, "transportpipes.craft.coloredpipe");
         pipeBaseDuctType.registerDuctType(pipeType);
         pipeType = new PipeType(pipeBaseDuctType, "Golden", LangConf.Key.PIPES_GOLDEN.get(), "transportpipes.craft.goldenpipe");
         pipeBaseDuctType.registerDuctType(pipeType);
@@ -152,29 +149,29 @@ public class PipeManager extends DuctManager<Pipe> {
         DuctType ductType;
 
         ductType = pipeBaseDuctType.ductTypeOf("White");
-        ductType.setDuctRecipe(itemService.createShapedRecipe(transportPipes, "white_pipe", pipeBaseDuctType.getItemManager().getClonedItem(ductType), new String[]{" a ", "a a", " a "}, 'a', Material.GLASS));
+        Objects.requireNonNull(ductType).setDuctRecipe(itemService.createShapedRecipe(transportPipes, "white_pipe", pipeBaseDuctType.getItemManager().getClonedItem(ductType), new String[]{" a ", "a a", " a "}, 'a', Material.GLASS));
         ductType = pipeBaseDuctType.ductTypeOf("Blue");
-        ductType.setDuctRecipe(itemService.createShapedRecipe(transportPipes, "blue_pipe", pipeBaseDuctType.getItemManager().getClonedItem(ductType), new String[]{" a ", "aba", " a "}, 'a', Material.GLASS, 'b', Material.LAPIS_LAZULI));
+        Objects.requireNonNull(ductType).setDuctRecipe(itemService.createShapedRecipe(transportPipes, "blue_pipe", pipeBaseDuctType.getItemManager().getClonedItem(ductType), new String[]{" a ", "aba", " a "}, 'a', Material.GLASS, 'b', Material.BLUE_DYE));
         ductType = pipeBaseDuctType.ductTypeOf("Red");
-        ductType.setDuctRecipe(itemService.createShapedRecipe(transportPipes, "red_pipe", pipeBaseDuctType.getItemManager().getClonedItem(ductType), new String[]{" a ", "aba", " a "}, 'a', Material.GLASS, 'b', LegacyUtils.getInstance().getRedDye()));
+        Objects.requireNonNull(ductType).setDuctRecipe(itemService.createShapedRecipe(transportPipes, "red_pipe", pipeBaseDuctType.getItemManager().getClonedItem(ductType), new String[]{" a ", "aba", " a "}, 'a', Material.GLASS, 'b', Material.RED_DYE));
         ductType = pipeBaseDuctType.ductTypeOf("Yellow");
-        ductType.setDuctRecipe(itemService.createShapedRecipe(transportPipes, "yellow_pipe", pipeBaseDuctType.getItemManager().getClonedItem(ductType), new String[]{" a ", "aba", " a "}, 'a', Material.GLASS, 'b', LegacyUtils.getInstance().getYellowDye()));
+        Objects.requireNonNull(ductType).setDuctRecipe(itemService.createShapedRecipe(transportPipes, "yellow_pipe", pipeBaseDuctType.getItemManager().getClonedItem(ductType), new String[]{" a ", "aba", " a "}, 'a', Material.GLASS, 'b', Material.YELLOW_DYE));
         ductType = pipeBaseDuctType.ductTypeOf("Green");
-        ductType.setDuctRecipe(itemService.createShapedRecipe(transportPipes, "green_pipe", pipeBaseDuctType.getItemManager().getClonedItem(ductType), new String[]{" a ", "aba", " a "}, 'a', Material.GLASS, 'b', LegacyUtils.getInstance().getGreenDye()));
+        Objects.requireNonNull(ductType).setDuctRecipe(itemService.createShapedRecipe(transportPipes, "green_pipe", pipeBaseDuctType.getItemManager().getClonedItem(ductType), new String[]{" a ", "aba", " a "}, 'a', Material.GLASS, 'b', Material.GREEN_DYE));
         ductType = pipeBaseDuctType.ductTypeOf("Black");
-        ductType.setDuctRecipe(itemService.createShapedRecipe(transportPipes, "black_pipe", pipeBaseDuctType.getItemManager().getClonedItem(ductType), new String[]{" a ", "aba", " a "}, 'a', Material.GLASS, 'b', Material.INK_SAC));
+        Objects.requireNonNull(ductType).setDuctRecipe(itemService.createShapedRecipe(transportPipes, "black_pipe", pipeBaseDuctType.getItemManager().getClonedItem(ductType), new String[]{" a ", "aba", " a "}, 'a', Material.GLASS, 'b', Material.BLACK_DYE));
         ductType = pipeBaseDuctType.ductTypeOf("Golden");
-        ductType.setDuctRecipe(itemService.createShapedRecipe(transportPipes, "golden_pipe", pipeBaseDuctType.getItemManager().getClonedItem(ductType), new String[]{" a ", "aba", " a "}, 'a', Material.GLASS, 'b', Material.GOLD_BLOCK));
+        Objects.requireNonNull(ductType).setDuctRecipe(itemService.createShapedRecipe(transportPipes, "golden_pipe", pipeBaseDuctType.getItemManager().getClonedItem(ductType), new String[]{" a ", "aba", " a "}, 'a', Material.GLASS, 'b', Material.GOLD_BLOCK));
         ductType = pipeBaseDuctType.ductTypeOf("Iron");
-        ductType.setDuctRecipe(itemService.createShapedRecipe(transportPipes, "iron_pipe", pipeBaseDuctType.getItemManager().getClonedItem(ductType), new String[]{" a ", "aba", " a "}, 'a', Material.GLASS, 'b', Material.IRON_BLOCK));
+        Objects.requireNonNull(ductType).setDuctRecipe(itemService.createShapedRecipe(transportPipes, "iron_pipe", pipeBaseDuctType.getItemManager().getClonedItem(ductType), new String[]{" a ", "aba", " a "}, 'a', Material.GLASS, 'b', Material.IRON_BLOCK));
         ductType = pipeBaseDuctType.ductTypeOf("Ice");
-        ductType.setDuctRecipe(itemService.createShapedRecipe(transportPipes, "ice_pipe", pipeBaseDuctType.getItemManager().getClonedItem(ductType), new String[]{" a ", "aba", " a "}, 'a', Material.GLASS, 'b', Material.SNOW_BLOCK));
+        Objects.requireNonNull(ductType).setDuctRecipe(itemService.createShapedRecipe(transportPipes, "ice_pipe", pipeBaseDuctType.getItemManager().getClonedItem(ductType), new String[]{" a ", "aba", " a "}, 'a', Material.GLASS, 'b', Material.SNOW_BLOCK));
         ductType = pipeBaseDuctType.ductTypeOf("Void");
-        ductType.setDuctRecipe(itemService.createShapedRecipe(transportPipes, "void_pipe", pipeBaseDuctType.getItemManager().getClonedItem(ductType), new String[]{" a ", "aba", " a "}, 'a', Material.GLASS, 'b', Material.OBSIDIAN));
+        Objects.requireNonNull(ductType).setDuctRecipe(itemService.createShapedRecipe(transportPipes, "void_pipe", pipeBaseDuctType.getItemManager().getClonedItem(ductType), new String[]{" a ", "aba", " a "}, 'a', Material.GLASS, 'b', Material.OBSIDIAN));
         ductType = pipeBaseDuctType.ductTypeOf("Extraction");
-        ductType.setDuctRecipe(itemService.createShapedRecipe(transportPipes, "extraction_pipe", pipeBaseDuctType.getItemManager().getClonedItem(ductType), new String[]{" a ", "aba", " a "}, 'a', Material.GLASS, 'b', Tag.PLANKS.getValues()));
+        Objects.requireNonNull(ductType).setDuctRecipe(itemService.createShapedRecipe(transportPipes, "extraction_pipe", pipeBaseDuctType.getItemManager().getClonedItem(ductType), new String[]{" a ", "aba", " a "}, 'a', Material.GLASS, 'b', Tag.PLANKS.getValues()));
         ductType = pipeBaseDuctType.ductTypeOf("Crafting");
-        ductType.setDuctRecipe(itemService.createShapedRecipe(transportPipes, "crafting_pipe", pipeBaseDuctType.getItemManager().getClonedItem(ductType), new String[]{" a ", "aba", " a "}, 'a', Material.GLASS, 'b', Material.CRAFTING_TABLE));
+        Objects.requireNonNull(ductType).setDuctRecipe(itemService.createShapedRecipe(transportPipes, "crafting_pipe", pipeBaseDuctType.getItemManager().getClonedItem(ductType), new String[]{" a ", "aba", " a "}, 'a', Material.GLASS, 'b', Material.CRAFTING_TABLE));
 
         wrenchRecipe = itemService.createShapedRecipe(transportPipes, "wrench", itemService.getWrench(), new String[]{" a ", "aba", " a "}, 'a', Material.REDSTONE, 'b', Material.STICK);
         Iterator<Recipe> iterator = Bukkit.recipeIterator();

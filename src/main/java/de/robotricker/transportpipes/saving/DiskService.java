@@ -10,7 +10,6 @@ import javax.inject.Inject;
 import org.bukkit.World;
 
 import de.robotricker.transportpipes.TransportPipes;
-import de.robotricker.transportpipes.log.SentryService;
 import net.querz.nbt.io.NBTUtil;
 import net.querz.nbt.tag.CompoundTag;
 
@@ -20,8 +19,6 @@ public class DiskService {
     private TransportPipes transportPipes;
     @Inject
     private DuctSaver ductSaver;
-    @Inject
-    private SentryService sentry;
 
     public void loadDuctsSync(World world) {
         try {
@@ -54,15 +51,13 @@ public class DiskService {
         } catch (FileNotFoundException ignored) {
         } catch (Exception e) {
             e.printStackTrace();
-            sentry.record(e);
         }
     }
 
     public void saveDuctsSync(World world) {
         try {
             ductSaver.saveDuctsSync(world);
-        } catch (Exception e) {
-            sentry.record(e);
+        } catch (Exception ignored) {
         }
     }
 

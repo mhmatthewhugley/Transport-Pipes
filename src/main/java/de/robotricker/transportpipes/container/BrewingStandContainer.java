@@ -12,7 +12,7 @@ import de.robotricker.transportpipes.location.TPDirection;
 
 public class BrewingStandContainer extends BlockContainer {
 
-    private Chunk chunk;
+    private final Chunk chunk;
     private BrewingStand cachedBrewingStand;
     private BrewerInventory cachedInv;
 
@@ -48,9 +48,7 @@ public class BrewingStandContainer extends BlockContainer {
                 takeItem = cachedInv.getItem(2);
                 cachedInv.setItem(2, null);
             }
-            if (takeItem != null) {
-                return takeItem;
-            }
+            return takeItem;
         }
         return null;
     }
@@ -77,13 +75,13 @@ public class BrewingStandContainer extends BlockContainer {
         } else if (insertDirection.isSide() && insertion.getType() == Material.BLAZE_POWDER) {
             ItemStack oldFuel = cachedInv.getFuel();
             cachedInv.setFuel(accumulateItems(oldFuel, insertion));
-            if (insertion == null || insertion.getAmount() == 0) {
+            if (insertion.getAmount() == 0) {
                 insertion = null;
             }
         } else if (isBrewingIngredient(insertion.getType())) {
             ItemStack oldIngredient = cachedInv.getIngredient();
             cachedInv.setIngredient(accumulateItems(oldIngredient, insertion));
-            if (insertion == null || insertion.getAmount() == 0) {
+            if (insertion.getAmount() == 0) {
                 insertion = null;
             }
         }
@@ -117,27 +115,10 @@ public class BrewingStandContainer extends BlockContainer {
     }
 
     private static boolean isBrewingIngredient(Material material) {
-        switch(material) {
-            case NETHER_WART:
-            case REDSTONE:
-            case GLOWSTONE_DUST:
-            case FERMENTED_SPIDER_EYE:
-            case GUNPOWDER:
-            case DRAGON_BREATH:
-            case GHAST_TEAR:
-            case GLISTERING_MELON_SLICE:
-            case GOLDEN_CARROT:
-            case RABBIT_FOOT:
-            case PUFFERFISH:
-            case BLAZE_POWDER:
-            case MAGMA_CREAM:
-            case PHANTOM_MEMBRANE:
-            case TURTLE_HELMET:
-            case SPIDER_EYE:
-            case SUGAR:
-                return true;
-            default: return false;
-        }
+        return switch (material) {
+            case NETHER_WART, REDSTONE, GLOWSTONE_DUST, FERMENTED_SPIDER_EYE, GUNPOWDER, DRAGON_BREATH, GHAST_TEAR, GLISTERING_MELON_SLICE, GOLDEN_CARROT, RABBIT_FOOT, PUFFERFISH, BLAZE_POWDER, MAGMA_CREAM, PHANTOM_MEMBRANE, TURTLE_HELMET, SPIDER_EYE, SUGAR -> true;
+            default -> false;
+        };
     }
 
 }

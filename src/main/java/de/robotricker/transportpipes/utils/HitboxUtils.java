@@ -85,7 +85,7 @@ public class HitboxUtils {
     }
 
     /**
-     * gets the neighbor block of the duct (where a block would be placed if right clicked) (calculated by the player direction ray
+     * gets the neighbor block of the duct (where a block would be placed if right-clicked) (calculated by the player direction ray
      * and the duct hitbox)
      */
     public static Block getRelativeBlockOfDuct(GlobalDuctManager globalDuctManager, Player p, Block ductLoc) {

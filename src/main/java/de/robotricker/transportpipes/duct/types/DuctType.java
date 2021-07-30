@@ -13,12 +13,12 @@ import de.robotricker.transportpipes.duct.Duct;
 
 public class DuctType {
 
-    private BaseDuctType<? extends Duct> baseDuctType;
-    private String name;
-    private String displayName;
-    private Set<DuctType> connectables;
+    private final BaseDuctType<? extends Duct> baseDuctType;
+    private final String name;
+    private final String displayName;
+    private final Set<DuctType> connectables;
     private Recipe ductRecipe;
-    private String craftingPermission;
+    private final String craftingPermission;
 
     public DuctType(BaseDuctType<? extends Duct> baseDuctType, String name, String displayName, String craftingPermission) {
         this.baseDuctType = baseDuctType;
@@ -28,11 +28,10 @@ public class DuctType {
         this.connectables = new HashSet<>();
     }
 
-    public DuctType connectTo(String... ductTypeNames) {
+    public void connectTo(String... ductTypeNames) {
         for (String name : ductTypeNames) {
             connectables.add(getBaseDuctType().ductTypeOf(name));
         }
-        return this;
     }
 
     public DuctType connectToAll() {

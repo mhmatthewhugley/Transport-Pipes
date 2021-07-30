@@ -38,10 +38,10 @@ import net.querz.nbt.tag.StringTag;
 
 public class CraftingPipe extends Pipe {
 
-    private ItemData[] recipeItems;
+    private final ItemData[] recipeItems;
     private Recipe recipe;
     private TPDirection outputDir;
-    private List<ItemStack> cachedItems;
+    private final List<ItemStack> cachedItems;
 
     public CraftingPipe(DuctType ductType, BlockLocation blockLoc, World world, Chunk chunk, DuctSettingsInventory settingsInv, GlobalDuctManager globalDuctManager, ItemDistributorService itemDistributor) {
         super(ductType, blockLoc, world, chunk, settingsInv, globalDuctManager, itemDistributor);
@@ -250,8 +250,7 @@ public class CraftingPipe extends Pipe {
         compoundTag.put("recipeItems", recipeItemsListTag);
 
         ListTag<StringTag> cachedItemsListTag = new ListTag<>(StringTag.class);
-        for (int i = 0; i < cachedItems.size(); i++) {
-            ItemStack itemStack = cachedItems.get(i);
+        for (ItemStack itemStack : cachedItems) {
             cachedItemsListTag.addString(itemService.serializeItemStack(itemStack));
         }
         compoundTag.put("cachedItems", cachedItemsListTag);

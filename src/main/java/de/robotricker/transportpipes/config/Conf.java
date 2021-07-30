@@ -8,6 +8,7 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
@@ -16,10 +17,10 @@ import org.bukkit.plugin.Plugin;
 
 public class Conf {
 
-    private Plugin configPlugin;
+    private final Plugin configPlugin;
     private Path configFile;
-    private YamlConfiguration yamlConf;
-    private Map<String, Object> cachedValues = new HashMap<>();
+    private final YamlConfiguration yamlConf;
+    private final Map<String, Object> cachedValues = new HashMap<>();
 
     /**
      * @param onlyOverwriteExistingProperties when true: only sets oldconf properties if the property exists in the new conf
@@ -41,7 +42,7 @@ public class Conf {
 
             InputStream is = configPlugin.getResource(jarConfigName);
             Files.createDirectories(finalConfigFile.getParent());
-            Files.copy(is, finalConfigFile);
+            Files.copy(Objects.requireNonNull(is), finalConfigFile);
 
             YamlConfiguration newConf = YamlConfiguration.loadConfiguration(finalConfigFile.toFile());
             Map<String, Object> valuesAfter = newConf.getValues(true);

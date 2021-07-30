@@ -71,13 +71,7 @@ public class BlockLocation implements Comparable<BlockLocation> {
             } else if (y > o.y) {
                 return 1;
             } else {
-                if (x < o.x) {
-                    return -1;
-                } else if (x > o.x) {
-                    return 1;
-                } else {
-                    return 0;
-                }
+                return Integer.compare(x, o.x);
             }
         }
     }
@@ -113,7 +107,7 @@ public class BlockLocation implements Comparable<BlockLocation> {
                 int y = Integer.parseInt(split[1]);
                 int z = Integer.parseInt(split[2]);
                 return new BlockLocation(x, y, z);
-            } catch (NumberFormatException e){
+            } catch (NumberFormatException ignored){
 
             }
         }

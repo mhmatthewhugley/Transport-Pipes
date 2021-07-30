@@ -9,13 +9,13 @@ import de.robotricker.transportpipes.location.RelativeLocation;
 
 public class ArmorStandData implements Cloneable {
 
-    private RelativeLocation relLoc;
-    private boolean small;
-    private Vector direction;
-    private Vector headRotation;
-    private Vector armRotation;
-    private ItemStack headItem;
-    private ItemStack handItem;
+    private final RelativeLocation relLoc;
+    private final boolean small;
+    private final Vector direction;
+    private final Vector headRotation;
+    private final Vector armRotation;
+    private final ItemStack headItem;
+    private final ItemStack handItem;
     private int entityID = -1;
 
     public ArmorStandData(RelativeLocation relLoc, boolean small, Vector direction, Vector headRotation, Vector armRotation, ItemStack headItem, ItemStack handItem) {
@@ -64,6 +64,7 @@ public class ArmorStandData implements Cloneable {
         this.entityID = entityID;
     }
 
+    @SuppressWarnings("MethodDoesntCallSuperMethod")
     @Override
     public ArmorStandData clone() {
         return new ArmorStandData(relLoc, small, direction, headRotation, armRotation, headItem, handItem);
@@ -80,6 +81,13 @@ public class ArmorStandData implements Cloneable {
                 Objects.equals(armRotation, armorStandData.armRotation) &&
                 Objects.equals(headItem, armorStandData.headItem) &&
                 Objects.equals(handItem, armorStandData.handItem);
+    }
+
+    public boolean isSimilarPos(ArmorStandData armorStandData) {
+        if (armorStandData == null) {
+            return false;
+        }
+        return Objects.equals(relLoc, armorStandData.relLoc);
     }
 
 }

@@ -3,10 +3,11 @@ package de.robotricker.transportpipes.api;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
+import org.jetbrains.annotations.NotNull;
 
 public class DuctPlaceEvent extends Event {
 
-    Player player;
+    final Player player;
     private static final HandlerList handlers = new HandlerList();
 
     public DuctPlaceEvent(Player player) {
@@ -15,7 +16,7 @@ public class DuctPlaceEvent extends Event {
     }
 
     @Override
-    public HandlerList getHandlers() {
+    public @NotNull HandlerList getHandlers() {
         return handlers;
     }
 

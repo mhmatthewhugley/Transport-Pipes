@@ -11,7 +11,6 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -21,51 +20,31 @@ import org.bukkit.event.player.PlayerResourcePackStatusEvent;
 import de.robotricker.transportpipes.config.GeneralConf;
 import de.robotricker.transportpipes.config.LangConf;
 import de.robotricker.transportpipes.config.PlayerSettingsConf;
-import de.robotricker.transportpipes.log.SentryService;
 import de.robotricker.transportpipes.rendersystems.ModelledRenderSystem;
 import de.robotricker.transportpipes.rendersystems.VanillaRenderSystem;
 
 public class ResourcepackService implements Listener {
 
-    private static String URL = "https://raw.githubusercontent.com/BlackBeltPanda/Transport-Pipes/master/src/main/resources/wiki/resourcepack.zip";
+    private static final String URL = "https://raw.githubusercontent.com/BlackBeltPanda/Transport-Pipes/master/src/main/resources/wiki/resourcepack.zip";
 
-    private SentryService sentry;
-    private TransportPipes transportPipes;
-    private PlayerSettingsService playerSettingsService;
+    private final TransportPipes transportPipes;
+    private final PlayerSettingsService playerSettingsService;
 
-    private ResourcepackMode resourcepackMode;
+    private final ResourcepackMode resourcepackMode;
     private byte[] cachedHash;
-    private Set<Player> resourcepackPlayers;
-    private Set<Player> loadingResourcepackPlayers;
-    private Set<Player> waitingForAuthmeLogin;
+    private final Set<Player> resourcepackPlayers;
+    private final Set<Player> loadingResourcepackPlayers;
 
     @Inject
-    public ResourcepackService(SentryService sentry, TransportPipes transportPipes, PlayerSettingsService playerSettingsService, GeneralConf generalConf) {
-        this.sentry = sentry;
+    public ResourcepackService(TransportPipes transportPipes, PlayerSettingsService playerSettingsService, GeneralConf generalConf) {
         this.transportPipes = transportPipes;
         this.playerSettingsService = playerSettingsService;
         this.resourcepackMode = generalConf.getResourcepackMode();
         if (resourcepackMode == ResourcepackMode.DEFAULT) {
-            cachedHash = calcSHA1Hash(URL);
+            cachedHash = calcSHA1Hash();
         }
         resourcepackPlayers = new HashSet<>();
         loadingResourcepackPlayers = new HashSet<>();
-        waitingForAuthmeLogin = new HashSet<>();
-
-        if (Bukkit.getPluginManager().isPluginEnabled("AuthMe")) {
-            Bukkit.getPluginManager().registerEvents(new Listener() {
-                @EventHandler
-                public void onAuthMeLogin(fr.xephi.authme.events.LoginEvent e) {
-                    if (waitingForAuthmeLogin.remove(e.getPlayer())) {
-                        loadResourcepackForPlayer(e.getPlayer());
-                    }
-                }
-            }, transportPipes);
-        }
-    }
-
-    public byte[] getCachedHash() {
-        return cachedHash;
     }
 
     public Set<Player> getResourcepackPlayers() {
@@ -85,12 +64,7 @@ public class ResourcepackService implements Listener {
             if (conf.getRenderSystemName().equalsIgnoreCase(ModelledRenderSystem.getDisplayName())) {
 
                 transportPipes.changeRenderSystem(e.getPlayer(), VanillaRenderSystem.getDisplayName());
-
-                if (!Bukkit.getPluginManager().isPluginEnabled("AuthMe") || fr.xephi.authme.api.v3.AuthMeApi.getInstance().isAuthenticated(e.getPlayer())) {
-                    transportPipes.runTaskSync(() -> loadResourcepackForPlayer(e.getPlayer()));
-                } else if (Bukkit.getPluginManager().isPluginEnabled("AuthMe") && !fr.xephi.authme.api.v3.AuthMeApi.getInstance().isAuthenticated(e.getPlayer())) {
-                    waitingForAuthmeLogin.add(e.getPlayer());
-                }
+                transportPipes.runTaskSync(() -> loadResourcepackForPlayer(e.getPlayer()));
             }
         }
     }
@@ -102,7 +76,10 @@ public class ResourcepackService implements Listener {
         }
         if (e.getStatus() == PlayerResourcePackStatusEvent.Status.DECLINED || e.getStatus() == PlayerResourcePackStatusEvent.Status.FAILED_DOWNLOAD) {
             LangConf.Key.RESOURCEPACK_FAIL.sendMessage(e.getPlayer());
-            loadingResourcepackPlayers.remove(e.getPlayer());
+            resourcepackPlayers.add(e.getPlayer());
+            if (loadingResourcepackPlayers.remove(e.getPlayer())) {
+                transportPipes.changeRenderSystem(e.getPlayer(), ModelledRenderSystem.getDisplayName());
+            }
         } else if (e.getStatus() == PlayerResourcePackStatusEvent.Status.SUCCESSFULLY_LOADED) {
             resourcepackPlayers.add(e.getPlayer());
             if (loadingResourcepackPlayers.remove(e.getPlayer())) {
@@ -122,9 +99,9 @@ public class ResourcepackService implements Listener {
         }
     }
 
-    private byte[] calcSHA1Hash(String resourcepackUrl) {
+    private byte[] calcSHA1Hash() {
         try {
-            URL url = new URL(resourcepackUrl);
+            URL url = new URL(ResourcepackService.URL);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
             if (connection.getContentLength() <= 0) {
@@ -142,15 +119,11 @@ public class ResourcepackService implements Listener {
 
             in.close();
 
-            if (resourcePackBytes != null) {
-                MessageDigest md = MessageDigest.getInstance("SHA-1");
-                return md.digest(resourcePackBytes);
-            }
+            MessageDigest md = MessageDigest.getInstance("SHA-1");
+            return md.digest(resourcePackBytes);
         } catch (NoSuchAlgorithmException | IOException e) {
             e.printStackTrace();
-            sentry.record(e);
-        } catch (Exception e) {
-            sentry.record(e);
+        } catch (Exception ignored) {
         }
         return null;
     }

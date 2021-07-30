@@ -19,10 +19,10 @@ import net.querz.nbt.tag.StringTag;
 
 public class DuctRegister {
 
-    private List<BaseDuctType<? extends Duct>> baseDuctTypes;
+    private final List<BaseDuctType<? extends Duct>> baseDuctTypes;
 
-    private TransportPipes plugin;
-    private GeneralConf generalConf;
+    private final TransportPipes plugin;
+    private final GeneralConf generalConf;
 
     @Inject
     public DuctRegister(TransportPipes plugin, GeneralConf generalConf) {
@@ -86,7 +86,7 @@ public class DuctRegister {
     }
     
     public List<TPDirection> loadBlockedConnectionsFromNBTTag(CompoundTag ductTag) {
-        List<TPDirection> blockedConnectionsList = new ArrayList<TPDirection>();
+        List<TPDirection> blockedConnectionsList = new ArrayList<>();
         ListTag<?> listTag = ductTag.getListTag("blockedConnections");
         if (listTag == null) {
             return null;

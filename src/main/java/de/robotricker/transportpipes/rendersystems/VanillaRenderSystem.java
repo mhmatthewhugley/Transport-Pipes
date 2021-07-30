@@ -16,6 +16,7 @@ public abstract class VanillaRenderSystem extends RenderSystem {
         return ductRegister.baseDuctTypeOf("pipe").getItemManager().getClonedItem(ductRegister.baseDuctTypeOf("pipe").ductTypeOf("white"));
     }
 
+    @SuppressWarnings("SameReturnValue")
     public static String getDisplayName() {
         return "VANILLA";
     }

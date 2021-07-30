@@ -17,7 +17,7 @@ import de.robotricker.transportpipes.protocol.ArmorStandData;
 
 public abstract class RenderSystem {
 
-    private BaseDuctType<? extends Duct> baseDuctType;
+    private final BaseDuctType<? extends Duct> baseDuctType;
 
     public RenderSystem(BaseDuctType<? extends Duct> baseDuctType) {
         this.baseDuctType = baseDuctType;

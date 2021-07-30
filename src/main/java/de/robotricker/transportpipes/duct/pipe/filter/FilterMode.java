@@ -8,7 +8,7 @@ public enum FilterMode {
     INVERTED(LangConf.Key.FILTER_MODE_INVERTED.get()),
     BLOCK_ALL(LangConf.Key.FILTER_MODE_BLOCKALL.get());
 
-    private String displayName;
+    private final String displayName;
 
     FilterMode(String displayName) {
         this.displayName = displayName;

@@ -1,13 +1,6 @@
 package de.robotricker.transportpipes.listener;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 import javax.inject.Inject;
 
@@ -20,12 +13,10 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.block.data.Directional;
 import org.bukkit.block.data.type.Stairs;
-import org.bukkit.craftbukkit.libs.org.apache.commons.lang3.text.translate.UnicodeUnpairedSurrogateRemover;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
-import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
@@ -38,7 +29,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.RegisteredListener;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
 
 import de.robotricker.transportpipes.PlayerSettingsService;
@@ -55,7 +45,6 @@ import de.robotricker.transportpipes.duct.types.DuctType;
 import de.robotricker.transportpipes.items.ItemService;
 import de.robotricker.transportpipes.location.BlockLocation;
 import de.robotricker.transportpipes.location.TPDirection;
-import de.robotricker.transportpipes.log.SentryService;
 import de.robotricker.transportpipes.utils.HitboxUtils;
 import de.robotricker.transportpipes.utils.WorldUtils;
 
@@ -64,20 +53,20 @@ public class DuctListener implements Listener {
     private final List<Material> interactables = new ArrayList<>();
 
     //makes sure that "callInteraction" is called with the mainHand and with the offHand every single time
-    private Map<Player, Interaction> interactions = new HashMap<>();
-    private Set<UUID> noClick = new HashSet<>();
+    private final Map<Player, Interaction> interactions = new HashMap<>();
+    private final Set<UUID> noClick = new HashSet<>();
 
-    private ItemService itemService;
-    private DuctRegister ductRegister;
-    private GlobalDuctManager globalDuctManager;
-    private TPContainerListener tpContainerListener;
-    private GeneralConf generalConf;
-    private TransportPipes transportPipes;
-    private ThreadService threadService;
-    private PlayerSettingsService playerSettingsService;
+    private final ItemService itemService;
+    private final DuctRegister ductRegister;
+    private final GlobalDuctManager globalDuctManager;
+    private final TPContainerListener tpContainerListener;
+    private final GeneralConf generalConf;
+    private final TransportPipes transportPipes;
+    private final ThreadService threadService;
+    private final PlayerSettingsService playerSettingsService;
 
     @Inject
-    public DuctListener(ItemService itemService, JavaPlugin plugin, DuctRegister ductRegister, GlobalDuctManager globalDuctManager, TPContainerListener tpContainerListener, GeneralConf generalConf, SentryService sentry, TransportPipes transportPipes, ThreadService threadService, PlayerSettingsService playerSettingsService) {
+    public DuctListener(ItemService itemService, JavaPlugin plugin, DuctRegister ductRegister, GlobalDuctManager globalDuctManager, TPContainerListener tpContainerListener, GeneralConf generalConf, TransportPipes transportPipes, ThreadService threadService, PlayerSettingsService playerSettingsService) {
         this.itemService = itemService;
         this.ductRegister = ductRegister;
         this.globalDuctManager = globalDuctManager;
@@ -113,7 +102,7 @@ public class DuctListener implements Listener {
         new BukkitRunnable() {
             @Override
             public void run() {
-                if (noClick.contains(uuid)) noClick.remove(uuid);
+                noClick.remove(uuid);
             }
         }.runTaskLater(transportPipes, 2L);
     }
@@ -125,7 +114,7 @@ public class DuctListener implements Listener {
         new BukkitRunnable() {
             @Override
             public void run() {
-                if (noClick.contains(uuid)) noClick.remove(uuid);
+                noClick.remove(uuid);
             }
         }.runTaskLater(transportPipes, 2L);
     }
@@ -150,7 +139,7 @@ public class DuctListener implements Listener {
         new BukkitRunnable() {
             @Override
             public void run() {
-                if (noClick.contains(uuid)) noClick.remove(uuid);
+                noClick.remove(uuid);
             }
         }.runTaskLater(transportPipes, 3L);
         
@@ -207,15 +196,15 @@ public class DuctListener implements Listener {
                     Block ductBlock = clickedDuct.getBlockLoc().toBlock(interaction.p.getWorld());
                     if (buildAllowed(interaction.p, ductBlock)) {
                         Block relativeBlock = HitboxUtils.getRelativeBlockOfDuct(globalDuctManager, interaction.p, ductBlock);
-                        TPDirection clickedDir = TPDirection.fromBlockFace(ductBlock.getFace(relativeBlock));
+                        TPDirection clickedDir = TPDirection.fromBlockFace(ductBlock.getFace(Objects.requireNonNull(relativeBlock)));
                         Duct relativeDuct = clickedDuct.getDuctConnections().get(clickedDir);
                         if (clickedDuct.getBlockedConnections().contains(clickedDir)) {
                             clickedDuct.getBlockedConnections().remove(clickedDir);
-                            LangConf.Key.CONNECTION_UNBLOCKED.sendMessage(interaction.p, clickedDir.toString());
+                            LangConf.Key.CONNECTION_UNBLOCKED.sendMessage(interaction.p, Objects.requireNonNull(clickedDir).toString());
                         }
                         else {
                             clickedDuct.getBlockedConnections().add(clickedDir);
-                            LangConf.Key.CONNECTION_BLOCKED.sendMessage(interaction.p, clickedDir.toString());
+                            LangConf.Key.CONNECTION_BLOCKED.sendMessage(interaction.p, Objects.requireNonNull(clickedDir).toString());
                         }
                         globalDuctManager.updateDuctConnections(clickedDuct);
                         globalDuctManager.updateDuctInRenderSystems(clickedDuct, true);
@@ -285,7 +274,7 @@ public class DuctListener implements Listener {
                 if (clickedDuct != null) {
                     placeBlock = HitboxUtils.getRelativeBlockOfDuct(globalDuctManager, interaction.p, clickedDuct.getBlockLoc().toBlock(interaction.p.getWorld()));
                 }
-                // Otherwise if block clicked, get block relative to clicked block
+                // Otherwise, if block clicked, get block relative to clicked block
                 else if (interaction.clickedBlock != null) {
                     placeBlock = interaction.clickedBlock.getRelative(interaction.blockFace);
                 }
@@ -293,7 +282,7 @@ public class DuctListener implements Listener {
                 if (itemDuctType == null && clickedDuct == null && (placeBlock != null && globalDuctManager.getDuctAtLoc(placeBlock.getLocation()) == null)) {
                 	return;
                 }
-                // If a block is placed and it's either solid or there's a duct where it's being placed
+                // If a block is placed, and it's either solid or there's a duct where it's being placed
                 if (placeBlock != null && (placeBlock.getType().isSolid() || globalDuctManager.getDuctAtLoc(placeBlock.getLocation()) != null)) {
                     placeBlock = null;
                 }
@@ -304,7 +293,7 @@ public class DuctListener implements Listener {
                     	return;
                     }
                 }
-                // Otherwise if a block is not placed or a duct was clicked and hand item is not a duct or solid block
+                // Otherwise, if a block is not placed or a duct was clicked and hand item is not a duct or solid block
                 else if (placeBlock == null || (clickedDuct != null && !manualPlaceable)) {
                     if (!interaction.item.getType().isEdible() && interaction.item.getType() != Material.BONE_MEAL) {
                         interaction.denyBlockUse = true;
@@ -317,7 +306,7 @@ public class DuctListener implements Listener {
                     if (itemDuctType != null) {
 
                         // duct placement
-                        if (buildAllowed(interaction.p, placeBlock)) {
+                        if (buildAllowed(interaction.p, Objects.requireNonNull(placeBlock))) {
                             boolean lwcAllowed = true;
                             for (TPDirection dir : TPDirection.values()) {
                                 if (WorldUtils.lwcProtection(placeBlock.getRelative(dir.getBlockFace()))) {
@@ -423,15 +412,13 @@ public class DuctListener implements Listener {
             return;
         }
         ItemStack item = hand == EquipmentSlot.HAND ? p.getInventory().getItemInMainHand() : p.getInventory().getItemInOffHand();
-        if (item != null) {
-            if (item.getAmount() <= 1) {
-                item = null;
-            } else {
-                item.setAmount(item.getAmount() - 1);
-            }
-            if (hand == EquipmentSlot.HAND) p.getInventory().setItemInMainHand(item);
-            else p.getInventory().setItemInOffHand(item);
+        if (item.getAmount() <= 1) {
+            item = null;
+        } else {
+            item.setAmount(item.getAmount() - 1);
         }
+        if (hand == EquipmentSlot.HAND) p.getInventory().setItemInMainHand(item);
+        else p.getInventory().setItemInOffHand(item);
     }
 
 
@@ -469,13 +456,13 @@ public class DuctListener implements Listener {
         return !event.isCancelled();
     }
 
-    private class Interaction {
-        Player p;
-        EquipmentSlot hand;
-        ItemStack item;
-        Block clickedBlock;
-        BlockFace blockFace;
-        Action action;
+    private static class Interaction {
+        final Player p;
+        final EquipmentSlot hand;
+        final ItemStack item;
+        final Block clickedBlock;
+        final BlockFace blockFace;
+        final Action action;
         boolean cancel;
         boolean denyBlockUse;
         boolean successful = false;

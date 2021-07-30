@@ -8,8 +8,8 @@ import de.robotricker.transportpipes.location.TPDirection;
 
 public class ModelledPipeConnectionModelData {
 
-    private PipeType pipeType;
-    private TPDirection connectionDir;
+    private final PipeType pipeType;
+    private final TPDirection connectionDir;
 
     public ModelledPipeConnectionModelData(PipeType pipeType, TPDirection connectionDir) {
         this.pipeType = pipeType;

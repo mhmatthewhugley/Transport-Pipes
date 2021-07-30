@@ -1,16 +1,5 @@
 package de.robotricker.transportpipes.rendersystems.pipe.modelled;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.inject.Inject;
-
-import org.bukkit.entity.Player;
-import org.bukkit.util.Vector;
-
 import de.robotricker.transportpipes.duct.Duct;
 import de.robotricker.transportpipes.duct.DuctRegister;
 import de.robotricker.transportpipes.duct.pipe.Pipe;
@@ -21,15 +10,20 @@ import de.robotricker.transportpipes.protocol.ArmorStandData;
 import de.robotricker.transportpipes.rendersystems.ModelledRenderSystem;
 import de.robotricker.transportpipes.rendersystems.pipe.modelled.model.ModelledPipeModel;
 import de.robotricker.transportpipes.rendersystems.pipe.modelled.model.data.ModelledPipeConnectionModelData;
+import org.bukkit.entity.Player;
+import org.bukkit.util.Vector;
+
+import javax.inject.Inject;
+import java.util.*;
 
 public class ModelledPipeRenderSystem extends ModelledRenderSystem {
 
-    private ModelledPipeModel model = new ModelledPipeModel();
+    private final ModelledPipeModel model = new ModelledPipeModel();
 
-    private Map<Pipe, ArmorStandData> midASD = new HashMap<>();
-    private Map<Pipe, Map<TPDirection, ArmorStandData>> connASD = new HashMap<>();
-    private AxisAlignedBB midAABB;
-    private Map<TPDirection, AxisAlignedBB> connAABBs = new HashMap<>();
+    private final Map<Pipe, ArmorStandData> midASD = new HashMap<>();
+    private final Map<Pipe, Map<TPDirection, ArmorStandData>> connASD = new HashMap<>();
+    private final AxisAlignedBB midAABB;
+    private final Map<TPDirection, AxisAlignedBB> connAABBs = new HashMap<>();
 
     @Inject
     public ModelledPipeRenderSystem(ItemService itemService, DuctRegister ductRegister) {
@@ -38,10 +32,10 @@ public class ModelledPipeRenderSystem extends ModelledRenderSystem {
 
         midAABB = new AxisAlignedBB(4d / 16d, 4d / 16d, 4d / 16d, 12d / 16d, 12d / 16d, 12d / 16d);
         connAABBs.put(TPDirection.NORTH, new AxisAlignedBB(4d / 16d, 4d / 16d, 0d / 16d, 12d / 16d, 12d / 16d, 4d / 16d));
-        connAABBs.put(TPDirection.EAST, new AxisAlignedBB(12d / 16d, 4d / 16d, 4d / 16d, 16d / 16d, 12d / 16d, 12d / 16d));
-        connAABBs.put(TPDirection.SOUTH, new AxisAlignedBB(4d / 16d, 4d / 16d, 12d / 16d, 12d / 16d, 12d / 16d, 16d / 16d));
+        connAABBs.put(TPDirection.EAST, new AxisAlignedBB(12d / 16d, 4d / 16d, 4d / 16d, 1.0, 12d / 16d, 12d / 16d));
+        connAABBs.put(TPDirection.SOUTH, new AxisAlignedBB(4d / 16d, 4d / 16d, 12d / 16d, 12d / 16d, 12d / 16d, 1.0));
         connAABBs.put(TPDirection.WEST, new AxisAlignedBB(0d / 16d, 4d / 16d, 4d / 16d, 4d / 16d, 12d / 16d, 12d / 16d));
-        connAABBs.put(TPDirection.UP, new AxisAlignedBB(4d / 16d, 12d / 16d, 4d / 16d, 12d / 16d, 16d / 16d, 12d / 16d));
+        connAABBs.put(TPDirection.UP, new AxisAlignedBB(4d / 16d, 12d / 16d, 4d / 16d, 12d / 16d, 1.0, 12d / 16d));
         connAABBs.put(TPDirection.DOWN, new AxisAlignedBB(4d / 16d, 0d / 16d, 4d / 16d, 12d / 16d, 4d / 16d, 12d / 16d));
 
     }
@@ -56,9 +50,11 @@ public class ModelledPipeRenderSystem extends ModelledRenderSystem {
         midASD.put(pipe, model.createMidASD(pipe.getDuctType()));
         Map<TPDirection, ArmorStandData> connMap = new HashMap<>();
         for (TPDirection connDir : connections) {
+            // TODO: Custom Model Data - 1 for each direction, 0 for not. IE - NSWD = 101101 (order - neswud)
+            // Then send only the middle pipe with the custom model data
             connMap.put(connDir, model.createConnASD(ModelledPipeConnectionModelData.createConnectionModelData(pipe, connDir)));
         }
-        connASD.put(pipe, connMap);
+        if (!connMap.isEmpty()) connASD.put(pipe, connMap);
     }
 
     @Override

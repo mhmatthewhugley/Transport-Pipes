@@ -1,8 +1,5 @@
 package de.robotricker.transportpipes.duct.types;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import de.robotricker.transportpipes.duct.Duct;
 import de.robotricker.transportpipes.duct.factory.DuctFactory;
 import de.robotricker.transportpipes.duct.manager.DuctManager;
@@ -10,16 +7,19 @@ import de.robotricker.transportpipes.items.ItemManager;
 import de.robotricker.transportpipes.rendersystems.ModelledRenderSystem;
 import de.robotricker.transportpipes.rendersystems.VanillaRenderSystem;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public final class BaseDuctType<T extends Duct> {
 
-    private String name;
-    private DuctManager<T> ductManager;
-    private DuctFactory<T> ductFactory;
-    private ItemManager<T> itemManager;
+    private final String name;
+    private final DuctManager<T> ductManager;
+    private final DuctFactory<T> ductFactory;
+    private final ItemManager<T> itemManager;
     private VanillaRenderSystem vanillaRenderSystem;
     private ModelledRenderSystem modelledRenderSystem;
 
-    private List<DuctType> ductTypes;
+    private final List<DuctType> ductTypes;
 
     public BaseDuctType(String name, DuctManager<T> ductManager, DuctFactory<T> ductFactory, ItemManager<T> itemManager) {
         this.name = name;

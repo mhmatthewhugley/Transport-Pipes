@@ -14,9 +14,9 @@ public enum TPDirection {
     UP(0, 1, 0, BlockFace.UP, LangConf.Key.DIRECTIONS_UP.get()),
     DOWN(0, -1, 0, BlockFace.DOWN, LangConf.Key.DIRECTIONS_DOWN.get());
 
-    private Vector vec;
-    private BlockFace blockFace;
-    private String displayName;
+    private final Vector vec;
+    private final BlockFace blockFace;
+    private final String displayName;
 
     TPDirection(int x, int y, int z, BlockFace blockFace, String displayName) {
         this.vec = new Vector(x, y, z);

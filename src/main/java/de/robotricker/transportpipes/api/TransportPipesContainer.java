@@ -8,7 +8,7 @@ import de.robotricker.transportpipes.location.TPDirection;
 public interface TransportPipesContainer {
 
     /**
-     * should give back the extracted item with the given amount if possible. If there are not enough items left to extract, just give back whats there
+     * should give back the extracted item with the given amount if possible. If there are not enough items left to extract, just give back what's there
      */
     ItemStack extractItem(TPDirection extractDirection, int amount, ItemFilter itemFilter);
 

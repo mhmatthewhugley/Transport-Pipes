@@ -2,6 +2,7 @@ package de.robotricker.transportpipes.saving;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import javax.inject.Inject;
 
@@ -66,7 +67,7 @@ public class LegacyDuctLoader_v4_3_1 extends DuctLoader {
             String locString = ductTag.getString("DuctLocation");
             BlockLocation blockLoc = new BlockLocation((int) Double.parseDouble(locString.split(":")[1]), (int) Double.parseDouble(locString.split(":")[2]),
                     (int) Double.parseDouble(locString.split(":")[3]));
-            if (ductType == null || blockLoc == null) {
+            if (ductType == null) {
                 continue;
             }
             Duct duct = globalDuctManager.createDuctObject(ductType, blockLoc, world, blockLoc.toLocation(world).getChunk());
@@ -112,7 +113,7 @@ public class LegacyDuctLoader_v4_3_1 extends DuctLoader {
                             i++;
                         }
 
-                        ((GoldenPipe) duct).setItemFilter(GoldenPipe.Color.getByDir(TPDirection.values()[dir]), itemFilter);
+                        ((GoldenPipe) duct).setItemFilter(Objects.requireNonNull(GoldenPipe.Color.getByDir(TPDirection.values()[dir])), itemFilter);
                         duct.getSettingsInv().populate();
 
                         dir++;

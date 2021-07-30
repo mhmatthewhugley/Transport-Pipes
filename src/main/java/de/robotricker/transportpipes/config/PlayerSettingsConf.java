@@ -9,10 +9,10 @@ import de.robotricker.transportpipes.rendersystems.RenderSystem;
 
 public class PlayerSettingsConf extends Conf {
 
-    private GeneralConf generalConf;
+    private final GeneralConf generalConf;
 
     public PlayerSettingsConf(TransportPipes transportPipes, GeneralConf generalConf, Player p) {
-        super(transportPipes, "playerconfig.yml", "playersettings/" + p.getUniqueId().toString() + ".yml", false);
+        super(transportPipes, "playerconfig.yml", "playersettings/" + p.getUniqueId() + ".yml", false);
         this.generalConf = generalConf;
     }
 

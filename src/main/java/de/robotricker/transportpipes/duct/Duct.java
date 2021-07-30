@@ -12,7 +12,6 @@ import org.bukkit.Material;
 import org.bukkit.Particle;
 import org.bukkit.World;
 import org.bukkit.block.data.BlockData;
-import org.bukkit.craftbukkit.v1_16_R1.CraftWorld;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -29,15 +28,15 @@ import net.querz.nbt.tag.CompoundTag;
 
 public abstract class Duct {
 
-    protected GlobalDuctManager globalDuctManager;
-    protected DuctSettingsInventory settingsInv;
-    private DuctType ductType;
-    private BlockLocation blockLoc;
-    private World world;
-    private int chunkX;
-    private int chunkZ;
-    private ConcurrentHashMap<TPDirection, Duct> connectedDucts;
-    private List<TPDirection> blockedConnections;
+    protected final GlobalDuctManager globalDuctManager;
+    protected final DuctSettingsInventory settingsInv;
+    private final DuctType ductType;
+    private final BlockLocation blockLoc;
+    private final World world;
+    private final int chunkX;
+    private final int chunkZ;
+    private final ConcurrentHashMap<TPDirection, Duct> connectedDucts;
+    private final List<TPDirection> blockedConnections;
     private BlockData obfuscatedWith;
 
     public Duct(DuctType ductType, BlockLocation blockLoc, World world, Chunk chunk, DuctSettingsInventory settingsInv, GlobalDuctManager globalDuctManager) {
@@ -46,8 +45,8 @@ public abstract class Duct {
         this.world = world;
         chunkX = chunk.getX();
         chunkZ = chunk.getZ();
-        this.connectedDucts = new ConcurrentHashMap<TPDirection, Duct>();
-        this.blockedConnections = new ArrayList<TPDirection>();
+        this.connectedDucts = new ConcurrentHashMap<>();
+        this.blockedConnections = new ArrayList<>();
         this.settingsInv = settingsInv;
         this.globalDuctManager = globalDuctManager;
     }
@@ -82,7 +81,7 @@ public abstract class Duct {
     }
 
     public boolean isInLoadedChunk() {
-        return ((CraftWorld) world).getHandle().getChunkProvider().isLoaded(chunkX, chunkZ);
+        return world.isChunkLoaded(chunkX, chunkZ);
     }
 
     public void notifyConnectionChange() {

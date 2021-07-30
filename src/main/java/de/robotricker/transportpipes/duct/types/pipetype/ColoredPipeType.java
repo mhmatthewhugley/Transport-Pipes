@@ -7,7 +7,7 @@ import de.robotricker.transportpipes.duct.types.BaseDuctType;
 
 public class ColoredPipeType extends PipeType {
 
-    private Material coloringMaterial;
+    private final Material coloringMaterial;
 
     public ColoredPipeType(BaseDuctType<Pipe> baseDuctType, String name, String displayName, Material coloringMaterial, String craftingPermission) {
         super(baseDuctType, name, displayName, craftingPermission);

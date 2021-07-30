@@ -25,9 +25,9 @@ public class PipeItem {
 	private RelativeLocation relativeLocation;
 	private TPDirection movingDir;
 	private ExtractMode extractMode = ExtractMode.ROUND;
-	private LinkedHashSet<BlockLocation> visitedPipes = new LinkedHashSet<BlockLocation>(); 
-	private HashMap<BlockLocation, LinkedHashSet<TPDirection>> movedDirs = new HashMap<BlockLocation, LinkedHashSet<TPDirection>>();
-	private HashMap<BlockLocation, TPDirection> sourceDirs = new HashMap<BlockLocation, TPDirection>();
+	private final LinkedHashSet<BlockLocation> visitedPipes = new LinkedHashSet<>();
+	private final HashMap<BlockLocation, LinkedHashSet<TPDirection>> movedDirs = new HashMap<>();
+	private final HashMap<BlockLocation, TPDirection> sourceDirs = new HashMap<>();
 
 	public PipeItem() {}
 
@@ -120,7 +120,7 @@ public class PipeItem {
 	}
 	
 	public void addMovedDir(BlockLocation location, TPDirection movedDir) {
-	    LinkedHashSet<TPDirection> dirs = movedDirs.containsKey(location) ? movedDirs.get(location) : new LinkedHashSet<TPDirection>();
+	    LinkedHashSet<TPDirection> dirs = movedDirs.containsKey(location) ? movedDirs.get(location) : new LinkedHashSet<>();
 		dirs.add(movedDir);
 		movedDirs.put(location, dirs);
 	}

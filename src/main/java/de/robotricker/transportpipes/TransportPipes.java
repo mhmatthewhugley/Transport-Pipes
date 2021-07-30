@@ -36,44 +36,26 @@ import de.robotricker.transportpipes.listener.PlayerListener;
 import de.robotricker.transportpipes.listener.TPContainerListener;
 import de.robotricker.transportpipes.listener.WorldListener;
 import de.robotricker.transportpipes.log.LoggerService;
-import de.robotricker.transportpipes.log.SentryService;
 import de.robotricker.transportpipes.protocol.ProtocolService;
 import de.robotricker.transportpipes.rendersystems.RenderSystem;
 import de.robotricker.transportpipes.rendersystems.pipe.modelled.ModelledPipeRenderSystem;
 import de.robotricker.transportpipes.rendersystems.pipe.vanilla.VanillaPipeRenderSystem;
 import de.robotricker.transportpipes.saving.DiskService;
 import de.robotricker.transportpipes.utils.LWCUtils;
-import de.robotricker.transportpipes.utils.legacy.LegacyUtils;
-import de.robotricker.transportpipes.utils.legacy.LegacyUtils_1_15;
-import io.sentry.event.Breadcrumb;
 
 public class TransportPipes extends JavaPlugin {
 
     private Injector injector;
 
-    private SentryService sentry;
     private ThreadService thread;
     private DiskService diskService;
 
-    @SuppressWarnings("deprecation")
     @Override
     public void onEnable() {
 
-    	if (Bukkit.getVersion().contains("1.16")) {
-    		LegacyUtils.setInstance(new LegacyUtils_1_15());
-    	} else {
+    	if (!Bukkit.getVersion().contains("1.17")) {
             System.err.println("------------------------------------------");
-            System.err.println("TransportPipes currently only works with Minecraft 1.16 and above.");
-            System.err.println("------------------------------------------");
-            Bukkit.getPluginManager().disablePlugin(this);
-            return;
-        }
-
-        try {
-            Class.forName("org.bukkit.inventory.RecipeChoice");
-        } catch (ClassNotFoundException e) {
-            System.err.println("------------------------------------------");
-            System.err.println("TransportPipes currently only works with Minecraft 1.15 and above.");
+            System.err.println("TransportPipes currently only works with Minecraft 1.17+.");
             System.err.println("------------------------------------------");
             Bukkit.getPluginManager().disablePlugin(this);
             return;
@@ -96,15 +78,6 @@ public class TransportPipes extends JavaPlugin {
 
         //Initialize logger
         LoggerService logger = injector.getSingleton(LoggerService.class);
-
-        //Initialize sentry
-        sentry = injector.getSingleton(SentryService.class);
-        if (!sentry.init("https://84937d8c6bc2435d860021667341c87c@sentry.io/1281889?stacktrace.app.packages=de.robotricker&release=" + getDescription().getVersion())) {
-            logger.warning("Unable to initialize sentry!");
-        }
-        sentry.addTag("thread", Thread.currentThread().getName());
-        sentry.injectThread(Thread.currentThread());
-        sentry.breadcrumb(Breadcrumb.Level.INFO, "MAIN", "enabling plugin");
 
         //Initialize configs
         injector.getSingleton(GeneralConf.class);
@@ -138,8 +111,6 @@ public class TransportPipes extends JavaPlugin {
         commandManager.registerCommand(injector.getSingleton(TPCommand.class));
         commandManager.getCommandCompletions().registerCompletion("baseDuctType", c -> injector.getSingleton(DuctRegister.class).baseDuctTypes().stream().map(BaseDuctType::getName).collect(Collectors.toList()));
 
-        sentry.breadcrumb(Breadcrumb.Level.INFO, "MAIN", "enabled plugin");
-
         diskService = injector.getSingleton(DiskService.class);
 
         TPContainerListener tpContainerListener = injector.getSingleton(TPContainerListener.class);
@@ -158,7 +129,6 @@ public class TransportPipes extends JavaPlugin {
                 com.griefcraft.lwc.LWC.getInstance().getModuleLoader().registerModule(this, module);
             } catch (Exception e) {
                 e.printStackTrace();
-                sentry.record(e);
             }
         }
 
@@ -166,8 +136,7 @@ public class TransportPipes extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        if (sentry != null && thread != null) {
-            sentry.breadcrumb(Breadcrumb.Level.INFO, "MAIN", "disabling plugin");
+        if (thread != null) {
             // Stop tpThread gracefully
             try {
                 thread.stopRunning();
@@ -178,25 +147,16 @@ public class TransportPipes extends JavaPlugin {
             for (World world : Bukkit.getWorlds()) {
                 saveWorld(world);
             }
-            sentry.breadcrumb(Breadcrumb.Level.INFO, "MAIN", "disabled plugin");
         }
     }
 
     public void saveWorld(World world) {
-        sentry.breadcrumb(Breadcrumb.Level.INFO, "MAIN", "saving world " + world.getName());
         diskService.saveDuctsSync(world);
-        sentry.breadcrumb(Breadcrumb.Level.INFO, "MAIN", "saved world " + world.getName());
     }
 
     public void runTaskSync(Runnable task) {
         if (isEnabled()) {
             Bukkit.getScheduler().runTask(this, task);
-        }
-    }
-
-    public void runTaskSyncLater(Runnable task, long delay) {
-        if (isEnabled()) {
-            Bukkit.getScheduler().runTaskLater(this, task, delay);
         }
     }
 
@@ -228,6 +188,7 @@ public class TransportPipes extends JavaPlugin {
             Iterator<Duct> ductIt = globalDuctManager.getPlayerDucts(p).iterator();
             while (ductIt.hasNext()) {
                 Duct nextDuct = ductIt.next();
+                assert oldRenderSystem != null;
                 protocolService.removeASD(p, oldRenderSystem.getASDForDuct(nextDuct));
                 ductIt.remove();
             }

@@ -6,7 +6,7 @@ import de.robotricker.transportpipes.location.TPDirection;
 
 public class VanillaIronPipeModelData extends VanillaPipeModelData {
 
-    private TPDirection outputDir;
+    private final TPDirection outputDir;
 
     public VanillaIronPipeModelData(BaseDuctType<? extends Duct> baseDuctType, TPDirection outputDir) {
         super(baseDuctType.ductTypeOf("Iron"));

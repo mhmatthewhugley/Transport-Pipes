@@ -1,11 +1,7 @@
 package de.robotricker.transportpipes.duct.pipe.filter;
 
 import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import javax.inject.Inject;
 
 import org.bukkit.inventory.ItemStack;
@@ -30,7 +26,7 @@ public class ItemDistributorService {
     @Inject
     private GlobalDuctManager globalDuctManager;
 
-    private Map<Pipe, Integer> pipeItemDistributionCounter;
+    private final Map<Pipe, Integer> pipeItemDistributionCounter;
 
     public ItemDistributorService() {
         this.pipeItemDistributionCounter = new HashMap<>();
@@ -55,7 +51,7 @@ public class ItemDistributorService {
             if (absWeights.get(dir) == 0) {
                 continue;
             }
-            absWeights.put(dir, absWeights.get(dir) / gcd.intValue());
+            absWeights.put(dir, absWeights.get(dir) / Objects.requireNonNull(gcd).intValue());
         }
     }
 
@@ -76,9 +72,8 @@ public class ItemDistributorService {
                 TransportPipesContainer container = containerMap.get(bl);
                 int freeSpace = container.spaceForItem(dir, item);
                 freeSpaceMap.put(dir, freeSpace);
-            } else if (ductMap != null && ductMap.containsKey(bl) && ductMap.get(bl) instanceof CraftingPipe) {
+            } else if (ductMap != null && ductMap.containsKey(bl) && ductMap.get(bl) instanceof CraftingPipe cp) {
                 // crafting pipe at location
-                CraftingPipe cp = (CraftingPipe) ductMap.get(bl);
                 int freeSpace = cp.spaceForItem(new ItemData(item));
                 freeSpaceMap.put(dir, freeSpace);
             }

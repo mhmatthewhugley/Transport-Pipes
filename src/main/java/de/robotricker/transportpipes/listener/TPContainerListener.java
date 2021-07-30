@@ -34,6 +34,8 @@ import de.robotricker.transportpipes.location.BlockLocation;
 import de.robotricker.transportpipes.location.TPDirection;
 import de.robotricker.transportpipes.utils.WorldUtils;
 
+import java.util.Objects;
+
 public class TPContainerListener implements Listener {
 
     @Inject
@@ -151,10 +153,9 @@ public class TPContainerListener implements Listener {
                     if (dir.isSide()) {
                         Block neighborBlock = block.getRelative(dir.getBlockFace());
                         if (neighborBlock.getState() instanceof InventoryHolder) {
-                            if (((InventoryHolder) neighborBlock.getState()).getInventory().getHolder() instanceof DoubleChest) {
+                            if (((InventoryHolder) neighborBlock.getState()).getInventory().getHolder() instanceof DoubleChest neighborBlockChest) {
                                 DoubleChest blockChest = (DoubleChest) ((InventoryHolder) block.getState()).getInventory().getHolder();
-                                DoubleChest neighborBlockChest = (DoubleChest) ((InventoryHolder) neighborBlock.getState()).getInventory().getHolder();
-                                if (blockChest.getLocation().equals(neighborBlockChest.getLocation())) {
+                                if (Objects.requireNonNull(blockChest).getLocation().equals(neighborBlockChest.getLocation())) {
                                     return neighborBlock;
                                 }
                             }

@@ -155,8 +155,7 @@ public class CraftingPipeSettingsInventory extends DuctSettingsInventory {
         recipe_loop:
         while (recipeIt.hasNext()) {
             Recipe recipe = recipeIt.next();
-            if (recipe instanceof ShapedRecipe) {
-                ShapedRecipe shapedRecipe = (ShapedRecipe) recipe;
+            if (recipe instanceof ShapedRecipe shapedRecipe) {
 
                 String[] shape = shapedRecipe.getShape();
                 int rows = shape.length;
@@ -181,12 +180,11 @@ public class CraftingPipeSettingsInventory extends DuctSettingsInventory {
                     }
                     return shapedRecipe;
                 }
-            } else if (recipe instanceof ShapelessRecipe) {
-                ShapelessRecipe shapelessRecipe = (ShapelessRecipe) recipe;
+            } else if (recipe instanceof ShapelessRecipe shapelessRecipe) {
                 List<ItemStack> givenItems = new ArrayList<>(Arrays.asList(items));
                 givenItems.removeIf(Objects::isNull);
                 for (RecipeChoice ingredientChoice : shapelessRecipe.getChoiceList()) {
-                    if (!givenItems.removeIf(ingredientChoice::test)) {
+                    if (!givenItems.removeIf(ingredientChoice)) {
                         continue recipe_loop;
                     }
                 }
@@ -254,10 +252,7 @@ public class CraftingPipeSettingsInventory extends DuctSettingsInventory {
         if (rawSlot == 2 * 9 + 1 || rawSlot == 2 * 9 + 2 || rawSlot == 2 * 9 + 3) {
             return true;
         }
-        if (rawSlot == 3 * 9 + 1 || rawSlot == 3 * 9 + 2 || rawSlot == 3 * 9 + 3) {
-            return true;
-        }
-        return false;
+        return rawSlot == 3 * 9 + 1 || rawSlot == 3 * 9 + 2 || rawSlot == 3 * 9 + 3;
     }
 
     @Override

@@ -5,9 +5,7 @@ import java.util.logging.Logger;
 
 import javax.inject.Inject;
 
-public class LoggerService {
-
-    private Logger logger;
+public record LoggerService(Logger logger) {
 
     @Inject
     public LoggerService(Logger logger) {

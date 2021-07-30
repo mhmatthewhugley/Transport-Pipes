@@ -1,37 +1,7 @@
 package de.robotricker.transportpipes.items;
 
-import java.lang.reflect.Field;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.Locale;
-import java.util.Objects;
-import java.util.UUID;
-import java.util.stream.Collectors;
-
-import javax.inject.Inject;
-
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
-import org.bukkit.configuration.InvalidConfigurationException;
-import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.enchantments.Enchantment;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemFlag;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.RecipeChoice;
-import org.bukkit.inventory.ShapedRecipe;
-import org.bukkit.inventory.ShapelessRecipe;
-import org.bukkit.inventory.meta.Damageable;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.inventory.meta.SkullMeta;
-import org.bukkit.persistence.PersistentDataType;
-
 import com.comphenix.protocol.wrappers.WrappedGameProfile;
 import com.comphenix.protocol.wrappers.WrappedSignedProperty;
-
 import de.robotricker.transportpipes.TransportPipes;
 import de.robotricker.transportpipes.config.GeneralConf;
 import de.robotricker.transportpipes.config.LangConf;
@@ -39,13 +9,29 @@ import de.robotricker.transportpipes.duct.Duct;
 import de.robotricker.transportpipes.duct.DuctRegister;
 import de.robotricker.transportpipes.duct.types.BaseDuctType;
 import de.robotricker.transportpipes.duct.types.DuctType;
-import de.robotricker.transportpipes.utils.NMSUtils;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
+import org.bukkit.configuration.InvalidConfigurationException;
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.enchantments.Enchantment;
+import org.bukkit.inventory.*;
+import org.bukkit.inventory.meta.Damageable;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.SkullMeta;
+import org.bukkit.persistence.PersistentDataContainer;
+import org.bukkit.persistence.PersistentDataType;
+
+import javax.inject.Inject;
+import java.lang.reflect.Field;
+import java.util.*;
 
 public class ItemService {
 
     private ItemStack wrench;
-    private YamlConfiguration tempConf;
-    private TransportPipes transportPipes;
+    private final YamlConfiguration tempConf;
+    private final TransportPipes transportPipes;
 
     @Inject
     public ItemService(GeneralConf generalConf, TransportPipes transportPipes) {
@@ -55,7 +41,7 @@ public class ItemService {
         wrench = generalConf.getWrenchGlowing() ? createGlowingItem(wrenchMaterial) : new ItemStack(wrenchMaterial);
         wrench = changeDisplayNameAndLoreConfig(wrench, LangConf.Key.WRENCH.getLines());
         ItemMeta meta = wrench.getItemMeta();
-        meta.setCustomModelData(133744);
+        Objects.requireNonNull(meta).setCustomModelData(133744);
         wrench.setItemMeta(meta);
         tempConf = new YamlConfiguration();
         
@@ -69,7 +55,7 @@ public class ItemService {
     public boolean isWrench(ItemStack item) {
         if (item != null && item.hasItemMeta()) {
             ItemMeta meta = item.getItemMeta();
-            if (meta.hasDisplayName() && meta.getDisplayName().equals(LangConf.Key.WRENCH.getLines().get(0))) {
+            if (Objects.requireNonNull(meta).hasDisplayName() && meta.getDisplayName().equals(LangConf.Key.WRENCH.getLines().get(0))) {
                 if (!meta.hasCustomModelData() || meta.getCustomModelData() != 133744) {
                     meta.setCustomModelData(133744);
                     item.setItemMeta(meta);
@@ -84,7 +70,7 @@ public class ItemService {
         ItemStack woodenPickaxe = new ItemStack(Material.WOODEN_PICKAXE);
         ItemMeta meta = woodenPickaxe.getItemMeta();
         
-        meta.setCustomModelData(133700 + damage);
+        Objects.requireNonNull(meta).setCustomModelData(133700 + damage);
 
         ((Damageable) meta).setDamage(damage);
         meta.setUnbreakable(true);
@@ -96,7 +82,7 @@ public class ItemService {
     public ItemStack createGlowingItem(Material material) {
         ItemStack is = new ItemStack(material);
         ItemMeta im = is.getItemMeta();
-        im.addEnchant(Enchantment.PROTECTION_ENVIRONMENTAL, 1, true);
+        Objects.requireNonNull(im).addEnchant(Enchantment.PROTECTION_ENVIRONMENTAL, 1, true);
         im.addItemFlags(ItemFlag.HIDE_ENCHANTS);
         is.setItemMeta(im);
         return is;
@@ -104,7 +90,7 @@ public class ItemService {
 
     public ItemStack changeDisplayName(ItemStack is, String displayName) {
         ItemMeta im = is.getItemMeta();
-        im.setDisplayName(displayName);
+        Objects.requireNonNull(im).setDisplayName(displayName);
         is.setItemMeta(im);
         return is;
     }
@@ -112,7 +98,7 @@ public class ItemService {
     public ItemStack changeDisplayNameAndLore(ItemStack is, String... displayNameAndLore) {
         ItemMeta meta = is.getItemMeta();
         if (displayNameAndLore.length > 0)
-            meta.setDisplayName(displayNameAndLore[0]);
+            Objects.requireNonNull(meta).setDisplayName(displayNameAndLore[0]);
         if (displayNameAndLore.length > 1)
             meta.setLore(Arrays.asList(displayNameAndLore).subList(1, displayNameAndLore.length));
         is.setItemMeta(meta);
@@ -121,7 +107,7 @@ public class ItemService {
 
     public ItemStack changeDisplayNameAndLoreConfig(ItemStack is, String displayName, List<String> lore) {
         ItemMeta meta = is.getItemMeta();
-        meta.setDisplayName(displayName);
+        Objects.requireNonNull(meta).setDisplayName(displayName);
         meta.setLore(lore);
         is.setItemMeta(meta);
         return is;
@@ -130,7 +116,7 @@ public class ItemService {
     public ItemStack changeDisplayNameAndLoreConfig(ItemStack is, List<String> displayNameAndLore) {
         ItemMeta meta = is.getItemMeta();
         if (displayNameAndLore.size() > 0)
-            meta.setDisplayName(displayNameAndLore.get(0));
+            Objects.requireNonNull(meta).setDisplayName(displayNameAndLore.get(0));
         if (displayNameAndLore.size() > 1)
             meta.setLore(displayNameAndLore.subList(1, displayNameAndLore.size()));
         is.setItemMeta(meta);
@@ -143,7 +129,7 @@ public class ItemService {
 
         ItemStack skull = new ItemStack(Material.PLAYER_HEAD);
         SkullMeta sm = (SkullMeta) skull.getItemMeta();
-        sm.setOwningPlayer(Bukkit.getOfflinePlayer(UUID.fromString(uuid)));
+        Objects.requireNonNull(sm).setOwningPlayer(Bukkit.getOfflinePlayer(UUID.fromString(uuid)));
 
         Field profileField;
         try {
@@ -158,51 +144,25 @@ public class ItemService {
         return skull;
     }
 
-    public ItemStack setDuctNBTTags(DuctType dt, ItemStack item) {
-        item = NMSUtils.manipulateItemStackNBT(item, "basicDuctType", dt.getBaseDuctType().getName(), String.class, "String");
-        item = NMSUtils.manipulateItemStackNBT(item, "ductType", dt.getName(), String.class, "String");
+    public ItemStack setDuctTags(DuctType dt, ItemStack item) {
+        ItemMeta itemMeta = item.getItemMeta();
+        if (itemMeta != null) {
+            PersistentDataContainer container = itemMeta.getPersistentDataContainer();
+            container.set(new NamespacedKey(transportPipes, "basicDuctType"), PersistentDataType.STRING, dt.getBaseDuctType().getName());
+            container.set(new NamespacedKey(transportPipes, "ductType"), PersistentDataType.STRING, dt.getName());
+            item.setItemMeta(itemMeta);
+        }
         return item;
     }
 
     public DuctType readDuctNBTTags(ItemStack item, DuctRegister ductRegister) {
-        String basicDuctTypeSerialized = (String) NMSUtils.readItemStackNBT(item, "basicDuctType", "String");
-        if (basicDuctTypeSerialized != null && !basicDuctTypeSerialized.isEmpty()) {
+        ItemMeta itemMeta = item.getItemMeta();
+        if (itemMeta != null) {
+            String basicDuctTypeSerialized = item.getItemMeta().getPersistentDataContainer().get(new NamespacedKey(transportPipes, "basicDuctType"), PersistentDataType.STRING);
             BaseDuctType<? extends Duct> bdt = ductRegister.baseDuctTypeOf(basicDuctTypeSerialized);
-            String ductTypeSerialized = (String) NMSUtils.readItemStackNBT(item, "ductType", "String");
+            String ductTypeSerialized = item.getItemMeta().getPersistentDataContainer().get(new NamespacedKey(transportPipes, "ductType"), PersistentDataType.STRING);
             if (ductTypeSerialized != null && !ductTypeSerialized.isEmpty()) {
                 return bdt.ductTypeOf(ductTypeSerialized);
-            }
-        } else {
-            //legacy ductType loading (with the gameprofile uuids of the skulls)
-            if (item.getItemMeta() instanceof SkullMeta) {
-
-                SkullMeta sm = (SkullMeta) item.getItemMeta();
-                try {
-
-                    Field profileField = sm.getClass().getDeclaredField("profile");
-                    profileField.setAccessible(true);
-                    Object profile = profileField.get(sm);
-                    if (profile == null)
-                        return null;
-
-                    Field idField = Class.forName("com.mojang.authlib.GameProfile").getDeclaredField("id");
-                    idField.setAccessible(true);
-                    UUID id = (UUID) idField.get(profile);
-                    if (id == null)
-                        return null;
-
-                    for (DuctType dt : ductRegister.baseDuctTypeOf("pipe").ductTypes()) {
-                        Object dtProfile = profileField.get(dt.getBaseDuctType().getItemManager().getItem(dt).getItemMeta());
-                        UUID dtId = (UUID) idField.get(dtProfile);
-
-                        if (id.compareTo(dtId) == 0) {
-                            return dt;
-                        }
-                    }
-                } catch (NoSuchFieldException | IllegalArgumentException | IllegalAccessException | ClassNotFoundException e) {
-                    e.printStackTrace();
-                }
-
             }
         }
         return null;
@@ -220,7 +180,7 @@ public class ItemService {
     public ItemStack createWildcardItem(Material material) {
         ItemStack glassPane = new ItemStack(material);
         ItemMeta meta = glassPane.getItemMeta();
-        meta.getPersistentDataContainer().set(new NamespacedKey(transportPipes, "wildcard"), PersistentDataType.INTEGER, 1);
+        Objects.requireNonNull(meta).getPersistentDataContainer().set(new NamespacedKey(transportPipes, "wildcard"), PersistentDataType.INTEGER, 1);
         glassPane.setItemMeta(meta);
         return changeDisplayNameAndLore(glassPane, ChatColor.RESET.toString());
     }
@@ -228,7 +188,7 @@ public class ItemService {
     public ItemStack createBarrierItem() {
         ItemStack barrier = new ItemStack(Material.BARRIER);
         ItemMeta meta = barrier.getItemMeta();
-        meta.getPersistentDataContainer().set(new NamespacedKey(transportPipes, "barrier"), PersistentDataType.INTEGER, 1);
+        Objects.requireNonNull(meta).getPersistentDataContainer().set(new NamespacedKey(transportPipes, "barrier"), PersistentDataType.INTEGER, 1);
         barrier.setItemMeta(meta);
         return changeDisplayNameAndLore(barrier, ChatColor.RESET.toString());
     }
@@ -253,7 +213,7 @@ public class ItemService {
                 case PINK_STAINED_GLASS_PANE:
                 case PURPLE_STAINED_GLASS_PANE:
                 case BARRIER:
-                    if (item.hasItemMeta() && item.getItemMeta().hasDisplayName()) {
+                    if (item.hasItemMeta() && Objects.requireNonNull(item.getItemMeta()).hasDisplayName()) {
                         return item.getItemMeta().getPersistentDataContainer().has(new NamespacedKey(transportPipes, "wildcard"), PersistentDataType.INTEGER)
                                 || item.getItemMeta().getPersistentDataContainer().has(new NamespacedKey(transportPipes,  "barrier"), PersistentDataType.INTEGER);
                     }
@@ -291,7 +251,7 @@ public class ItemService {
             if (ingredientMap[i + 1] instanceof Material) {
                 recipe.setIngredient(c, (Material) ingredientMap[i + 1]);
             } else {
-                recipe.setIngredient(c, new RecipeChoice.MaterialChoice(((Collection<Material>) ingredientMap[i + 1]).stream().collect(Collectors.toList())));
+                recipe.setIngredient(c, new RecipeChoice.MaterialChoice(new ArrayList<>(((Collection<Material>) ingredientMap[i + 1]))));
             }
         }
         return recipe;
@@ -303,6 +263,25 @@ public class ItemService {
             recipe.addIngredient(ingredients[i]);
         }
         return recipe;
+    }
+
+    public static boolean isFurnaceFuelItem(ItemStack item) {
+        return (item.getType().isFuel());
+    }
+
+    public static boolean isFurnaceBurnableItem(ItemStack item) {
+
+        Iterator<Recipe> recipeIt = Bukkit.recipeIterator();
+        while (recipeIt.hasNext()) {
+            Recipe recipe = recipeIt.next();
+            if (!(recipe instanceof FurnaceRecipe))
+                continue;
+            if(!((FurnaceRecipe) recipe).getInputChoice().test(item))
+                continue;
+            return true;
+        }
+
+        return false;
     }
 
 }

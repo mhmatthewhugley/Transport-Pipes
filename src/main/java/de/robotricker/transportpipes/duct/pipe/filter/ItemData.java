@@ -2,9 +2,11 @@ package de.robotricker.transportpipes.duct.pipe.filter;
 
 import org.bukkit.inventory.ItemStack;
 
+import java.util.Objects;
+
 public class ItemData {
 
-    private ItemStack backedItem;
+    private final ItemStack backedItem;
 
     public ItemData(ItemStack item) {
         this.backedItem = item.clone();
@@ -20,7 +22,7 @@ public class ItemData {
         int hash = 1;
 
         hash = hash * 31 + backedItem.getType().ordinal();
-        hash = hash * 31 + (backedItem.hasItemMeta() ? backedItem.getItemMeta().hashCode() : 0);
+        hash = hash * 31 + (backedItem.hasItemMeta() ? Objects.requireNonNull(backedItem.getItemMeta()).hashCode() : 0);
 
         return hash;
     }

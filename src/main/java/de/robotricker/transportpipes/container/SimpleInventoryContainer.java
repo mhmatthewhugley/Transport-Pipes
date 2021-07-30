@@ -1,6 +1,7 @@
 package de.robotricker.transportpipes.container;
 
 import java.util.Collection;
+import java.util.Objects;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
@@ -17,7 +18,7 @@ import de.robotricker.transportpipes.location.TPDirection;
 
 public class SimpleInventoryContainer extends BlockContainer {
 
-    private Chunk chunk;
+    private final Chunk chunk;
     private InventoryHolder cachedInvHolder;
     private Inventory cachedInv;
 
@@ -46,19 +47,16 @@ public class SimpleInventoryContainer extends BlockContainer {
             if (itemFilter.applyFilter(cachedInv.getItem(i)).getWeight() > 0) {
                 int amountBefore = itemTaken != null ? itemTaken.getAmount() : 0;
                 if (itemTaken == null) {
-                    itemTaken = cachedInv.getItem(i).clone();
+                    itemTaken = Objects.requireNonNull(cachedInv.getItem(i)).clone();
                     itemTaken.setAmount(Math.min(Math.min(amount, itemTaken.getAmount()), itemTaken.getMaxStackSize()));
                 } else if (itemTaken.isSimilar(cachedInv.getItem(i))) {
-                    itemTaken.setAmount(Math.min(Math.min(amount, amountBefore + cachedInv.getItem(i).getAmount()), itemTaken.getMaxStackSize()));
+                    itemTaken.setAmount(Math.min(Math.min(amount, amountBefore + Objects.requireNonNull(cachedInv.getItem(i)).getAmount()), itemTaken.getMaxStackSize()));
                 }
                 ItemStack invItem = cachedInv.getItem(i);
-                invItem.setAmount(invItem.getAmount() - (itemTaken.getAmount() - amountBefore));
+                Objects.requireNonNull(invItem).setAmount(invItem.getAmount() - (itemTaken.getAmount() - amountBefore));
                 cachedInv.setItem(i, invItem.getAmount() <= 0 ? null : invItem);
         		if (invItem.getAmount() > 0) Bukkit.getServer().getPluginManager().callEvent(new DuctExtractEvent(cachedInv, invItem));
             }
-        }
-        if (itemTaken != null) {
-            //block.getState().update();
         }
         return itemTaken;
     }
@@ -104,7 +102,7 @@ public class SimpleInventoryContainer extends BlockContainer {
     @Override
     public void updateBlock() {
         this.cachedInvHolder = ((InventoryHolder) block.getState()).getInventory().getHolder();
-        this.cachedInv = cachedInvHolder.getInventory();
+        this.cachedInv = Objects.requireNonNull(cachedInvHolder).getInventory();
     }
 
 }

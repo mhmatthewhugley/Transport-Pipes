@@ -9,13 +9,13 @@ import de.robotricker.transportpipes.location.RelativeLocation;
 import de.robotricker.transportpipes.location.TPDirection;
 
 /**
- * represents an axis aligned bounding box relative to a blocks origin. That means the coordinates are mostly inside a [0;1] range.
- * There are various methods to convert theses coordinates to world coordinates with a given block location.
+ * represents an axis aligned bounding box relative to a block's origin. That means the coordinates are mostly inside a [0;1] range.
+ * There are various methods to convert these coordinates to world coordinates with a given block location.
  */
 public class AxisAlignedBB {
 
-    private RelativeLocation min;
-    private RelativeLocation max;
+    private final RelativeLocation min;
+    private final RelativeLocation max;
 
     public AxisAlignedBB(double minx, double miny, double minz, double maxx, double maxy, double maxz) {
         min = new RelativeLocation(minx, miny, minz);

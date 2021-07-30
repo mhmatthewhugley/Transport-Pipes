@@ -58,7 +58,7 @@ public class IronPipe extends Pipe {
     }
 
     private void cycleOutputDirection() {
-        ArrayList<TPDirection> allConnections = new ArrayList<TPDirection>(getAllConnections());
+        ArrayList<TPDirection> allConnections = new ArrayList<>(getAllConnections());
         if (allConnections.isEmpty()) {
             return;
         }

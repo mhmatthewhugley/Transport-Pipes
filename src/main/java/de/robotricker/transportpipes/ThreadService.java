@@ -19,27 +19,24 @@ import de.robotricker.transportpipes.duct.Duct;
 import de.robotricker.transportpipes.duct.manager.GlobalDuctManager;
 import de.robotricker.transportpipes.location.BlockLocation;
 import de.robotricker.transportpipes.log.LoggerService;
-import de.robotricker.transportpipes.log.SentryService;
 import de.robotricker.transportpipes.utils.WorldUtils;
 
 public class ThreadService extends Thread {
 
     private final Map<Runnable, Long> tasks;
 
-    private LoggerService logger;
-    private SentryService sentry;
-    private GlobalDuctManager globalDuctManager;
-    private PlayerSettingsService playerSettingsService;
+    private final LoggerService logger;
+    private final GlobalDuctManager globalDuctManager;
+    private final PlayerSettingsService playerSettingsService;
 
     private boolean running = false;
     private int preferredTPS = 10;
     private int currentTPS = 0;
 
     @Inject
-    public ThreadService(JavaPlugin plugin, LoggerService logger, SentryService sentry, GlobalDuctManager globalDuctManager, PlayerSettingsService playerSettingsService) {
+    public ThreadService(JavaPlugin plugin, LoggerService logger, GlobalDuctManager globalDuctManager, PlayerSettingsService playerSettingsService) {
         super("TransportPipes-Thread");
         this.logger = logger;
-        this.sentry = sentry;
         this.globalDuctManager = globalDuctManager;
         this.playerSettingsService = playerSettingsService;
         this.tasks = Collections.synchronizedMap(new LinkedHashMap<>());
@@ -51,8 +48,6 @@ public class ThreadService extends Thread {
     public void run() {
         logger.info("Started ThreadService");
         running = true;
-        sentry.addTag("thread", getName());
-        sentry.injectThread(this);
 
         long lastTick = System.currentTimeMillis();
         long lastSec = lastTick;
@@ -77,6 +72,7 @@ public class ThreadService extends Thread {
             } else {
                 long waitTime = (long) (1000f / preferredTPS - diff);
                 try {
+                    //noinspection BusyWait
                     sleep(waitTime);
                 } catch (InterruptedException e) {
                     logger.error("ThreadService was terminated while sleeping!", e);
@@ -112,6 +108,7 @@ public class ThreadService extends Thread {
     /**
      * does the same as tickDuctSpawnAndDespawn(Duct duct) but for all ducts in all worlds
      */
+    @SuppressWarnings("GrazieInspection")
     private void tickDuctSpawnAndDespawn() {
         for (World world : Bukkit.getWorlds()) {
             Map<BlockLocation, Duct> ductMap = globalDuctManager.getDucts(world);
@@ -126,6 +123,7 @@ public class ThreadService extends Thread {
     /**
      * does the same as tickDuctSpawnAndDespawn(Duct duct, Player p) but for all players in the duct's world
      */
+    @SuppressWarnings("GrazieInspection")
     public void tickDuctSpawnAndDespawn(Duct duct) {
         List<Player> playerList = WorldUtils.getPlayerList(duct.getWorld());
         for (Player worldPlayer : playerList) {

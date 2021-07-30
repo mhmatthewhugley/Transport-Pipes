@@ -50,14 +50,14 @@ public class Pipe extends Duct {
 	 * unloaded chunk. As the next pipe / container gets loaded again, these items get put into it one by one.
 	 * <p />
 	 * <p />
-	 * This means that all of the pipeItems inside this list have got a blockLocation which differs from this pipe's
+	 * This means that all the pipeItems inside this list have got a blockLocation which differs from this pipe's
 	 * blockLocation. The blockLocation of one of these pipeItems may be pointing on a container block or on a different
 	 * pipe.
 	 */
 	private final ConcurrentLinkedDeque<PipeItem> unloadedItems;
 
-	ItemDistributorService itemDistributor;
-	private ConcurrentHashMap<TPDirection, TransportPipesContainer> connectedContainers;
+	final ItemDistributorService itemDistributor;
+	private final ConcurrentHashMap<TPDirection, TransportPipesContainer> connectedContainers;
 
 	public Pipe(DuctType ductType, BlockLocation blockLoc, World world, Chunk chunk, DuctSettingsInventory settingsInv, GlobalDuctManager globalDuctManager, ItemDistributorService itemDistributor) {
 		super(ductType, blockLoc, world, chunk, settingsInv, globalDuctManager);
@@ -159,7 +159,7 @@ public class Pipe extends Duct {
 			return;
 		}
 
-        List<PipeItem> copiedItems = new ArrayList<PipeItem>(items);
+        List<PipeItem> copiedItems = new ArrayList<>(items);
 
 		for (int i = copiedItems.size() - 1; i >= 0; i--) {
 			PipeItem pipeItem = copiedItems.get(i);
@@ -196,9 +196,7 @@ public class Pipe extends Duct {
                         items.remove(pipeItem);
                         pipeManager.despawnPipeItem(pipeItem);
                         // drop item
-                        transportPipes.runTaskSync(() -> {
-                            pipeItem.getWorld().dropItem(pipeItem.getBlockLoc().getNeighbor(pipeItem.getMovingDir()).toLocation(pipeItem.getWorld()), pipeItem.getItem());
-                        });
+                        transportPipes.runTaskSync(() -> pipeItem.getWorld().dropItem(pipeItem.getBlockLoc().getNeighbor(pipeItem.getMovingDir()).toLocation(pipeItem.getWorld()), pipeItem.getItem()));
     					continue;
 					}
 				}
@@ -233,9 +231,8 @@ public class Pipe extends Duct {
 				Duct duct = getDuctConnections().get(pipeItem.getMovingDir());
 				TransportPipesContainer transportPipesContainer = getContainerConnections().get(pipeItem.getMovingDir());
 
-				if (duct instanceof Pipe) {
+				if (duct instanceof Pipe pipe) {
 
-					Pipe pipe = (Pipe) duct;
 					BlockLocation location = pipe.getBlockLoc();
 
 					// make pipe item ready for next pipe
@@ -288,9 +285,7 @@ public class Pipe extends Duct {
 					}
 					else {
 						// drop item
-						transportPipes.runTaskSync(() -> {
-							pipeItem.getWorld().dropItem(pipeItem.getBlockLoc().getNeighbor(pipeItem.getMovingDir()).toLocation(pipeItem.getWorld()), pipeItem.getItem());
-						});
+						transportPipes.runTaskSync(() -> pipeItem.getWorld().dropItem(pipeItem.getBlockLoc().getNeighbor(pipeItem.getMovingDir()).toLocation(pipeItem.getWorld()), pipeItem.getItem()));
 					}
 				}
 			}
@@ -328,7 +323,7 @@ public class Pipe extends Duct {
 
 	/**
 	 * can be overridden to calculate how a pipeItem which arrives at the middle of the pipe should be split and in
-	 * which directions theses parts should go. Return null to fully remove the pipeItem and return an empty map to
+	 * which directions these parts should go. Return null to fully remove the pipeItem and return an empty map to
 	 * fully remove the item and additionally drop it in the world.
 	 */
 	protected Map<TPDirection, Integer> calculateItemDistribution(PipeItem pipeItem, TPDirection movingDir, List<TPDirection> dirs, TransportPipes transportPipes) {

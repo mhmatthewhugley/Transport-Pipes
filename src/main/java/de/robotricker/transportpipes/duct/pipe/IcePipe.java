@@ -40,7 +40,7 @@ public class IcePipe extends Pipe {
         BlockLocation location = getBlockLoc();
         TreeSet<TPDirection> newDirs = dirs.stream().filter(dir -> pipeItem.hasMovedDirs(location) && !pipeItem.getMovedDirs(location).contains(dir)).collect(Collectors.toCollection(TreeSet::new));
         if (newDirs.isEmpty()) {
-            newDirs = new TreeSet<TPDirection>(dirs);
+            newDirs = new TreeSet<>(dirs);
         }
         
         // If we have more than one direction option, make sure we remove the opposite direction to prevent backtracking when possible
@@ -48,10 +48,10 @@ public class IcePipe extends Pipe {
             newDirs.remove(movingDir.getOpposite());
         }
 
-        TreeMap<TPDirection, Integer> absWeights = new TreeMap<TPDirection, Integer>();
-        TreeMap<TPDirection, Integer> origWeights = new TreeMap<TPDirection, Integer>();
-        newDirs.stream().forEach(dir -> absWeights.put(dir, 1));
-        dirs.stream().forEach(dir -> {
+        TreeMap<TPDirection, Integer> absWeights = new TreeMap<>();
+        TreeMap<TPDirection, Integer> origWeights = new TreeMap<>();
+        newDirs.forEach(dir -> absWeights.put(dir, 1));
+        dirs.forEach(dir -> {
             if (dir != movingDir.getOpposite()) origWeights.put(dir, 1);
         });
 

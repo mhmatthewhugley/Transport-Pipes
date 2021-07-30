@@ -2,6 +2,7 @@ package de.robotricker.transportpipes.listener;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import javax.inject.Inject;
 
@@ -47,7 +48,7 @@ public class PlayerListener implements Listener {
 
     @EventHandler
     public void onWorldChange(PlayerChangedWorldEvent e) {
-        //make sure that all duct that were visible to the player get removed so they will spawn again when the player is nearby
+        //make sure that all duct that were visible to the player get removed, so they will spawn again when the player is nearby
         globalDuctManager.getPlayerDucts(e.getPlayer()).clear();
         ((PipeManager) (DuctManager<? extends Duct>) ductRegister.baseDuctTypeOf("pipe").getDuctManager()).getPlayerPipeItems(e.getPlayer()).clear();
     }
@@ -57,10 +58,9 @@ public class PlayerListener implements Listener {
         if (generalConf.isCraftingEnabled()) {
             List<NamespacedKey> keys = new ArrayList<>();
             for (BaseDuctType<? extends Duct> bdt : ductRegister.baseDuctTypes()) {
-                for (Object type : bdt.ductTypes()) {
-                    DuctType dt = (DuctType) type;
-                    if (dt.getDuctRecipe() != null) {
-                        NamespacedKey key = ((Keyed) dt.getDuctRecipe()).getKey();
+                for (DuctType type : bdt.ductTypes()) {
+                    if (type.getDuctRecipe() != null) {
+                        NamespacedKey key = ((Keyed) type.getDuctRecipe()).getKey();
                         keys.add(key);
                     }
                 }
@@ -79,16 +79,16 @@ public class PlayerListener implements Listener {
         }
         Player p = (Player) e.getInventory().getViewers().get(0);
         for (BaseDuctType<? extends Duct> bdt : ductRegister.baseDuctTypes()) {
-            for (Object dt : bdt.ductTypes()) {
-                if (e.getRecipe().getResult().isSimilar(bdt.getItemManager().getItem((DuctType) dt))) {
-                    if (!((DuctType) dt).hasPlayerCraftingPermission(p)) {
+            for (DuctType dt : bdt.ductTypes()) {
+                if (Objects.requireNonNull(e.getRecipe()).getResult().isSimilar(bdt.getItemManager().getItem(dt))) {
+                    if (!dt.hasPlayerCraftingPermission(p)) {
                         e.getInventory().setResult(null);
                         return;
                     }
                 }
             }
         }
-        if (itemService.isWrench(e.getRecipe().getResult())) {
+        if (itemService.isWrench(Objects.requireNonNull(e.getRecipe()).getResult())) {
             if (!p.hasPermission("transportpipes.craft.wrench")) {
                 e.getInventory().setResult(null);
             }

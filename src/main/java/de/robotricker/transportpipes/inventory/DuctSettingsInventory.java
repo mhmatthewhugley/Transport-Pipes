@@ -61,12 +61,12 @@ public abstract class DuctSettingsInventory extends GlobalInventory implements L
 
     @EventHandler
     public void onInvClick(InventoryClickEvent e) {
-        if (e.getInventory() != null && e.getInventory().equals(inv) && e.getWhoClicked() instanceof Player) {
+        if (e.getInventory().equals(inv) && e.getWhoClicked() instanceof Player) {
             if (itemService.isItemWildcardOrBarrier(e.getCurrentItem())) {
                 e.setCancelled(true);
                 return;
             }
-            //don't call click method when double clicked, because before a double click, left click was already registered twice
+            //don't call click method when double-clicked, because before a double click, left click was already registered twice
             if (e.getClick() != ClickType.DOUBLE_CLICK && click((Player) e.getWhoClicked(), e.getRawSlot(), e.getClick())) {
                 e.setCancelled(true);
             } else if (e.getClick() == ClickType.DOUBLE_CLICK && e.getAction() == InventoryAction.COLLECT_TO_CURSOR && collect_to_cursor((Player) e.getWhoClicked(), e.getCursor(), e.getRawSlot())) {
@@ -77,7 +77,7 @@ public abstract class DuctSettingsInventory extends GlobalInventory implements L
 
     @EventHandler
     public void onDrag(InventoryDragEvent e) {
-        if (e.getInventory() != null && e.getInventory().equals(inv) && e.getWhoClicked() instanceof Player) {
+        if (e.getInventory().equals(inv) && e.getWhoClicked() instanceof Player) {
             if (drag((Player) e.getWhoClicked(), e.getRawSlots(), e.getType())) {
                 e.setCancelled(true);
             }
@@ -86,7 +86,7 @@ public abstract class DuctSettingsInventory extends GlobalInventory implements L
 
     @EventHandler
     public void onClose(InventoryCloseEvent e) {
-        if (e.getInventory() != null && e.getInventory().equals(inv) && e.getPlayer() instanceof Player) {
+        if (e.getInventory().equals(inv) && e.getPlayer() instanceof Player) {
             save((Player) e.getPlayer());
         }
     }

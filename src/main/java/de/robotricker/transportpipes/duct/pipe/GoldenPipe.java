@@ -3,6 +3,7 @@ package de.robotricker.transportpipes.duct.pipe;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import org.bukkit.Chunk;
 import org.bukkit.Material;
@@ -29,7 +30,7 @@ import net.querz.nbt.tag.ListTag;
 
 public class GoldenPipe extends Pipe {
 
-    private ItemFilter[] itemFilters;
+    private final ItemFilter[] itemFilters;
 
     public GoldenPipe(DuctType ductType, BlockLocation blockLoc, World world, Chunk chunk, DuctSettingsInventory settingsInv, GlobalDuctManager globalDuctManager, ItemDistributorService itemDistributor) {
         super(ductType, blockLoc, world, chunk, settingsInv, globalDuctManager, itemDistributor);
@@ -53,7 +54,7 @@ public class GoldenPipe extends Pipe {
         Map<TPDirection, Integer> dirAmtWithoutItems = new HashMap<>();
         dirs.remove(movingDir.getOpposite());
         for (TPDirection dir : dirs) {
-        	FilterResponse response = getItemFilter(Color.getByDir(dir)).applyFilter(pipeItem.getItem());
+        	FilterResponse response = getItemFilter(Objects.requireNonNull(Color.getByDir(dir))).applyFilter(pipeItem.getItem());
             int amount = response.getWeight();
             if (response.hasItems()) {
             	dirAmtWithItems.put(dir, amount);
@@ -127,10 +128,10 @@ public class GoldenPipe extends Pipe {
         GREEN(Material.LIME_WOOL, Material.LIME_STAINED_GLASS_PANE, LangConf.Key.COLORS_GREEN.get(), TPDirection.UP),
         BLACK(Material.BLACK_WOOL, Material.BLACK_STAINED_GLASS_PANE, LangConf.Key.COLORS_BLACK.get(), TPDirection.DOWN);
 
-        private Material woolMaterial;
-        private Material glassPaneMaterial;
-        private String displayName;
-        private TPDirection direction;
+        private final Material woolMaterial;
+        private final Material glassPaneMaterial;
+        private final String displayName;
+        private final TPDirection direction;
 
         Color(Material woolMaterial, Material glassPaneMaterial, String displayName, TPDirection direction) {
             this.woolMaterial = woolMaterial;

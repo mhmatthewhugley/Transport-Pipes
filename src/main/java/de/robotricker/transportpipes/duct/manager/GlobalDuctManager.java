@@ -30,19 +30,19 @@ import de.robotricker.transportpipes.utils.WorldUtils;
 
 public class GlobalDuctManager {
 
-    protected TransportPipes transportPipes;
-    protected ProtocolService protocolService;
-    protected DuctRegister ductRegister;
-    protected PlayerSettingsService playerSettingsService;
+    protected final TransportPipes transportPipes;
+    protected final ProtocolService protocolService;
+    protected final DuctRegister ductRegister;
+    protected final PlayerSettingsService playerSettingsService;
 
     /**
      * ThreadSafe
      **/
-    private ConcurrentHashMap<World, ConcurrentSkipListMap<BlockLocation, Duct>> ducts;
+    private final ConcurrentHashMap<World, ConcurrentSkipListMap<BlockLocation, Duct>> ducts;
     /**
      * ThreadSafe
      **/
-    private ConcurrentHashMap<Player, Set<Duct>> playerDucts;
+    private final ConcurrentHashMap<Player, Set<Duct>> playerDucts;
 
     @Inject
     public GlobalDuctManager(TransportPipes transportPipes, ProtocolService protocolService, DuctRegister ductRegister, PlayerSettingsService playerSettingsService) {

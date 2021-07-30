@@ -15,7 +15,7 @@ public class ItemFilter {
 
     public static final int MAX_ITEMS_PER_ROW = 32;
 
-    private ItemData[] filterItems;
+    private final ItemData[] filterItems;
     private FilterMode filterMode;
     private FilterStrictness filterStrictness;
 
@@ -76,14 +76,10 @@ public class ItemFilter {
     }
 
     private boolean matchesItemStrictness(ItemStack mask, ItemStack itemStack) {
-        switch (getFilterStrictness()) {
-            case MATERIAL:
-                return mask.getType() == itemStack.getType();
-            case MATERIAL_METADATA:
-                return mask.getType() == itemStack.getType() && Bukkit.getItemFactory().equals(mask.getItemMeta(), itemStack.getItemMeta());
-            default:
-                return false;
-        }
+        return switch (getFilterStrictness()) {
+            case MATERIAL -> mask.getType() == itemStack.getType();
+            case MATERIAL_METADATA -> mask.getType() == itemStack.getType() && Bukkit.getItemFactory().equals(mask.getItemMeta(), itemStack.getItemMeta());
+        };
     }
 
     public List<ItemStack> getAsItemStacks() {

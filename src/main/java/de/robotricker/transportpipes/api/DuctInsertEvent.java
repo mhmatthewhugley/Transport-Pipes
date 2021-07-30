@@ -4,11 +4,12 @@ import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
 
 public class DuctInsertEvent extends Event {
 
-	private Inventory destination;
-	private ItemStack item;
+	private final Inventory destination;
+	private final ItemStack item;
 	private static final HandlerList handlers = new HandlerList();
 
 	public DuctInsertEvent(Inventory destination, ItemStack item) {
@@ -18,7 +19,7 @@ public class DuctInsertEvent extends Event {
 	}
 
 	@Override
-	public HandlerList getHandlers() {
+	public @NotNull HandlerList getHandlers() {
 		return handlers;
 	}
 

@@ -6,7 +6,7 @@ import de.robotricker.transportpipes.duct.types.pipetype.PipeType;
 
 public class VanillaPipeModelData {
 
-    private PipeType pipeType;
+    private final PipeType pipeType;
 
     public VanillaPipeModelData(PipeType pipeType) {
         this.pipeType = pipeType;

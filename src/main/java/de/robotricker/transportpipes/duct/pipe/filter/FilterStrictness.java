@@ -7,7 +7,7 @@ public enum FilterStrictness {
     MATERIAL(LangConf.Key.FILTER_STRICTNESS_MATERIAL.get()),
     MATERIAL_METADATA(LangConf.Key.FILTER_STRICTNESS_MATERIAL_METADATA.get());
 
-    private String displayName;
+    private final String displayName;
 
     FilterStrictness(String displayName) {
         this.displayName = displayName;
