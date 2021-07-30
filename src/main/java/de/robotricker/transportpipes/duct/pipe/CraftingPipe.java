@@ -54,7 +54,7 @@ public class CraftingPipe extends Pipe {
         ItemStack overflow = addCachedItem(pipeItem.getItem(), transportPipes);
         if (overflow != null) {
             pipeItem.setItem(overflow);
-            return Map.of(outputDir, 1);
+            return Map.of(outputDir, pipeItem.getItem().getAmount());
         }
         return null;
     }
