@@ -1,23 +1,5 @@
 package de.robotricker.transportpipes.duct.pipe;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.bukkit.Chunk;
-import org.bukkit.Material;
-import org.bukkit.World;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.Recipe;
-import org.bukkit.inventory.RecipeChoice;
-import org.bukkit.inventory.ShapedRecipe;
-import org.bukkit.inventory.ShapelessRecipe;
-
 import de.robotricker.transportpipes.TransportPipes;
 import de.robotricker.transportpipes.config.GeneralConf;
 import de.robotricker.transportpipes.duct.Duct;
@@ -35,19 +17,28 @@ import de.robotricker.transportpipes.location.TPDirection;
 import net.querz.nbt.tag.CompoundTag;
 import net.querz.nbt.tag.ListTag;
 import net.querz.nbt.tag.StringTag;
+import org.bukkit.Chunk;
+import org.bukkit.Material;
+import org.bukkit.World;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.*;
+
+import java.util.*;
 
 public class CraftingPipe extends Pipe {
 
     private final ItemData[] recipeItems;
     private Recipe recipe;
     private TPDirection outputDir;
-    private final List<ItemStack> cachedItems;
+    private List<ItemStack> cachedItems;
+    private final List<RecipeChoice> necessaryIngredients;
 
     public CraftingPipe(DuctType ductType, BlockLocation blockLoc, World world, Chunk chunk, DuctSettingsInventory settingsInv, GlobalDuctManager globalDuctManager, ItemDistributorService itemDistributor) {
         super(ductType, blockLoc, world, chunk, settingsInv, globalDuctManager, itemDistributor);
         recipeItems = new ItemData[9];
         outputDir = null;
         cachedItems = new ArrayList<>();
+        necessaryIngredients = new ArrayList<>();
     }
 
     @Override
@@ -68,70 +59,50 @@ public class CraftingPipe extends Pipe {
     }
 
     public void performCrafting(PipeManager pipeManager, TransportPipes transportPipes) {
-        if (outputDir != null && recipe != null) {
+        if (outputDir == null || recipe == null) {
+            return;
+        }
+
+        // Create copy of the cached items
+        List<ItemStack> cachedItems = new ArrayList<>();
+        for (ItemStack cachedItem : this.cachedItems) {
+            cachedItems.add(cachedItem.clone());
+        }
+
+        //iterate needed ingredients
+        int neededIngredientsCount = necessaryIngredients.size();
+        for (RecipeChoice neededIngredient : necessaryIngredients) {
+            //iterate cached items
+            for (int i = 0; i < cachedItems.size(); i++) {
+                if (neededIngredient.test(cachedItems.get(i))) {
+                    if (cachedItems.get(i).getAmount() > 1) {
+                        cachedItems.get(i).setAmount(cachedItems.get(i).getAmount() - 1);
+                    } else {
+                        cachedItems.remove(i);
+                    }
+                    neededIngredientsCount--;
+                    break;
+                }
+            }
+        }
+
+        if (neededIngredientsCount == 0) {
+            // update real cachedItems list
+            this.cachedItems = cachedItems;
+
+            transportPipes.runTaskSync(() -> {
+                settingsInv.save(null);
+                settingsInv.populate();
+            });
+
+            // output result item
             ItemStack resultItem = recipe.getResult();
+            PipeItem pipeItem = new PipeItem(resultItem.clone(), getWorld(), getBlockLoc(), outputDir);
+            pipeItem.getRelativeLocation().set(0.5d, 0.5d, 0.5d);
+            pipeItem.resetOldRelativeLocation();
+            pipeManager.spawnPipeItem(pipeItem);
+            pipeManager.putPipeItemInPipe(pipeItem);
 
-            List<RecipeChoice> ingredients = new ArrayList<>();
-            if (recipe instanceof ShapelessRecipe) {
-                ingredients.addAll(((ShapelessRecipe) recipe).getChoiceList());
-            } else if (recipe instanceof ShapedRecipe) {
-                Map<Character, Integer> charCounts = new HashMap<>();
-                for (String row : ((ShapedRecipe) recipe).getShape()) {
-                    for (char c : row.toCharArray()) {
-                        charCounts.put(c, charCounts.getOrDefault(c, 0) + 1);
-                    }
-                }
-                for (Character c : charCounts.keySet()) {
-                    RecipeChoice ingredientChoice = ((ShapedRecipe) recipe).getChoiceMap().get(c);
-                    if (ingredientChoice != null) {
-                        ingredients.addAll(Collections.nCopies(charCounts.get(c), ingredientChoice));
-                    }
-                }
-            }
-
-            List<ItemStack> cachedItems = new ArrayList<>();
-            for (ItemStack cachedItem : this.cachedItems) {
-                cachedItems.add(cachedItem.clone());
-            }
-
-            //iterate needed ingredients
-            Iterator<RecipeChoice> neededIngredientsIt = ingredients.iterator();
-            while (neededIngredientsIt.hasNext()) {
-                RecipeChoice neededIngredient = neededIngredientsIt.next();
-
-                //iterate cached items
-                for (int i = 0; i < cachedItems.size(); i++) {
-                    if (neededIngredient.test(cachedItems.get(i))) {
-                        if (cachedItems.get(i).getAmount() > 1) {
-                            cachedItems.get(i).setAmount(cachedItems.get(i).getAmount() - 1);
-                        } else {
-                            cachedItems.remove(i);
-                        }
-                        neededIngredientsIt.remove();
-                        break;
-                    }
-                }
-
-            }
-
-            if (ingredients.isEmpty()) {
-                // update real cachedItems list
-                this.cachedItems.clear();
-                this.cachedItems.addAll(cachedItems);
-
-                transportPipes.runTaskSync(() -> {
-                    settingsInv.save(null);
-                    settingsInv.populate();
-                });
-
-                // output result item
-                PipeItem pipeItem = new PipeItem(resultItem.clone(), getWorld(), getBlockLoc(), outputDir);
-                pipeItem.getRelativeLocation().set(0.5d, 0.5d, 0.5d);
-                pipeItem.resetOldRelativeLocation();
-                pipeManager.spawnPipeItem(pipeItem);
-                pipeManager.putPipeItemInPipe(pipeItem);
-
-            }
         }
     }
 
@@ -148,7 +119,6 @@ public class CraftingPipe extends Pipe {
                 }
             }
         }
-
         return space;
     }
 
@@ -164,12 +134,30 @@ public class CraftingPipe extends Pipe {
         this.outputDir = outputDir;
     }
 
-    public Recipe getRecipe() {
-        return recipe;
-    }
-
     public void setRecipe(Recipe recipe) {
         this.recipe = recipe;
+        updateIngredients(this.recipe);
+    }
+
+    private  void updateIngredients(Recipe recipe){
+        // Collect needed ingredients from recipe
+        necessaryIngredients.clear();
+        if (recipe instanceof ShapelessRecipe) {
+            necessaryIngredients.addAll(((ShapelessRecipe) recipe).getChoiceList());
+        } else if (recipe instanceof ShapedRecipe) {
+            Map<Character, Integer> charCounts = new HashMap<>();
+            for (String row : ((ShapedRecipe) recipe).getShape()) {
+                for (char c : row.toCharArray()) {
+                    charCounts.put(c, charCounts.getOrDefault(c, 0) + 1);
+                }
+            }
+            for (Character c : charCounts.keySet()) {
+                RecipeChoice ingredientChoice = ((ShapedRecipe) recipe).getChoiceMap().get(c);
+                if (ingredientChoice != null) {
+                    necessaryIngredients.addAll(Collections.nCopies(charCounts.get(c), ingredientChoice));
+                }
+            }
+        }
     }
 
     public List<ItemStack> getCachedItems() {

@@ -196,7 +196,7 @@ public class Pipe extends Duct {
                         items.remove(pipeItem);
                         pipeManager.despawnPipeItem(pipeItem);
                         // drop item
-                        transportPipes.runTaskSync(() -> pipeItem.getWorld().dropItem(pipeItem.getBlockLoc().getNeighbor(pipeItem.getMovingDir()).toLocation(pipeItem.getWorld()), pipeItem.getItem()));
+                        //transportPipes.runTaskSync(() -> pipeItem.getWorld().dropItem(pipeItem.getBlockLoc().getNeighbor(pipeItem.getMovingDir()).toLocation(pipeItem.getWorld()), pipeItem.getItem()));
     					continue;
 					}
 				}
