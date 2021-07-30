@@ -71,6 +71,10 @@ public class PipeItem {
 		return item;
 	}
 
+	public void setItem(ItemStack item) {
+		this.item = item;
+	}
+
 	public World getWorld() {
 		return world;
 	}

@@ -53,7 +53,8 @@ public class CraftingPipe extends Pipe {
     protected Map<TPDirection, Integer> calculateItemDistribution(PipeItem pipeItem, TPDirection movingDir, List<TPDirection> dirs, TransportPipes transportPipes) {
         ItemStack overflow = addCachedItem(pipeItem.getItem(), transportPipes);
         if (overflow != null) {
-            transportPipes.runTaskSync(() -> getWorld().dropItem(getBlockLoc().toLocation(getWorld()), overflow));
+            pipeItem.setItem(overflow);
+            return Map.of(outputDir, 1);
         }
         return null;
     }
@@ -165,22 +166,26 @@ public class CraftingPipe extends Pipe {
     }
 
     public ItemStack addCachedItem(ItemStack item, TransportPipes transportPipes) {
-        for (ItemStack cachedItem : cachedItems) {
-            if (cachedItem.isSimilar(item)) {
-                int cachedItemAmount = cachedItem.getAmount();
-                cachedItem.setAmount(Math.min(cachedItem.getMaxStackSize(), cachedItemAmount + item.getAmount()));
-                int overflow = cachedItemAmount + item.getAmount() - cachedItem.getMaxStackSize();
-                if (overflow > 0) {
-                    item.setAmount(overflow);
-                } else {
+        for (RecipeChoice choice : necessaryIngredients) {
+            if (item != null && choice.test(item)) {
+                for (ItemStack cachedItem : cachedItems) {
+                    if (cachedItem.isSimilar(item)) {
+                        int cachedItemAmount = cachedItem.getAmount();
+                        cachedItem.setAmount(Math.min(cachedItem.getMaxStackSize(), cachedItemAmount + item.getAmount()));
+                        int overflow = cachedItemAmount + item.getAmount() - cachedItem.getMaxStackSize();
+                        if (overflow > 0) {
+                            item.setAmount(overflow);
+                        } else {
+                            item = null;
+                            break;
+                        }
+                    }
+                }
+                if (cachedItems.size() < 9 && item != null) {
+                    cachedItems.add(item);
                     item = null;
-                    break;
                 }
             }
-        }
-        if (cachedItems.size() < 9 && item != null) {
-            cachedItems.add(item);
-            item = null;
         }
 
         transportPipes.runTaskSync(() -> {

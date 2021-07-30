@@ -1,14 +1,10 @@
 package de.robotricker.transportpipes.inventory;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-
+import de.robotricker.transportpipes.TransportPipes;
+import de.robotricker.transportpipes.config.LangConf;
+import de.robotricker.transportpipes.duct.pipe.CraftingPipe;
+import de.robotricker.transportpipes.duct.pipe.filter.ItemData;
+import de.robotricker.transportpipes.location.TPDirection;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -16,15 +12,11 @@ import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.DragType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
-import org.bukkit.inventory.RecipeChoice;
-import org.bukkit.inventory.ShapedRecipe;
-import org.bukkit.inventory.ShapelessRecipe;
 
-import de.robotricker.transportpipes.TransportPipes;
-import de.robotricker.transportpipes.config.LangConf;
-import de.robotricker.transportpipes.duct.pipe.CraftingPipe;
-import de.robotricker.transportpipes.duct.pipe.filter.ItemData;
-import de.robotricker.transportpipes.location.TPDirection;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class CraftingPipeSettingsInventory extends DuctSettingsInventory {
 
@@ -87,113 +79,6 @@ public class CraftingPipeSettingsInventory extends DuctSettingsInventory {
 
         updateResultWithDelay();
 
-    }
-
-    private Recipe getCraftingRecipe(ItemStack[] items) {
-
-        int col_min = -1;
-        int col_max = 0;
-        for (int col = 0; col < 3; col++) {
-            boolean item = false;
-            for (int row = 0; row < 3; row++) {
-                item |= items[row * 3 + col] != null;
-            }
-            if (item && col_min == -1) {
-                col_min = col;
-            }
-            if (item) {
-                col_max = col;
-            }
-        }
-        int row_min = -1;
-        int row_max = 0;
-        for (int row = 0; row < 3; row++) {
-            boolean item = false;
-            for (int col = 0; col < 3; col++) {
-                item |= items[row * 3 + col] != null;
-            }
-            if (item && row_min == -1) {
-                row_min = row;
-            }
-            if (item) {
-                row_max = row;
-            }
-        }
-        int in_rows = row_min == -1 ? 0 : row_max - row_min + 1;
-        int in_cols = col_min == -1 ? 0 : col_max - col_min + 1;
-
-        if (in_rows == 0 || in_cols == 0) {
-            return null;
-        }
-
-        Map<Character, ItemStack> in_map = new HashMap<>();
-        String[] in_shape = new String[in_rows];
-        char current_char = 'a';
-        for (int row = row_min; row <= row_max; row++) {
-            StringBuilder sb = new StringBuilder();
-            for (int col = col_min; col <= col_max; col++) {
-                if (items[row * 3 + col] == null) {
-                    sb.append(" ");
-                } else {
-                    char shape_char = '\0';
-                    for (Character tempChar : in_map.keySet()) {
-                        if (in_map.get(tempChar).equals(items[row * 3 + col])) {
-                            shape_char = tempChar;
-                        }
-                    }
-                    if (shape_char == '\0') {
-                        shape_char = current_char++;
-                        in_map.put(shape_char, items[row * 3 + col]);
-                    }
-                    sb.append(shape_char);
-                }
-            }
-            in_shape[row - row_min] = sb.toString();
-        }
-
-        Iterator<Recipe> recipeIt = Bukkit.recipeIterator();
-        recipe_loop:
-        while (recipeIt.hasNext()) {
-            Recipe recipe = recipeIt.next();
-            if (recipe instanceof ShapedRecipe shapedRecipe) {
-
-                String[] shape = shapedRecipe.getShape();
-                int rows = shape.length;
-                int cols = shape[0].length();
-
-                if (in_rows == rows && in_cols == cols) {
-                    for (int row = 0; row < rows; row++) {
-                        for (int col = 0; col < cols; col++) {
-                            char recipeChar = shape[row].charAt(col);
-                            char inChar = in_shape[row].charAt(col);
-                            if (shapedRecipe.getChoiceMap().get(recipeChar) == null && in_map.get(inChar) == null) {
-                                continue;
-                            }
-                            if (shapedRecipe.getChoiceMap().get(recipeChar) == null || in_map.get(inChar) == null) {
-                                continue recipe_loop;
-                            }
-                            if(shapedRecipe.getChoiceMap().get(recipeChar).test(in_map.get(inChar))) {
-                                continue;
-                            }
-                            continue recipe_loop;
-                        }
-                    }
-                    return shapedRecipe;
-                }
-            } else if (recipe instanceof ShapelessRecipe shapelessRecipe) {
-                List<ItemStack> givenItems = new ArrayList<>(Arrays.asList(items));
-                givenItems.removeIf(Objects::isNull);
-                for (RecipeChoice ingredientChoice : shapelessRecipe.getChoiceList()) {
-                    if (!givenItems.removeIf(ingredientChoice)) {
-                        continue recipe_loop;
-                    }
-                }
-                if (givenItems.isEmpty()) {
-                    return shapelessRecipe;
-                }
-            }
-        }
-        return null;
     }
 
     @Override
@@ -271,7 +156,7 @@ public class CraftingPipeSettingsInventory extends DuctSettingsInventory {
                 }
             }
         }
-        return getCraftingRecipe(items);
+        return Bukkit.getCraftingRecipe(items, duct.getWorld());
     }
 
     private void updateResultWithDelay() {
