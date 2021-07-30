@@ -155,7 +155,7 @@ public class ItemService {
         return item;
     }
 
-    public DuctType readDuctNBTTags(ItemStack item, DuctRegister ductRegister) {
+    public DuctType readDuctTags(ItemStack item, DuctRegister ductRegister) {
         ItemMeta itemMeta = item.getItemMeta();
         if (itemMeta != null) {
             String basicDuctTypeSerialized = item.getItemMeta().getPersistentDataContainer().get(new NamespacedKey(transportPipes, "basicDuctType"), PersistentDataType.STRING);

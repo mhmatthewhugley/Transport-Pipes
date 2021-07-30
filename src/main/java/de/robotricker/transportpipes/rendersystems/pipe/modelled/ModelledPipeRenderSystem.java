@@ -54,7 +54,7 @@ public class ModelledPipeRenderSystem extends ModelledRenderSystem {
             // Then send only the middle pipe with the custom model data
             connMap.put(connDir, model.createConnASD(ModelledPipeConnectionModelData.createConnectionModelData(pipe, connDir)));
         }
-        if (!connMap.isEmpty()) connASD.put(pipe, connMap);
+        connASD.put(pipe, connMap);
     }
 
     @Override

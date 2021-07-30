@@ -182,7 +182,7 @@ public class DuctListener implements Listener {
         if (interaction.action == Action.RIGHT_CLICK_AIR || interaction.action == Action.RIGHT_CLICK_BLOCK) {
             if (interaction.item != null) {
                 Duct clickedDuct = HitboxUtils.getDuctLookingTo(globalDuctManager, interaction.p, interaction.clickedBlock);
-                DuctType itemDuctType = itemService.readDuctNBTTags(interaction.item, ductRegister);
+                DuctType itemDuctType = itemService.readDuctTags(interaction.item, ductRegister);
                 boolean manualPlaceable = itemDuctType != null || interaction.item.getType().isSolid();
                 
                 // ********************** CLICKING AIR WITHOUT A WRENCH ****************************

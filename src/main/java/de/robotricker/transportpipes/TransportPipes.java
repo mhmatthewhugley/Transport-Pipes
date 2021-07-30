@@ -3,6 +3,7 @@ package de.robotricker.transportpipes;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Iterator;
+import java.util.Objects;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
@@ -188,8 +189,7 @@ public class TransportPipes extends JavaPlugin {
             Iterator<Duct> ductIt = globalDuctManager.getPlayerDucts(p).iterator();
             while (ductIt.hasNext()) {
                 Duct nextDuct = ductIt.next();
-                assert oldRenderSystem != null;
-                protocolService.removeASD(p, oldRenderSystem.getASDForDuct(nextDuct));
+                protocolService.removeASD(p, Objects.requireNonNull(oldRenderSystem).getASDForDuct(nextDuct));
                 ductIt.remove();
             }
 
