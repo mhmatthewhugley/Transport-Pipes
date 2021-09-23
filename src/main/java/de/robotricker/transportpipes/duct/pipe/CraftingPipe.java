@@ -52,7 +52,7 @@ public class CraftingPipe extends Pipe {
     @Override
     protected Map<TPDirection, Integer> calculateItemDistribution(PipeItem pipeItem, TPDirection movingDir, List<TPDirection> dirs, TransportPipes transportPipes) {
         ItemStack overflow = addCachedItem(pipeItem.getItem(), transportPipes);
-        if (overflow != null) {
+        if (overflow != null && outputDir != null) {
             pipeItem.setItem(overflow);
             return Map.of(outputDir, pipeItem.getItem().getAmount());
         }
