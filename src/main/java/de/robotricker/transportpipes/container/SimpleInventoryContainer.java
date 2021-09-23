@@ -52,10 +52,17 @@ public class SimpleInventoryContainer extends BlockContainer {
                 } else if (itemTaken.isSimilar(cachedInv.getItem(i))) {
                     itemTaken.setAmount(Math.min(Math.min(amount, amountBefore + Objects.requireNonNull(cachedInv.getItem(i)).getAmount()), itemTaken.getMaxStackSize()));
                 }
-                ItemStack invItem = cachedInv.getItem(i);
-                Objects.requireNonNull(invItem).setAmount(invItem.getAmount() - (itemTaken.getAmount() - amountBefore));
+                ItemStack invItem = Objects.requireNonNull(cachedInv.getItem(i)).clone();
+                invItem.setAmount(invItem.getAmount() - (itemTaken.getAmount() - amountBefore));
+                DuctExtractEvent event = new DuctExtractEvent(cachedInv, invItem);
+                Bukkit.getServer().getPluginManager().callEvent(event);
+                if(event.isCancelled()){
+                    if(amountBefore > 0) {
+                        itemTaken.setAmount(amountBefore);
+                    }else itemTaken = null;
+                    continue;
+                }
                 cachedInv.setItem(i, invItem.getAmount() <= 0 ? null : invItem);
-        		if (invItem.getAmount() > 0) Bukkit.getServer().getPluginManager().callEvent(new DuctExtractEvent(cachedInv, invItem));
             }
         }
         return itemTaken;
@@ -69,8 +76,12 @@ public class SimpleInventoryContainer extends BlockContainer {
         if (isInvLocked(cachedInvHolder)) {
             return insertion;
         }
+        DuctInsertEvent insertEvent = new DuctInsertEvent(cachedInv, insertion);
+        Bukkit.getServer().getPluginManager().callEvent(insertEvent);
+        if(insertEvent.isCancelled()){
+            return insertion;
+        }
         Collection<ItemStack> overflow = cachedInv.addItem(insertion).values();
-		Bukkit.getServer().getPluginManager().callEvent(new DuctInsertEvent(cachedInv, insertion));
         //block.getState().update();
         if (overflow.isEmpty()) {
             return null;
