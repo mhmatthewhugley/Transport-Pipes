@@ -1,5 +1,6 @@
 package de.robotricker.transportpipes.items;
 
+import com.comphenix.protocol.reflect.FieldUtils;
 import com.comphenix.protocol.wrappers.WrappedGameProfile;
 import com.comphenix.protocol.wrappers.WrappedSignedProperty;
 import de.robotricker.transportpipes.TransportPipes;
@@ -131,19 +132,17 @@ public class ItemService {
         wrappedProfile.getProperties().put("textures", new WrappedSignedProperty("textures", textureValue, textureSignature));
 
         ItemStack skull = new ItemStack(Material.PLAYER_HEAD);
-        SkullMeta sm = (SkullMeta) skull.getItemMeta();
-        Objects.requireNonNull(sm).setOwningPlayer(Bukkit.getOfflinePlayer(UUID.fromString(uuid)));
+        SkullMeta skullMeta = (SkullMeta) skull.getItemMeta();
+        Objects.requireNonNull(skullMeta).setOwningPlayer(Bukkit.getOfflinePlayer(UUID.fromString(uuid)));
 
-        Field profileField;
+        Field field = FieldUtils.getField(skullMeta.getClass(), "profile", true);
         try {
-            profileField = sm.getClass().getDeclaredField("profile");
-            profileField.setAccessible(true);
-            profileField.set(sm, wrappedProfile.getHandle());
-        } catch (NoSuchFieldException | IllegalArgumentException | IllegalAccessException e1) {
-            e1.printStackTrace();
+            FieldUtils.writeField(field, skullMeta, wrappedProfile.getHandle());
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
         }
 
-        skull.setItemMeta(sm);
+        skull.setItemMeta(skullMeta);
         return skull;
     }
 

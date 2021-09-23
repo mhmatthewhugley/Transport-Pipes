@@ -101,8 +101,12 @@ public class DuctType {
         Bukkit.addRecipe(ductRecipe);
     }
 
-    public boolean hasPlayerCraftingPermission(Player p) {
-        return craftingPermission == null || p.hasPermission(craftingPermission);
+    public String getCraftingPermission() {
+        return craftingPermission;
+    }
+
+    public boolean hasPlayerCraftingPermission(Player player) {
+        return craftingPermission == null || player.hasPermission(craftingPermission);
     }
 
     public boolean connectsTo(DuctType otherDuctType) {

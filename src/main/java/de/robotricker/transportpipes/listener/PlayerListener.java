@@ -1,21 +1,5 @@
 package de.robotricker.transportpipes.listener;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-
-import javax.inject.Inject;
-
-import org.bukkit.Keyed;
-import org.bukkit.NamespacedKey;
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.bukkit.event.inventory.PrepareItemCraftEvent;
-import org.bukkit.event.player.PlayerChangedWorldEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
-
 import de.robotricker.transportpipes.config.GeneralConf;
 import de.robotricker.transportpipes.duct.Duct;
 import de.robotricker.transportpipes.duct.DuctRegister;
@@ -25,6 +9,22 @@ import de.robotricker.transportpipes.duct.manager.PipeManager;
 import de.robotricker.transportpipes.duct.types.BaseDuctType;
 import de.robotricker.transportpipes.duct.types.DuctType;
 import de.robotricker.transportpipes.items.ItemService;
+import org.bukkit.Keyed;
+import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.PrepareItemCraftEvent;
+import org.bukkit.event.player.PlayerChangedWorldEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.SkullMeta;
+
+import javax.inject.Inject;
+import java.util.ArrayList;
+import java.util.List;
 
 public class PlayerListener implements Listener {
 
@@ -73,24 +73,41 @@ public class PlayerListener implements Listener {
     }
 
     @EventHandler
-    public void onCraft(PrepareItemCraftEvent e) {
-        if (e.getInventory().getViewers().isEmpty() || e.getInventory().getResult() == null) {
+    public void onCraft(PrepareItemCraftEvent event) {
+        if (event.getRecipe() == null) {
             return;
         }
-        Player p = (Player) e.getInventory().getViewers().get(0);
-        for (BaseDuctType<? extends Duct> bdt : ductRegister.baseDuctTypes()) {
-            for (DuctType dt : bdt.ductTypes()) {
-                if (Objects.requireNonNull(e.getRecipe()).getResult().isSimilar(bdt.getItemManager().getItem(dt))) {
-                    if (!dt.hasPlayerCraftingPermission(p)) {
-                        e.getInventory().setResult(null);
-                        return;
+        if (event.getView().getPlayer() instanceof Player player) {
+            for (BaseDuctType<? extends Duct> baseDuctType : ductRegister.baseDuctTypes()) {
+                for (DuctType ductType : baseDuctType.ductTypes()) {
+                    ItemStack result = event.getRecipe().getResult();
+                    ItemStack duct = baseDuctType.getItemManager().getItem(ductType);
+                    // For some reason, ItemStack.isSimilar() does not work properly with custom player heads, so we have to do it this way, instead
+                    if (result.getType() == Material.PLAYER_HEAD && duct.getType() == Material.PLAYER_HEAD) {
+                        SkullMeta resultMeta = (SkullMeta) result.getItemMeta();
+                        SkullMeta ductMeta = (SkullMeta) duct.getItemMeta();
+                        // SkullMeta shouldn't be null for player_head material, but we'll check just in case since getItemMeta can technically return null
+                        if (resultMeta != null && ductMeta != null) {
+                            if (resultMeta.getOwningPlayer() == ductMeta.getOwningPlayer()) {
+                                if (!ductType.hasPlayerCraftingPermission(player)) {
+                                    event.getInventory().setResult(null);
+                                    return;
+                                }
+                            }
+                        }
+                    }
+                    else if (result.isSimilar(duct)) {
+                        if (!ductType.hasPlayerCraftingPermission(player)) {
+                            event.getInventory().setResult(null);
+                            return;
+                        }
                     }
                 }
             }
-        }
-        if (itemService.isWrench(Objects.requireNonNull(e.getRecipe()).getResult())) {
-            if (!p.hasPermission("transportpipes.craft.wrench")) {
-                e.getInventory().setResult(null);
+            if (itemService.isWrench(event.getRecipe().getResult())) {
+                if (!player.hasPermission("transportpipes.craft.wrench")) {
+                    event.getInventory().setResult(null);
+                }
             }
         }
     }
