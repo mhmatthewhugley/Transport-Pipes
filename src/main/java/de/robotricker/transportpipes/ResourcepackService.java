@@ -95,7 +95,7 @@ public class ResourcepackService implements Listener {
         if (e.getStatus() == PlayerResourcePackStatusEvent.Status.DECLINED || e.getStatus() == PlayerResourcePackStatusEvent.Status.FAILED_DOWNLOAD) {
             LangConf.Key.RESOURCEPACK_FAIL.sendMessage(e.getPlayer());
             if (loadingResourcepackPlayers.remove(e.getPlayer())) {
-                transportPipes.changeRenderSystem(e.getPlayer(), ModelledRenderSystem.getDisplayName());
+                transportPipes.changeRenderSystem(e.getPlayer(), VanillaRenderSystem.getDisplayName());
             }
         } else if (e.getStatus() == PlayerResourcePackStatusEvent.Status.SUCCESSFULLY_LOADED) {
             resourcepackPlayers.add(e.getPlayer());
