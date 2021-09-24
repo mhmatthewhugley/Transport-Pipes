@@ -171,9 +171,6 @@ public class TransportPipes extends JavaPlugin {
 
     public void changeRenderSystem(Player p, String newRenderSystemName) {
         PlayerSettingsConf playerSettingsConf = injector.getSingleton(PlayerSettingsService.class).getOrCreateSettingsConf(p);
-        DuctRegister ductRegister = injector.getSingleton(DuctRegister.class);
-        GlobalDuctManager globalDuctManager = injector.getSingleton(GlobalDuctManager.class);
-        ProtocolService protocolService = injector.getSingleton(ProtocolService.class);
 
         // change render system
         String oldRenderSystemName = playerSettingsConf.getRenderSystemName();
@@ -181,6 +178,10 @@ public class TransportPipes extends JavaPlugin {
             return;
         }
         playerSettingsConf.setRenderSystemName(newRenderSystemName);
+
+        DuctRegister ductRegister = injector.getSingleton(DuctRegister.class);
+        GlobalDuctManager globalDuctManager = injector.getSingleton(GlobalDuctManager.class);
+        ProtocolService protocolService = injector.getSingleton(ProtocolService.class);
 
         for (BaseDuctType<? extends Duct> baseDuctType : ductRegister.baseDuctTypes()) {
             RenderSystem oldRenderSystem = RenderSystem.getRenderSystem(oldRenderSystemName, baseDuctType);
