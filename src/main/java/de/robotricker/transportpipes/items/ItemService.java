@@ -128,7 +128,7 @@ public class ItemService {
     }
 
     public ItemStack createHeadItem(String uuid, String textureValue, String textureSignature) {
-        WrappedGameProfile wrappedProfile = new WrappedGameProfile(UUID.fromString(uuid), null);
+        WrappedGameProfile wrappedProfile = new WrappedGameProfile(UUID.fromString(uuid), uuid);
         wrappedProfile.getProperties().put("textures", new WrappedSignedProperty("textures", textureValue, textureSignature));
 
         ItemStack skull = new ItemStack(Material.PLAYER_HEAD);

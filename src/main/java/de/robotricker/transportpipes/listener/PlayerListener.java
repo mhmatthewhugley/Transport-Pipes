@@ -78,16 +78,16 @@ public class PlayerListener implements Listener {
             return;
         }
         if (event.getView().getPlayer() instanceof Player player) {
+            ItemStack result = event.getRecipe().getResult();
+            SkullMeta resultMeta = result.getType() == Material.PLAYER_HEAD ? (SkullMeta) result.getItemMeta() : null;
             for (BaseDuctType<? extends Duct> baseDuctType : ductRegister.baseDuctTypes()) {
                 for (DuctType ductType : baseDuctType.ductTypes()) {
-                    ItemStack result = event.getRecipe().getResult();
                     ItemStack duct = baseDuctType.getItemManager().getItem(ductType);
                     // For some reason, ItemStack.isSimilar() does not work properly with custom player heads, so we have to do it this way, instead
-                    if (result.getType() == Material.PLAYER_HEAD && duct.getType() == Material.PLAYER_HEAD) {
-                        SkullMeta resultMeta = (SkullMeta) result.getItemMeta();
+                    if (resultMeta != null && duct.getType() == Material.PLAYER_HEAD) {
                         SkullMeta ductMeta = (SkullMeta) duct.getItemMeta();
                         // SkullMeta shouldn't be null for player_head material, but we'll check just in case since getItemMeta can technically return null
-                        if (resultMeta != null && ductMeta != null) {
+                        if (ductMeta != null) {
                             if (resultMeta.getOwningPlayer() == ductMeta.getOwningPlayer()) {
                                 if (!ductType.hasPlayerCraftingPermission(player)) {
                                     event.getInventory().setResult(null);

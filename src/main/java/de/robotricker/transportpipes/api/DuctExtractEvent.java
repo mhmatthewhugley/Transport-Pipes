@@ -14,6 +14,13 @@ public class DuctExtractEvent extends Event implements Cancellable {
 	private static final HandlerList handlers = new HandlerList();
 	private boolean cancelled;
 
+	/** Called when a duct tries to extract an ItemStack from a container
+	 *  If this event is cancelled, the ItemStack will not be extracted from the container
+	 *
+	 * @param source The inventory that the items is to be removed from
+	 * @param item  The ItemStack that is to be removed
+	 */
+
 	public DuctExtractEvent(Inventory source, ItemStack item) {
 		super();
 		this.source = source;
@@ -30,9 +37,19 @@ public class DuctExtractEvent extends Event implements Cancellable {
 		return handlers;
 	}
 
+	/** Get the inventory the item is to be removed from
+	 *
+	 * @return The source inventory
+	 */
+
 	public Inventory getSource() {
 		return source;
 	}
+
+	/** Get the ItemStack that is to be removed
+	 *
+	 * @return The ItemStack to be removed
+	 */
 
 	public ItemStack getItem() {
 		return item;
@@ -44,8 +61,8 @@ public class DuctExtractEvent extends Event implements Cancellable {
 	}
 
 	@Override
-	public void setCancelled(boolean b) {
-		cancelled = b;
+	public void setCancelled(boolean cancelled) {
+		this.cancelled = cancelled;
 	}
 
 }

@@ -59,7 +59,7 @@ public class SimpleInventoryContainer extends BlockContainer {
                 if(event.isCancelled()){
                     if(amountBefore > 0) {
                         itemTaken.setAmount(amountBefore);
-                    }else itemTaken = null;
+                    } else itemTaken = null;
                     continue;
                 }
                 cachedInv.setItem(i, invItem.getAmount() <= 0 ? null : invItem);
@@ -82,7 +82,6 @@ public class SimpleInventoryContainer extends BlockContainer {
             return insertion;
         }
         Collection<ItemStack> overflow = cachedInv.addItem(insertion).values();
-        //block.getState().update();
         if (overflow.isEmpty()) {
             return null;
         } else {

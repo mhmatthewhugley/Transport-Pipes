@@ -10,9 +10,16 @@ import org.jetbrains.annotations.NotNull;
 public class DuctInsertEvent extends Event implements Cancellable{
 
 	private final Inventory destination;
-	private final ItemStack item;
+	private ItemStack item;
 	private static final HandlerList handlers = new HandlerList();
 	private boolean cancelled;
+
+	/** Called when a duct tries to insert an ItemStack into a container
+	 *  If this event is cancelled, the ItemStack will not be inserted into the container
+	 *
+	 * @param destination The inventory that the items is to be inserted into
+	 * @param item  The ItemStack that is to be inserted
+	 */
 
 	public DuctInsertEvent(Inventory destination, ItemStack item) {
 		super();
@@ -30,12 +37,30 @@ public class DuctInsertEvent extends Event implements Cancellable{
 		return handlers;
 	}
 
+	/** Get the inventory the item is to be inserted into
+	 *
+	 * @return The destination inventory
+	 */
+
 	public Inventory getDestination() {
 		return destination;
 	}
 
+	/** Get the ItemStack that is to be inserted
+	 *
+	 * @return The ItemStack to be inserted
+	 */
+
 	public ItemStack getItem() {
 		return item;
+	}
+
+	/** Set the ItemStack that is to be inserted
+	 *
+	 * @param item The ItemStack to be inserted
+	 */
+	public void setItem(ItemStack item) {
+		this.item = item;
 	}
 
 	@Override
@@ -44,8 +69,8 @@ public class DuctInsertEvent extends Event implements Cancellable{
 	}
 
 	@Override
-	public void setCancelled(boolean b) {
-		cancelled = b;
+	public void setCancelled(boolean cancelled) {
+		this.cancelled = cancelled;
 	}
 
 }
