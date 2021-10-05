@@ -1,13 +1,22 @@
 package de.robotricker.transportpipes.listener;
 
-import java.util.*;
-
-import javax.inject.Inject;
-
-import org.bukkit.Bukkit;
-import org.bukkit.GameMode;
-import org.bukkit.Location;
-import org.bukkit.Material;
+import de.robotricker.transportpipes.PlayerSettingsService;
+import de.robotricker.transportpipes.ThreadService;
+import de.robotricker.transportpipes.TransportPipes;
+import de.robotricker.transportpipes.api.DuctBreakEvent;
+import de.robotricker.transportpipes.api.DuctPlaceEvent;
+import de.robotricker.transportpipes.config.GeneralConf;
+import de.robotricker.transportpipes.config.LangConf;
+import de.robotricker.transportpipes.duct.Duct;
+import de.robotricker.transportpipes.duct.DuctRegister;
+import de.robotricker.transportpipes.duct.manager.GlobalDuctManager;
+import de.robotricker.transportpipes.duct.types.DuctType;
+import de.robotricker.transportpipes.items.ItemService;
+import de.robotricker.transportpipes.location.BlockLocation;
+import de.robotricker.transportpipes.location.TPDirection;
+import de.robotricker.transportpipes.utils.HitboxUtils;
+import de.robotricker.transportpipes.utils.WorldUtils;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.BlockData;
@@ -31,22 +40,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
-import de.robotricker.transportpipes.PlayerSettingsService;
-import de.robotricker.transportpipes.ThreadService;
-import de.robotricker.transportpipes.TransportPipes;
-import de.robotricker.transportpipes.api.DuctBreakEvent;
-import de.robotricker.transportpipes.api.DuctPlaceEvent;
-import de.robotricker.transportpipes.config.GeneralConf;
-import de.robotricker.transportpipes.config.LangConf;
-import de.robotricker.transportpipes.duct.Duct;
-import de.robotricker.transportpipes.duct.DuctRegister;
-import de.robotricker.transportpipes.duct.manager.GlobalDuctManager;
-import de.robotricker.transportpipes.duct.types.DuctType;
-import de.robotricker.transportpipes.items.ItemService;
-import de.robotricker.transportpipes.location.BlockLocation;
-import de.robotricker.transportpipes.location.TPDirection;
-import de.robotricker.transportpipes.utils.HitboxUtils;
-import de.robotricker.transportpipes.utils.WorldUtils;
+import javax.inject.Inject;
+import java.util.*;
 
 public class DuctListener implements Listener {
 
@@ -181,8 +176,11 @@ public class DuctListener implements Listener {
     private void callInteraction(Interaction interaction) {
         if (interaction.action == Action.RIGHT_CLICK_AIR || interaction.action == Action.RIGHT_CLICK_BLOCK) {
             if (interaction.item != null) {
+                // clicedDuct is the duct that was clicked, if a duct was clicked, otherwise null
                 Duct clickedDuct = HitboxUtils.getDuctLookingTo(globalDuctManager, interaction.p, interaction.clickedBlock);
+                // itemDuctType is the duct type in the player's hand when they click, if they have one, otherwise null
                 DuctType itemDuctType = itemService.readDuctTags(interaction.item, ductRegister);
+                // manualPlaceable is true if the item in the player's hand can be placed, ie the item is a block or a duct
                 boolean manualPlaceable = itemDuctType != null || interaction.item.getType().isSolid();
                 
                 // ********************** CLICKING AIR WITHOUT A WRENCH ****************************
@@ -191,7 +189,7 @@ public class DuctListener implements Listener {
                 }
 
                 // ********************** WRENCH SNEAK DUCT CLICK ****************************
-                if (clickedDuct != null && itemDuctType == null && itemService.isWrench(interaction.item) && interaction.p.isSneaking()) {
+                if (clickedDuct != null && itemService.isWrench(interaction.item) && interaction.p.isSneaking()) {
                     // Wrench sneak click
                     Block ductBlock = clickedDuct.getBlockLoc().toBlock(interaction.p.getWorld());
                     if (buildAllowed(interaction.p, ductBlock)) {
@@ -221,8 +219,8 @@ public class DuctListener implements Listener {
                 }
 
                 // ********************** WRENCH DUCT CLICK ****************************
-                if (clickedDuct != null && itemDuctType == null && !manualPlaceable
-                        && (itemService.isWrench(interaction.item) || (!generalConf.getWrenchRequired() && !canBeUsedToObfuscate(interaction.item.getType())))) {
+                if (clickedDuct != null && !manualPlaceable &&
+                        (itemService.isWrench(interaction.item) || (!generalConf.getWrenchRequired() && !canBeUsedToObfuscate(interaction.item.getType())))) {
                     //wrench click
                     if (buildAllowed(interaction.p, clickedDuct.getBlockLoc().toBlock(interaction.p.getWorld()))) {
                         clickedDuct.notifyClick(interaction.p, interaction.p.isSneaking());
@@ -233,7 +231,7 @@ public class DuctListener implements Listener {
                     return;
                 }
 
-                // ********************** WRENCH NON DUCT CLICK ****************************
+                // ********************** SNEAK WRENCH NON DUCT CLICK ****************************
                 if (clickedDuct == null && itemService.isWrench(interaction.item) && interaction.p.isSneaking()) {
                     //wrench click
 
@@ -245,21 +243,37 @@ public class DuctListener implements Listener {
                 }
 
                 // ********************** DUCT OBFUSCATION ****************************
-                if (clickedDuct != null && !interaction.p.isSneaking() && canBeUsedToObfuscate(interaction.item.getType())) {
+                if (!interaction.p.isSneaking() && canBeUsedToObfuscate(interaction.item.getType())) {
                     // block can be used to obfuscate and player is not sneaking
                     // this block will be used to obfuscate the duct
-                    Block ductBlock = clickedDuct.getBlockLoc().toBlock(interaction.p.getWorld());
+                    Duct relativeDuct = null;
+                    Block ductBlock;
+                    if (clickedDuct != null) {
+                        ductBlock = clickedDuct.getBlockLoc().toBlock(interaction.p.getWorld());
+                    }
+                    else if (interaction.clickedBlock != null) {
+                        ductBlock = interaction.clickedBlock.getRelative(interaction.blockFace);
+                        relativeDuct = globalDuctManager.getDuctAtLoc(interaction.clickedBlock.getRelative(interaction.blockFace).getLocation());
+                    }
+                    else {
+                        return;
+                    }
                     if (buildAllowed(interaction.p, ductBlock)) {
+
+                        BlockData oldBlockData = ductBlock.getBlockData().clone();
+                        BlockData blockData = interaction.item.getType().createBlockData();
+                        setDirectionalBlockFace(ductBlock.getLocation(), blockData, interaction.p);
+                        ductBlock.setBlockData(blockData, true);
+
                         BlockPlaceEvent event = new BlockPlaceEvent(ductBlock, ductBlock.getState(), ductBlock.getRelative(BlockFace.DOWN), interaction.item, interaction.p, true, interaction.hand);
                         Bukkit.getPluginManager().callEvent(event);
+
                         if (!event.isCancelled()) {
-                        	
-	                        BlockData bd = interaction.item.getType().createBlockData();
-	                        setDirectionalBlockFace(ductBlock.getLocation(), bd, interaction.p);
-	                        ductBlock.setBlockData(bd, true);
-	                        clickedDuct.obfuscatedWith(bd);
-	                        
+                            Objects.requireNonNullElse(clickedDuct, relativeDuct).obfuscatedWith(blockData);
 	                        decreaseHandItem(interaction.p, interaction.hand);
+                        }
+                        else {
+                            ductBlock.setBlockData(oldBlockData, true);
                         }
                     }
 
@@ -278,11 +292,11 @@ public class DuctListener implements Listener {
                 else if (interaction.clickedBlock != null) {
                     placeBlock = interaction.clickedBlock.getRelative(interaction.blockFace);
                 }
-                // If hand item is not a duct, duct was not clicked, a block is placed, and the block isn't being placed at a duct
+                // If hand item is not a duct, duct was not clicked, a block is to be placed, and the block isn't being placed at a duct
                 if (itemDuctType == null && clickedDuct == null && (placeBlock != null && globalDuctManager.getDuctAtLoc(placeBlock.getLocation()) == null)) {
                 	return;
                 }
-                // If a block is placed, and it's either solid or there's a duct where it's being placed
+                // If a block is to be placed, and it's either solid or there's a duct where it's being placed
                 if (placeBlock != null && (placeBlock.getType().isSolid() || globalDuctManager.getDuctAtLoc(placeBlock.getLocation()) != null)) {
                     placeBlock = null;
                 }
@@ -306,7 +320,7 @@ public class DuctListener implements Listener {
                     if (itemDuctType != null) {
 
                         // duct placement
-                        if (buildAllowed(interaction.p, Objects.requireNonNull(placeBlock))) {
+                        if (placeBlock != null && buildAllowed(interaction.p, placeBlock)) {
                             boolean lwcAllowed = true;
                             for (TPDirection dir : TPDirection.values()) {
                                 if (WorldUtils.lwcProtection(placeBlock.getRelative(dir.getBlockFace()))) {
@@ -334,21 +348,33 @@ public class DuctListener implements Listener {
                         interaction.successful = true;
                     } else if (clickedDuct != null) {
                         //block placement next to duct
+
+                        BlockData oldBlockData = placeBlock.getBlockData().clone();
+                        BlockData blockData = interaction.item.getType().createBlockData();
+                        setDirectionalBlockFace(placeBlock.getLocation(), blockData, interaction.p);
+                        placeBlock.setBlockData(blockData, true);
+
                         if (buildAllowed(interaction.p, placeBlock)) {
                             BlockPlaceEvent event = new BlockPlaceEvent(placeBlock, placeBlock.getState(), clickedDuct.getBlockLoc().toBlock(placeBlock.getWorld()), interaction.item, interaction.p, true, interaction.hand);
                             Bukkit.getPluginManager().callEvent(event);
                             if (!event.isCancelled()) {
-                            	
-	                            BlockData bd = placeBlock.getBlockData();//interaction.item.getType().createBlockData();
-	                            setDirectionalBlockFace(placeBlock.getLocation(), bd, interaction.p);
-	                            placeBlock.setBlockData(bd, true);
-	
-	                            // create TransportPipesContainer from placed block if it is such
-	                            if (WorldUtils.isContainerBlock(interaction.item.getType())) {
-	                                tpContainerListener.updateContainerBlock(placeBlock, true, true);
-	                            }
-	                            
-	                            decreaseHandItem(interaction.p, interaction.hand);
+
+                                if (!placeBlock.getType().isOccluding() && !Tag.SLABS.isTagged(placeBlock.getType()) && !Tag.STAIRS.isTagged(placeBlock.getType())
+                                        && !Tag.IMPERMEABLE.isTagged(placeBlock.getType()) && placeBlock.getType() != Material.GLOWSTONE &&
+                                        placeBlock.getRelative(BlockFace.DOWN).getType().isAir()) {
+                                    placeBlock.setBlockData(oldBlockData);
+                                }
+                                else {
+                                    // create TransportPipesContainer from placed block if it is such
+                                    if (WorldUtils.isContainerBlock(interaction.item.getType())) {
+                                        tpContainerListener.updateContainerBlock(placeBlock, true, true);
+                                    }
+
+                                    decreaseHandItem(interaction.p, interaction.hand);
+                                }
+                            }
+                            else {
+                                placeBlock.setBlockData(oldBlockData, true);
                             }
                         }
                         interaction.cancel = true;
@@ -379,7 +405,8 @@ public class DuctListener implements Listener {
     }
 
     private boolean canBeUsedToObfuscate(Material type) {
-        return type.isOccluding() && !type.isInteractable() && !type.hasGravity();
+        return (type.isOccluding() || Tag.IMPERMEABLE.isTagged(type) || type == Material.GLOWSTONE) &&
+                !type.isInteractable() && !type.hasGravity();
     }
 
     private void setDirectionalBlockFace(Location b, BlockData bd, Player p) {
