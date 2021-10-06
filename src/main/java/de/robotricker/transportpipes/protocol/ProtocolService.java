@@ -113,7 +113,7 @@ public class ProtocolService {
             WrappedDataWatcher.WrappedDataWatcherObject asMask = new WrappedDataWatcher.WrappedDataWatcherObject(15, BYTE_SERIALIZER);
             WrappedDataWatcher.WrappedDataWatcherObject headRot = new WrappedDataWatcher.WrappedDataWatcherObject(16, VECTOR_SERIALIZER);
             WrappedDataWatcher.WrappedDataWatcherObject rArmRot = new WrappedDataWatcher.WrappedDataWatcherObject(19, VECTOR_SERIALIZER);
-            dataWatcher.setObject(entityMask, (byte) (0x20)); // Invisible
+            dataWatcher.setObject(entityMask, (byte) (0x20 | 0x01)); // Invisible and on fire (to fix lighting issues)
             dataWatcher.setObject(nameVisible, false); // Custom Name Visible
             dataWatcher.setObject(asMask, bitMask); // Armor Stand Data
             dataWatcher.setObject(headRot, new Vector3F((float) asd.getHeadRotation().getX(), (float) asd.getHeadRotation().getY(), (float) asd.getHeadRotation().getZ())); // Head Rotation
