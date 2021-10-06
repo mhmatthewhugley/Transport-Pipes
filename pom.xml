@@ -336,6 +336,12 @@
             <id>ender-zone-repo</id>
             <url>https://ci.ender.zone/plugin/repository/everything/</url>
         </repository>
+
+        <!-- AuthMe -->
+        <repository>
+            <id>codemc-repo</id>
+            <url>https://repo.codemc.org/repository/maven-public/</url>
+        </repository>
     </repositories>
 
     <dependencies>
