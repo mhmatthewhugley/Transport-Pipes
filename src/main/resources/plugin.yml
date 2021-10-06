@@ -3,7 +3,8 @@ version: ${project.versionCode}
 authors: [RoboTricker, BlackBeltPanda]
 main: ${project.groupId}.${project.artifactId}.${project.name}
 depend: [ProtocolLib]
-api-version: 1.16
+softdepend: [LWC, AuthMe]
+api-version: 1.17
 permissions:
   transportpipes.*:
     children:

@@ -5,18 +5,18 @@
 
     <groupId>de.robotricker</groupId>
     <artifactId>transportpipes</artifactId>
-    <version>5.3.0-SNAPSHOT</version>
+    <version>5.3.1-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>TransportPipes</name>
     <description>This plugin is BuildCraft without Mods!</description>
     <inceptionYear>2016</inceptionYear>
-    <url>https://github.com/RoboTricker/Transport-Pipes</url>
+    <url>https://github.com/BlackBeltPanda/Transport-Pipes</url>
 
     <scm>
-        <connection>scm:git:https://github.com/RoboTricker/Transport-Pipes.git</connection>
-        <developerConnection>scm:git:git@github.com:RoboTricker/Transport-Pipes.git</developerConnection>
-        <url>https://github.com/RoboTricker/Transport-Pipes</url>
+        <connection>scm:git:https://github.com/BlackBeltPanda/Transport-Pipes.git</connection>
+        <developerConnection>scm:git:git@github.com/BlackBeltPanda/Transport-Pipes.git</developerConnection>
+        <url>https://github.com/BlackBeltPanda/Transport-Pipes</url>
     </scm>
 
     <ciManagement>
@@ -26,7 +26,7 @@
 
     <issueManagement>
         <system>GitHub</system>
-        <url>https://github.com/RoboTricker/Transport-Pipes/issues</url>
+        <url>https://github.com/BlackBeltPanda/Transport-Pipes/issues</url>
     </issueManagement>
 
     <distributionManagement>
