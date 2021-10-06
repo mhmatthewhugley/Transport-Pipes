@@ -2,6 +2,8 @@ package de.robotricker.transportpipes.listener;
 
 import javax.inject.Inject;
 
+import de.robotricker.transportpipes.api.ContainerUpdateEvent;
+import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.block.*;
 import org.bukkit.event.EventHandler;
@@ -85,7 +87,18 @@ public class TPContainerListener implements Listener {
         handleChunkLoadSync(e.getChunk(), false);
     }
 
+    /**
+     * Adds or removes a container and optionally updates connected pipes
+     * @param block The container block to add or remove
+     * @param add True to add a container if it does not already exist, False to remove a container if it exists
+     * @param updateNeighborPipes True to update connected pipes, False to not update connected pipes
+     */
     public void updateContainerBlock(Block block, boolean add, boolean updateNeighborPipes) {
+        ContainerUpdateEvent event = new ContainerUpdateEvent(block, add, updateNeighborPipes);
+        Bukkit.getPluginManager().callEvent(event);
+        if (event.isCancelled()) {
+            return;
+        }
         PipeManager pipeManager = (PipeManager) (DuctManager<? extends Duct>) ductRegister.baseDuctTypeOf("pipe").getDuctManager();
 
         BlockLocation blockLoc = new BlockLocation(block.getLocation());

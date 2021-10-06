@@ -10,6 +10,10 @@ public class DuctBreakEvent extends Event {
     final Player player;
     private static final HandlerList handlers = new HandlerList();
 
+    /**
+     * Called when a duct is broken
+     * @param player The player that broke the duct
+     */
     public DuctBreakEvent(Player player) {
         super();
         this.player = player;
@@ -23,7 +27,11 @@ public class DuctBreakEvent extends Event {
     public static HandlerList getHandlerList() {
         return handlers;
     }
-    
+
+    /**
+     * Gets the player that broke the duct
+     * @return The player that broke the duct
+     */
     public Player getPlayer() {
         return player;
     }

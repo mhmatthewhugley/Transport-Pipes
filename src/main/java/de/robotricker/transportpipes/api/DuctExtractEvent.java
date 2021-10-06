@@ -20,7 +20,6 @@ public class DuctExtractEvent extends Event implements Cancellable {
 	 * @param source The inventory that the items is to be removed from
 	 * @param item  The ItemStack that is to be removed
 	 */
-
 	public DuctExtractEvent(Inventory source, ItemStack item) {
 		super();
 		this.source = source;
@@ -41,7 +40,6 @@ public class DuctExtractEvent extends Event implements Cancellable {
 	 *
 	 * @return The source inventory
 	 */
-
 	public Inventory getSource() {
 		return source;
 	}
@@ -50,16 +48,23 @@ public class DuctExtractEvent extends Event implements Cancellable {
 	 *
 	 * @return The ItemStack to be removed
 	 */
-
 	public ItemStack getItem() {
 		return item;
 	}
 
+	/**
+	 * Get if this event is cancelled
+	 * @return True if cancelled, False if not cancelled
+	 */
 	@Override
 	public boolean isCancelled() {
 		return cancelled;
 	}
 
+	/**
+	 * Set the cancellation status of this event
+	 * @param cancelled True to cancel the event, False to not cancel the event
+	 */
 	@Override
 	public void setCancelled(boolean cancelled) {
 		this.cancelled = cancelled;

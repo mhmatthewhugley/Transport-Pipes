@@ -20,7 +20,6 @@ public class DuctInsertEvent extends Event implements Cancellable{
 	 * @param destination The inventory that the items is to be inserted into
 	 * @param item  The ItemStack that is to be inserted
 	 */
-
 	public DuctInsertEvent(Inventory destination, ItemStack item) {
 		super();
 		this.destination = destination;
@@ -41,7 +40,6 @@ public class DuctInsertEvent extends Event implements Cancellable{
 	 *
 	 * @return The destination inventory
 	 */
-
 	public Inventory getDestination() {
 		return destination;
 	}
@@ -50,7 +48,6 @@ public class DuctInsertEvent extends Event implements Cancellable{
 	 *
 	 * @return The ItemStack to be inserted
 	 */
-
 	public ItemStack getItem() {
 		return item;
 	}
@@ -63,11 +60,19 @@ public class DuctInsertEvent extends Event implements Cancellable{
 		this.item = item;
 	}
 
+	/**
+	 * Get if this event is cancelled
+	 * @return True if cancelled, False if not cancelled
+	 */
 	@Override
 	public boolean isCancelled() {
 		return cancelled;
 	}
 
+	/**
+	 * Set the cancellation status of this event
+	 * @param cancelled True to cancel the event, False to not cancel the event
+	 */
 	@Override
 	public void setCancelled(boolean cancelled) {
 		this.cancelled = cancelled;
