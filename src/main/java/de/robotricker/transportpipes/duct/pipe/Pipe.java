@@ -268,7 +268,7 @@ public class Pipe extends Duct {
 
 								ItemStack overflow = transportPipesContainer.insertItem(pipeItem.getMovingDir(), pipeItem.getItem());
 								if (overflow != null) {
-									// getWorld().dropItem(getBlockLoc().toLocation(getWorld()), overflow);
+									// Send overflow items back into the pipe the way they came
 									pipeItem.getItem().setAmount(overflow.getAmount());
 									pipeItem.setMovingDir(pipeItem.getMovingDir().getOpposite());
 									pipeItem.setBlockLoc(this.getBlockLoc());
@@ -284,8 +284,13 @@ public class Pipe extends Duct {
 						});
 					}
 					else {
-						// drop item
-						transportPipes.runTaskSync(() -> pipeItem.getWorld().dropItem(pipeItem.getBlockLoc().getNeighbor(pipeItem.getMovingDir()).toLocation(pipeItem.getWorld()), pipeItem.getItem()));
+						// Send items that hit a dead end back into the pipe the way they came
+						pipeItem.setMovingDir(pipeItem.getMovingDir().getOpposite());
+						pipeItem.setBlockLoc(this.getBlockLoc());
+						pipeItem.getRelativeLocation().switchValues();
+						pipeItem.resetOldRelativeLocation();
+						pipeManager.spawnPipeItem(pipeItem);
+						this.putPipeItem(pipeItem);
 					}
 				}
 			}

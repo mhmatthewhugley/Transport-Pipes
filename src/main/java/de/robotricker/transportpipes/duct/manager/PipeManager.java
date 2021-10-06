@@ -89,7 +89,7 @@ public class PipeManager extends DuctManager<Pipe> {
         pipe.getContainerConnections().clear();
         for (TPDirection tpDir : TPDirection.values()) {
             TransportPipesContainer neighborContainer = getContainerAtLoc(pipe.getWorld(), pipe.getBlockLoc().getNeighbor(tpDir));
-            if (neighborContainer != null) {
+            if (neighborContainer != null && !duct.getBlockedConnections().contains(tpDir)) {
                 pipe.getContainerConnections().put(tpDir, neighborContainer);
             }
         }

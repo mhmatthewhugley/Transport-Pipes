@@ -188,6 +188,12 @@ public class DuctListener implements Listener {
                 	return;
                 }
 
+                // ********************** CLICKING BLOCK WITH NO PIPE OR PIPE ITEM WITHOUT A WRENCH ****************************
+                if (clickedDuct == null && itemDuctType == null && interaction.clickedBlock != null && !itemService.isWrench(interaction.item) &&
+                        globalDuctManager.getDuctAtLoc(interaction.clickedBlock.getRelative(interaction.blockFace).getLocation()) == null) {
+                    return;
+                }
+
                 // ********************** WRENCH SNEAK DUCT CLICK ****************************
                 if (clickedDuct != null && itemService.isWrench(interaction.item) && interaction.p.isSneaking()) {
                     // Wrench sneak click
@@ -269,8 +275,17 @@ public class DuctListener implements Listener {
                         Bukkit.getPluginManager().callEvent(event);
 
                         if (!event.isCancelled()) {
-                            Objects.requireNonNullElse(clickedDuct, relativeDuct).obfuscatedWith(blockData);
-	                        decreaseHandItem(interaction.p, interaction.hand);
+                            if (clickedDuct != null) {
+                                clickedDuct.obfuscatedWith(blockData);
+                                decreaseHandItem(interaction.p, interaction.hand);
+                            }
+                            else if (relativeDuct != null) {
+                                relativeDuct.obfuscatedWith(blockData);
+                                decreaseHandItem(interaction.p, interaction.hand);
+                            }
+                            else {
+                                ductBlock.setBlockData(oldBlockData, true);
+                            }
                         }
                         else {
                             ductBlock.setBlockData(oldBlockData, true);
