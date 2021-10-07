@@ -21,7 +21,7 @@
 
     <ciManagement>
         <system>jenkins</system>
-        <url>https://ci.codemc.org/job/RoboTricker/job/TransportPipes/</url>
+        <url>https://ci.codemc.org/job/BlackBeltPanda/job/TransportPipes/</url>
     </ciManagement>
 
     <issueManagement>
