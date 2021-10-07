@@ -12,10 +12,9 @@ https://discord.gg/wPKCAX5
 or write a new issue here on GitHub.
 # Builds
 
-<a href="http://ci.codemc.org/job/RoboTricker/job/TransportPipes">![Build Status](http://ci.codemc.org/job/RoboTricker/job/TransportPipes/badge/icon)</a>
+<a href="http://ci.codemc.org/job/BlackBeltPanda/job/TransportPipes">![Build Status](http://ci.codemc.org/job/BlackBeltPanda/job/TransportPipes/badge/icon)</a>
 
-~~If you want to have access to snapshot versions of this plugin, visit the following jenkins page: https://ci.codemc.org/job/RoboTricker/job/TransportPipes/
-Otherwise you can download the releases on the plugin's spigot page.~~ Builds are currently only available in the releases section of the repo here: https://github.com/BlackBeltPanda/Transport-Pipes/releases.
+If you want to have access to snapshot versions of this plugin, visit the following jenkins page: https://ci.codemc.org/job/BlackBeltPanda/job/TransportPipes/.
 
 You can also add TransportPipes as a Maven dependency:
 ```xml
@@ -30,7 +29,7 @@ You can also add TransportPipes as a Maven dependency:
   <dependency>
     <groupId>de.robotricker</groupId>
     <artifactId>transportpipes</artifactId>
-    <version>5.0.0</version>
+    <version>5.3.1-SNAPSHOT</version>
   </dependency>
 </dependencies>
 ```

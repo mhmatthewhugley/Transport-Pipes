@@ -1,21 +1,40 @@
 # This is the general config file of transportpipes. You can read about the options and their values at the GitHub wiki of the plugin
-# https://github.com/RoboTricker/Transport-Pipes/wiki
+# https://github.com/BlackBeltPanda/Transport-Pipes/wiki
+
+# How many pipe items allowed in a pipe before it explodes.
 max_items_per_pipe: 20
+# Whether pipes should be craftable. Set to false to disable crafting recipes, which can be useful if you want to use a custom recipe plugin, instead.
 crafting_enabled: true
+# List of anticheat plugins to add compatibility for. Not adding your anticheat plugins here can cause anticheat false positives with players breaking or placing pipes.
 anticheat_plugins:
 - NoCheatPlus
 - AAC
 - CompatNoCheatPlus
 - AntiCheatPlus
+# The render system players see by default. "modelled" uses the resource pack, "vanilla" does not. Players can change this in /tpipes settings.
 default_render_system: modelled
+# Whether players can see items moving through the pipes by default. Players can change this in /tpipes settings.
 default_show_items: true
+# The distance at which players can see pipes by default. Players can change this in /tpipes settings.
 default_render_distance: 25
+# The resource pack to use.
+# "default" to use the default TransportPipes resource pack bundled with the plugin.
+# "server" to use the server's resource pack. You should add the TransportPipes resource pack to your server resource pack if you choose this option.
+# "none" for no resource pack, which essentially disables the modelled render system.
 resourcepack_mode: default
+# A list of worlds where pipes will be disabled.
 disabled_worlds: []
+# Wrench options
+# Item is the Material of the Wrench. (See https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/Material.html for a list of Materials)
+# Glowing is whether the Wrench should have the enchantment glowing effect.
+# Set required to true if you want players to only be able to access pipe GUIs by clicking them with a wrench. False means they can use an empty hand or any item to open a pipe GUI.
 wrench:
   item: STICK
   glowing: true
   required: false
+# The language you want to use. Make sure a lang_[language].yml file exists in the plugin data folder for the language you want to use. You may have to create this file.
 language: en
+# How long obfuscated pipes should be made visible, in seconds, when sneak+right-clicking with a Wrench.
 show_hidden_ducts_time: 5
-merge_same_pipe_items: false
+# Should pipe items of the same type attempt to merge together when they are in the same pipe section. Setting to true can increase performance and reduce pipe explosions.
+merge_same_pipe_items: true
