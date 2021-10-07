@@ -8,6 +8,7 @@ import com.comphenix.protocol.wrappers.EnumWrappers;
 import com.comphenix.protocol.wrappers.Pair;
 import com.comphenix.protocol.wrappers.Vector3F;
 import com.comphenix.protocol.wrappers.WrappedDataWatcher;
+import de.robotricker.transportpipes.TransportPipes;
 import de.robotricker.transportpipes.duct.pipe.items.PipeItem;
 import de.robotricker.transportpipes.location.BlockLocation;
 import de.robotricker.transportpipes.location.RelativeLocation;
@@ -30,23 +31,25 @@ public class ProtocolService {
     private final WrappedDataWatcher.Serializer BOOLEAN_SERIALIZER;
     
     private final ProtocolManager protocolManager;
+    private final TransportPipes plugin;
 
     @Inject
-    public ProtocolService() {
+    public ProtocolService(TransportPipes plugin) {
         BYTE_SERIALIZER = WrappedDataWatcher.Registry.get(Byte.class);
         VECTOR_SERIALIZER = WrappedDataWatcher.Registry.getVectorSerializer();
         BOOLEAN_SERIALIZER = WrappedDataWatcher.Registry.get(Boolean.class);
         
         protocolManager = ProtocolLibrary.getProtocolManager();
+        this.plugin = plugin;
     }
 
     private int nextEntityID = 99999;
 
-    public void sendPipeItem(Player p, PipeItem item) {
-        sendASD(p, item.getBlockLoc(), item.getRelativeLocation().clone().add(-0.5d, -0.5d, -0.5d), item.getAsd());
+    public void sendPipeItem(Player player, PipeItem item) {
+        sendASD(player, item.getBlockLoc(), item.getRelativeLocation().clone().add(-0.5d, -0.5d, -0.5d), item.getAsd());
     }
 
-    public void updatePipeItem(Player p, PipeItem item) {
+    public void updatePipeItem(Player player, PipeItem item) {
         try {
         	PacketContainer relEntityMoveContainer = protocolManager.createPacket(PacketType.Play.Server.REL_ENTITY_MOVE);
         	relEntityMoveContainer.getIntegers().write(0, item.getAsd().getEntityID());
@@ -54,17 +57,17 @@ public class ProtocolService {
         	relEntityMoveContainer.getShorts().write(1, (short) ((item.getRelativeLocationDifference().getDoubleY() * 32d) * 128));
         	relEntityMoveContainer.getShorts().write(2, (short) ((item.getRelativeLocationDifference().getDoubleZ() * 32d) * 128));
         	relEntityMoveContainer.getBooleans().write(0, true);
-        	protocolManager.sendServerPacket(p, relEntityMoveContainer);
+        	protocolManager.sendServerPacket(player, relEntityMoveContainer);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    public void removePipeItem(final Player p, PipeItem item) {
-        removeASD(p, Collections.singletonList(item.getAsd()));
+    public void removePipeItem(final Player player, PipeItem item) {
+        removeASD(player, Collections.singletonList(item.getAsd()));
     }
 
-    public void sendASD(Player p, BlockLocation blockLoc, RelativeLocation offset, ArmorStandData asd) {
+    public void sendASD(Player player, BlockLocation blockLoc, RelativeLocation offset, ArmorStandData asd) {
 
         try {
             if (asd.getEntityID() == -1) {
@@ -90,13 +93,13 @@ public class ProtocolService {
             spawnEntityLivingContainer.getDoubles().write(2, blockLoc.getZ() + asd.getRelLoc().getDoubleZ() + offset.getDoubleZ()); // Z Location
             spawnEntityLivingContainer.getIntegers().write(5, (int) (yaw * 256.0f / 360.0f)); // Yaw
             
-            protocolManager.sendServerPacket(p, spawnEntityLivingContainer);
+            protocolManager.sendServerPacket(player, spawnEntityLivingContainer);
             
             PacketContainer entityHeadRotationContainer = protocolManager.createPacket(PacketType.Play.Server.ENTITY_HEAD_ROTATION);
             entityHeadRotationContainer.getIntegers().write(0, asd.getEntityID());
             entityHeadRotationContainer.getBytes().write(0, (byte)(yaw * 256.0f / 360.0f));
             
-            protocolManager.sendServerPacket(p, entityHeadRotationContainer);
+            protocolManager.sendServerPacket(player, entityHeadRotationContainer);
 
             // ENTITYMETADATA
             
@@ -120,7 +123,7 @@ public class ProtocolService {
             dataWatcher.setObject(rArmRot, new Vector3F((float) asd.getArmRotation().getX(), (float) asd.getArmRotation().getY(), (float) asd.getArmRotation().getZ())); // Right Arm Rotation
 
             entityMetadataContainer.getWatchableCollectionModifier().write(0, dataWatcher.getWatchableObjects());
-            protocolManager.sendServerPacket(p, entityMetadataContainer);
+            protocolManager.sendServerPacket(player, entityMetadataContainer);
 
 
             // ENTITYEQUIPMENT
@@ -139,8 +142,14 @@ public class ProtocolService {
             if (!itemList.isEmpty()) {
                 entityEquipmentContainer.getSlotStackPairLists().write(0, itemList);
             }
-            
-            protocolManager.sendServerPacket(p, entityEquipmentContainer);
+
+            plugin.runTaskAsync(() -> {
+                try {
+                    protocolManager.sendServerPacket(player, entityEquipmentContainer);
+                } catch (InvocationTargetException e) {
+                    e.printStackTrace();
+                }
+            }, 1L);
 
         } catch (Exception e) {
             e.printStackTrace();

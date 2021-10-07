@@ -1,20 +1,5 @@
 package de.robotricker.transportpipes.duct.manager;
 
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentSkipListMap;
-
-import javax.inject.Inject;
-
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.Tag;
-import org.bukkit.World;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.Recipe;
-import org.bukkit.inventory.ShapedRecipe;
-
 import de.robotricker.transportpipes.PlayerSettingsService;
 import de.robotricker.transportpipes.TransportPipes;
 import de.robotricker.transportpipes.api.TransportPipesContainer;
@@ -34,6 +19,15 @@ import de.robotricker.transportpipes.location.BlockLocation;
 import de.robotricker.transportpipes.location.TPDirection;
 import de.robotricker.transportpipes.protocol.ProtocolService;
 import de.robotricker.transportpipes.utils.WorldUtils;
+import org.bukkit.*;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.Recipe;
+import org.bukkit.inventory.ShapedRecipe;
+
+import javax.inject.Inject;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentSkipListMap;
 
 public class PipeManager extends DuctManager<Pipe> {
 
@@ -232,12 +226,12 @@ public class PipeManager extends DuctManager<Pipe> {
 
     public void spawnPipeItem(PipeItem pipeItem) {
         List<Player> playerList = WorldUtils.getPlayerList(pipeItem.getWorld());
-        for (Player p : playerList) {
-            PlayerSettingsConf conf = playerSettingsService.getOrCreateSettingsConf(p);
+        for (Player player : playerList) {
+            PlayerSettingsConf conf = playerSettingsService.getOrCreateSettingsConf(player);
             int renderDistance = conf.getRenderDistance();
-            if (conf.isShowItems() && p.getLocation().distance(pipeItem.getBlockLoc().toLocation(pipeItem.getWorld())) <= renderDistance) {
-                getPlayerPipeItems(p).add(pipeItem);
-                protocolService.sendPipeItem(p, pipeItem);
+            if (conf.isShowItems() && player.getLocation().distance(pipeItem.getBlockLoc().toLocation(pipeItem.getWorld())) <= renderDistance) {
+                getPlayerPipeItems(player).add(pipeItem);
+                protocolService.sendPipeItem(player, pipeItem);
             }
         }
     }
