@@ -64,6 +64,9 @@ public class CraftingPipe extends Pipe {
             return;
         }
 
+        int emptyBuckets = 0;
+        int emptyBottles = 0;
+
         // Create copy of the cached items
         List<ItemStack> cachedItems = new ArrayList<>();
         for (ItemStack cachedItem : this.cachedItems) {
@@ -76,6 +79,12 @@ public class CraftingPipe extends Pipe {
             //iterate cached items
             for (int i = 0; i < cachedItems.size(); i++) {
                 if (neededIngredient.test(cachedItems.get(i))) {
+                    if (cachedItems.get(i).getType() == Material.MILK_BUCKET || cachedItems.get(i).getType() == Material.LAVA_BUCKET) {
+                        emptyBuckets++;
+                    }
+                    else if (cachedItems.get(i).getType() == Material.HONEY_BOTTLE) {
+                        emptyBottles++;
+                    }
                     if (cachedItems.get(i).getAmount() > 1) {
                         cachedItems.get(i).setAmount(cachedItems.get(i).getAmount() - 1);
                     } else {
@@ -97,12 +106,26 @@ public class CraftingPipe extends Pipe {
             });
 
             // output result item
-            ItemStack resultItem = recipe.getResult();
-            PipeItem pipeItem = new PipeItem(resultItem.clone(), getWorld(), getBlockLoc(), outputDir);
+            PipeItem pipeItem = new PipeItem(recipe.getResult().clone(), getWorld(), getBlockLoc(), outputDir);
             pipeItem.getRelativeLocation().set(0.5d, 0.5d, 0.5d);
             pipeItem.resetOldRelativeLocation();
             pipeManager.spawnPipeItem(pipeItem);
             pipeManager.putPipeItemInPipe(pipeItem);
+
+            if (emptyBuckets > 0) {
+                PipeItem bucketItem = new PipeItem(new ItemStack(Material.BUCKET, emptyBuckets), getWorld(), getBlockLoc(), outputDir);
+                bucketItem.getRelativeLocation().set(0.5d, 0.5d, 0.5d);
+                bucketItem.resetOldRelativeLocation();
+                pipeManager.spawnPipeItem(bucketItem);
+                pipeManager.putPipeItemInPipe(bucketItem);
+            }
+            if (emptyBottles > 0) {
+                PipeItem bottleItem = new PipeItem(new ItemStack(Material.GLASS_BOTTLE, emptyBottles), getWorld(), getBlockLoc(), outputDir);
+                bottleItem.getRelativeLocation().set(0.5d, 0.5d, 0.5d);
+                bottleItem.resetOldRelativeLocation();
+                pipeManager.spawnPipeItem(bottleItem);
+                pipeManager.putPipeItemInPipe(bottleItem);
+            }
 
         }
     }
