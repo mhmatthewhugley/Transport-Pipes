@@ -1,32 +1,63 @@
 ### Java files ###
 *.class
 
+# Log file
+*.log
+
 # Package Files
+*.jar
 *.war
+*.nar
 *.ear
+*.tar.gz
+*.rar
 
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
 
 
 ### Intellij ###
-# Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm
-# Ignore project files
+# User-specific stuff
+.idea/**/workspace.xml
+.idea/**/tasks.xml
+.idea/**/usage.statistics.xml
+.idea/**/dictionaries
+.idea/**/shelf
+
+# AWS User-specific
+.idea/**/aws.xml
+
+# Generated files
+.idea/**/contentModel.xml
+
+# Sensitive or high-churn files
+.idea/**/dataSources/
+.idea/**/dataSources.ids
+.idea/**/dataSources.local.xml
+.idea/**/sqlDataSources.xml
+.idea/**/dynamic.xml
+.idea/**/uiDesigner.xml
+.idea/**/dbnavigator.xml
+
+# Gradle
+.idea/**/gradle.xml
+.idea/**/libraries
+
+# Gradle and Maven with auto-import
+.idea/artifacts
+.idea/compiler.xml
+.idea/jarRepositories.xml
+.idea/modules.xml
+.idea/*.iml
+.idea/modules
 *.iml
-
-# Ignore IDEA directory
-.idea/*
-
-# File-based project format:
 *.ipr
+
+# File-based project format
 *.iws
 
-### Plugin-specific files: ###
 # IntelliJ
-/out/
-
-# mpeltonen/sbt-idea plugin
-.idea_modules/
+out/
 
 # JIRA plugin
 atlassian-ide-plugin.xml
@@ -35,7 +66,20 @@ atlassian-ide-plugin.xml
 com_crashlytics_export_strings.xml
 crashlytics.properties
 crashlytics-build.properties
+fabric.properties
 
+# mpeltonen/sbt-idea plugin
+.idea_modules/
+
+# Editor-based Rest Client
+.idea/httpRequests
+
+### Intellij Patch ###
+.idea/
+
+# Cache file creation bug
+# See https://youtrack.jetbrains.com/issue/JBR-2257
+.idea/$CACHE_FILE$
 
 ### Eclipse ###
 *.pydevproject
@@ -85,6 +129,10 @@ pom.xml.next
 release.properties
 dependency-reduced-pom.xml
 buildNumber.properties
+.mvn/timing.properties
+# https://github.com/takari/maven-wrapper#usage-without-binary-jar
+.mvn/wrapper/maven-wrapper.jar
+
 
 ### Git ###
 # Don't exclude the .gitignore itself
