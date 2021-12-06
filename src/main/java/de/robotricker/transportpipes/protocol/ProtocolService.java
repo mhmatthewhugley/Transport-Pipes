@@ -12,7 +12,6 @@ import de.robotricker.transportpipes.TransportPipes;
 import de.robotricker.transportpipes.duct.pipe.items.PipeItem;
 import de.robotricker.transportpipes.location.BlockLocation;
 import de.robotricker.transportpipes.location.RelativeLocation;
-import org.bukkit.craftbukkit.libs.it.unimi.dsi.fastutil.ints.IntArrayList;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -23,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class ProtocolService {
 
@@ -164,8 +164,8 @@ public class ProtocolService {
 
     public void removeASD(Player p, List<ArmorStandData> armorStandData) {
     	PacketContainer entityDestroyContainer = protocolManager.createPacket(PacketType.Play.Server.ENTITY_DESTROY);
-        int[] ids = armorStandData.stream().mapToInt(ArmorStandData::getEntityID).toArray();
-        entityDestroyContainer.getModifier().write(0, new IntArrayList(ids));
+        List<Integer> ids = armorStandData.stream().mapToInt(ArmorStandData::getEntityID).boxed().collect(Collectors.toList());
+        entityDestroyContainer.getIntLists().write(0, ids);
         try {
 			protocolManager.sendServerPacket(p, entityDestroyContainer);
 		}

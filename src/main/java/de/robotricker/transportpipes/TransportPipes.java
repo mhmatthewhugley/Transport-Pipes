@@ -1,19 +1,5 @@
 package de.robotricker.transportpipes;
 
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.Iterator;
-import java.util.Objects;
-import java.util.logging.Logger;
-import java.util.stream.Collectors;
-
-import org.bukkit.Bukkit;
-import org.bukkit.Chunk;
-import org.bukkit.World;
-import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
-import org.bukkit.plugin.java.JavaPlugin;
-
 import ch.jalu.injector.Injector;
 import ch.jalu.injector.InjectorBuilder;
 import co.aikar.commands.PaperCommandManager;
@@ -43,6 +29,19 @@ import de.robotricker.transportpipes.rendersystems.pipe.modelled.ModelledPipeRen
 import de.robotricker.transportpipes.rendersystems.pipe.vanilla.VanillaPipeRenderSystem;
 import de.robotricker.transportpipes.saving.DiskService;
 import de.robotricker.transportpipes.utils.LWCUtils;
+import org.bukkit.Bukkit;
+import org.bukkit.Chunk;
+import org.bukkit.World;
+import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.java.JavaPlugin;
+
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.Iterator;
+import java.util.Objects;
+import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 public class TransportPipes extends JavaPlugin {
 
@@ -54,9 +53,9 @@ public class TransportPipes extends JavaPlugin {
     @Override
     public void onEnable() {
 
-    	if (!Bukkit.getVersion().contains("1.17")) {
+    	if (!Bukkit.getVersion().contains("1.17.1") && !Bukkit.getVersion().contains("1.18")) {
             System.err.println("------------------------------------------");
-            System.err.println("TransportPipes currently only works with Minecraft 1.17+.");
+            System.err.println("TransportPipes currently only works with Minecraft 1.17.1+.");
             System.err.println("------------------------------------------");
             Bukkit.getPluginManager().disablePlugin(this);
             return;
