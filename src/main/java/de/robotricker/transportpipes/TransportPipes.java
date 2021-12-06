@@ -40,6 +40,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Iterator;
 import java.util.Objects;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
@@ -54,17 +55,17 @@ public class TransportPipes extends JavaPlugin {
     public void onEnable() {
 
     	if (!Bukkit.getVersion().contains("1.17.1") && !Bukkit.getVersion().contains("1.18")) {
-            System.err.println("------------------------------------------");
-            System.err.println("TransportPipes currently only works with Minecraft 1.17.1+.");
-            System.err.println("------------------------------------------");
+            getLogger().log(Level.SEVERE, "------------------------------------------");
+            getLogger().log(Level.SEVERE, "TransportPipes currently only works with Minecraft 1.17.1+.");
+            getLogger().log(Level.SEVERE, "------------------------------------------");
             Bukkit.getPluginManager().disablePlugin(this);
             return;
         }
 
         if (Files.isRegularFile(Paths.get(getDataFolder().getPath(), "recipes.yml"))) {
-            System.err.println("------------------------------------------");
-            System.err.println("Please delete the old plugins/TransportPipes directory so TransportPipes can recreate it with a bunch of new config values");
-            System.err.println("------------------------------------------");
+            getLogger().log(Level.SEVERE, "------------------------------------------");
+            getLogger().log(Level.SEVERE, "Please delete the old plugins/TransportPipes directory so TransportPipes can recreate it with a bunch of new config values");
+            getLogger().log(Level.SEVERE, "------------------------------------------");
             Bukkit.getPluginManager().disablePlugin(this);
             return;
         }
