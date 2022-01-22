@@ -152,7 +152,7 @@ public class CraftingPipeSettingsInventory extends DuctSettingsInventory {
                 if (inv.getItem(10 + row * 9 + col) != null) {
                     items[row * 3 + col] = inv.getItem(10 + row * 9 + col);
                 } else {
-                    items[row * 3 + col] = new ItemStack(Material.AIR);
+                    items[row * 3 + col] = null;
                 }
             }
         }
