@@ -373,9 +373,9 @@ public class DuctListener implements Listener {
                             BlockPlaceEvent event = new BlockPlaceEvent(placeBlock, placeBlock.getState(), clickedDuct.getBlockLoc().toBlock(placeBlock.getWorld()), interaction.item, interaction.p, true, interaction.hand);
                             Bukkit.getPluginManager().callEvent(event);
                             if (!event.isCancelled()) {
-
                                 if (!placeBlock.getType().isOccluding() && !Tag.SLABS.isTagged(placeBlock.getType()) && !Tag.STAIRS.isTagged(placeBlock.getType())
                                         && !Tag.IMPERMEABLE.isTagged(placeBlock.getType()) && placeBlock.getType() != Material.GLOWSTONE &&
+                                        !WorldUtils.isContainerBlock(placeBlock.getType()) &&
                                         placeBlock.getRelative(BlockFace.DOWN).getType().isAir()) {
                                     placeBlock.setBlockData(oldBlockData);
                                 }

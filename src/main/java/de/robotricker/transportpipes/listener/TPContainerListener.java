@@ -103,21 +103,12 @@ public class TPContainerListener implements Listener {
 
         BlockLocation blockLoc = new BlockLocation(block.getLocation());
         if (add) {
-
             if (pipeManager.getContainerAtLoc(block.getLocation()) == null) {
                 TransportPipesContainer container = createContainerFromBlock(block);
                 pipeManager.getContainers(block.getWorld()).put(blockLoc, container);
 
                 // only update the neighbor pipes if this updateContainerBlock method call is because of a chunk load that was not issued inside the onEnable method
-                if (updateNeighborPipes) {
-                    for (TPDirection dir : TPDirection.values()) {
-                        Duct duct = globalDuctManager.getDuctAtLoc(block.getWorld(), blockLoc.getNeighbor(dir));
-                        if (duct instanceof Pipe) {
-                            globalDuctManager.updateDuctConnections(duct);
-                            globalDuctManager.updateDuctInRenderSystems(duct, true);
-                        }
-                    }
-                }
+                doUpdateNeighborPipes(block, updateNeighborPipes, blockLoc);
 
                 transportPipes.runTaskSync(() -> {
                     //checks for double chest neighbor and updates the neighbors TransportPipesContainer if present
@@ -136,20 +127,23 @@ public class TPContainerListener implements Listener {
             }
 
         } else {
-
             TransportPipesContainer container = pipeManager.getContainerAtLoc(block.getLocation());
             if (container != null) {
                 pipeManager.getContainers(block.getWorld()).remove(blockLoc);
 
                 // only update the neighbor pipes if this updateContainerBlock method call is because of a chunk load that was not issued inside the onEnable method
-                if (updateNeighborPipes) {
-                    for (TPDirection dir : TPDirection.values()) {
-                        Duct duct = globalDuctManager.getDuctAtLoc(block.getWorld(), blockLoc.getNeighbor(dir));
-                        if (duct instanceof Pipe) {
-                            globalDuctManager.updateDuctConnections(duct);
-                            globalDuctManager.updateDuctInRenderSystems(duct, true);
-                        }
-                    }
+                doUpdateNeighborPipes(block, updateNeighborPipes, blockLoc);
+            }
+        }
+    }
+
+    private void doUpdateNeighborPipes(Block block, boolean updateNeighborPipes, BlockLocation blockLoc) {
+        if (updateNeighborPipes) {
+            for (TPDirection dir : TPDirection.values()) {
+                Duct duct = globalDuctManager.getDuctAtLoc(block.getWorld(), blockLoc.getNeighbor(dir));
+                if (duct instanceof Pipe) {
+                    globalDuctManager.updateDuctConnections(duct);
+                    globalDuctManager.updateDuctInRenderSystems(duct, true);
                 }
             }
         }
