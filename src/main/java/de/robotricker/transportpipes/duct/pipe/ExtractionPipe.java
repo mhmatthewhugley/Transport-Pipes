@@ -1,16 +1,5 @@
 package de.robotricker.transportpipes.duct.pipe;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import org.bukkit.Chunk;
-import org.bukkit.Material;
-import org.bukkit.World;
-import org.bukkit.block.Block;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-
 import de.robotricker.transportpipes.TransportPipes;
 import de.robotricker.transportpipes.api.TransportPipesContainer;
 import de.robotricker.transportpipes.duct.Duct;
@@ -29,6 +18,17 @@ import de.robotricker.transportpipes.items.ItemService;
 import de.robotricker.transportpipes.location.BlockLocation;
 import de.robotricker.transportpipes.location.TPDirection;
 import net.querz.nbt.tag.CompoundTag;
+import org.bukkit.Chunk;
+import org.bukkit.Material;
+import org.bukkit.World;
+import org.bukkit.block.Block;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 public class ExtractionPipe extends Pipe {
 
@@ -170,7 +170,9 @@ public class ExtractionPipe extends Pipe {
     @Override
     public List<ItemStack> destroyed(TransportPipes transportPipes, DuctManager<? extends Duct> ductManager, Player destroyer) {
         List<ItemStack> drop = super.destroyed(transportPipes, ductManager, destroyer);
-        drop.addAll(itemFilter.getAsItemStacks());
+        if (destroyer != null) {
+            drop.addAll(itemFilter.getAsItemStacks());
+        }
         return drop;
     }
 

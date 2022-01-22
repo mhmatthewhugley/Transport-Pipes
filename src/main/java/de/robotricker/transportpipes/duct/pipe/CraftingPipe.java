@@ -304,14 +304,16 @@ public class CraftingPipe extends Pipe {
     @Override
     public List<ItemStack> destroyed(TransportPipes transportPipes, DuctManager<? extends Duct> ductManager, Player destroyer) {
         List<ItemStack> items = super.destroyed(transportPipes, ductManager, destroyer);
-        for (int i = 0; i < 9; i++) {
-            ItemData id = recipeItems[i];
-            if (id != null) {
-                items.add(id.toItemStack().clone());
+        if (destroyer != null) {
+            for (int i = 0; i < 9; i++) {
+                ItemData id = recipeItems[i];
+                if (id != null) {
+                    items.add(id.toItemStack().clone());
+                }
             }
-        }
-        for (ItemStack cachedItem : cachedItems) {
-            items.add(cachedItem.clone());
+            for (ItemStack cachedItem : cachedItems) {
+                items.add(cachedItem.clone());
+            }
         }
         return items;
     }

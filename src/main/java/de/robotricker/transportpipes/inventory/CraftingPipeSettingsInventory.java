@@ -149,13 +149,46 @@ public class CraftingPipeSettingsInventory extends DuctSettingsInventory {
         ItemStack[] items = new ItemStack[9];
         for (int row = 0; row < 3; row++) {
             for (int col = 0; col < 3; col++) {
-                if (inv.getItem(9 + 1 + row * 9 + col) != null) {
-                    items[row * 3 + col] = inv.getItem(9 + 1 + row * 9 + col);
+                if (inv.getItem(10 + row * 9 + col) != null) {
+                    items[row * 3 + col] = inv.getItem(10 + row * 9 + col);
                 } else {
-                    items[row * 3 + col] = null;
+                    items[row * 3 + col] = new ItemStack(Material.AIR);
                 }
             }
         }
+
+//        Inventory craftingInventory = Bukkit.createInventory(null, InventoryType.WORKBENCH);
+//        craftingInventory.setContents(items);
+
+//        Iterator<Recipe> iterator = Bukkit.recipeIterator();
+//        recipeLoop:
+//        while (iterator.hasNext()) {
+//            Recipe recipe = iterator.next();
+//            if (recipe instanceof ShapedRecipe shapedRecipe) {
+//                Map<Character, RecipeChoice> ingredients = shapedRecipe.getChoiceMap();
+//                int index = 0;
+//                for (String row : shapedRecipe.getShape()) {
+//                    for (char col : row.toCharArray()) {
+//                        RecipeChoice recipeChoice = ingredients.get(col);
+//                        if (recipeChoice.test(Objects.requireNonNull(items[index]))) {
+//                            if (index == 8) {
+//                                // All items have matched, return the recipe
+//                                return recipe;
+//                            }
+//                        }
+//                        else {
+//                            continue recipeLoop;
+//                        }
+//                        index++;
+//                    }
+//                }
+//            }
+//            else if (recipe instanceof ShapelessRecipe shapelessRecipe) {
+//                if (shapelessRecipe.getChoiceList().stream().allMatch(recipeChoice -> Arrays.stream(items).anyMatch(recipeChoice))) {
+//                    return recipe;
+//                }
+//            }
+//        }
         return Bukkit.getCraftingRecipe(items, duct.getWorld());
     }
 

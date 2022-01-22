@@ -1,20 +1,5 @@
 package de.robotricker.transportpipes.duct;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.TreeSet;
-import java.util.concurrent.ConcurrentHashMap;
-
-import org.bukkit.Bukkit;
-import org.bukkit.Chunk;
-import org.bukkit.GameMode;
-import org.bukkit.Material;
-import org.bukkit.Particle;
-import org.bukkit.World;
-import org.bukkit.block.data.BlockData;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-
 import de.robotricker.transportpipes.TransportPipes;
 import de.robotricker.transportpipes.config.GeneralConf;
 import de.robotricker.transportpipes.duct.manager.DuctManager;
@@ -25,6 +10,15 @@ import de.robotricker.transportpipes.items.ItemService;
 import de.robotricker.transportpipes.location.BlockLocation;
 import de.robotricker.transportpipes.location.TPDirection;
 import net.querz.nbt.tag.CompoundTag;
+import org.bukkit.*;
+import org.bukkit.block.data.BlockData;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.TreeSet;
+import java.util.concurrent.ConcurrentHashMap;
 
 public abstract class Duct {
 
@@ -131,7 +125,7 @@ public abstract class Duct {
      */
     public List<ItemStack> destroyed(TransportPipes transportPipes, DuctManager<? extends Duct> ductManager, Player destroyer) {
         List<ItemStack> dropItems = new ArrayList<>();
-        if (destroyer == null || destroyer.getGameMode() != GameMode.CREATIVE) {
+        if (destroyer != null && destroyer.getGameMode() != GameMode.CREATIVE) {
             dropItems.add(getDuctType().getBaseDuctType().getItemManager().getClonedItem(getDuctType()));
         }
 

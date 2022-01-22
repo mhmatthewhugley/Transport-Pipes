@@ -29,6 +29,7 @@ import de.robotricker.transportpipes.rendersystems.pipe.modelled.ModelledPipeRen
 import de.robotricker.transportpipes.rendersystems.pipe.vanilla.VanillaPipeRenderSystem;
 import de.robotricker.transportpipes.saving.DiskService;
 import de.robotricker.transportpipes.utils.LWCUtils;
+import de.robotricker.transportpipes.utils.WorldEditUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.World;
@@ -51,10 +52,19 @@ public class TransportPipes extends JavaPlugin {
     private ThreadService thread;
     private DiskService diskService;
 
+    public String serverVersion;
+
     @Override
     public void onEnable() {
 
-    	if (!Bukkit.getVersion().contains("1.17.1") && !Bukkit.getVersion().contains("1.18")) {
+        if (Bukkit.getVersion().contains("1.16.5")) {
+            serverVersion = "1.16";
+        }
+        else if (Bukkit.getVersion().contains("1.17.1") || Bukkit.getVersion().contains("1.18")) {
+            serverVersion = "1.17";
+        }
+//    	if (!Bukkit.getVersion().contains("1.17.1") && !Bukkit.getVersion().contains("1.18")) {
+        else {
             getLogger().log(Level.SEVERE, "------------------------------------------");
             getLogger().log(Level.SEVERE, "TransportPipes currently only works with Minecraft 1.17.1+.");
             getLogger().log(Level.SEVERE, "------------------------------------------");
@@ -131,6 +141,10 @@ public class TransportPipes extends JavaPlugin {
             } catch (Exception e) {
                 e.printStackTrace();
             }
+        }
+        if (Bukkit.getPluginManager().isPluginEnabled("WorldEdit")) {
+            WorldEditUtils weUtils = injector.getSingleton(WorldEditUtils.class);
+            com.sk89q.worldedit.WorldEdit.getInstance().getEventBus().register(weUtils);
         }
 
     }

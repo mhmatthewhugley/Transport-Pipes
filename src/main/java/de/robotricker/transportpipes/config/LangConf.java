@@ -1,12 +1,12 @@
 package de.robotricker.transportpipes.config;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Locale;
-
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Locale;
 
 public class LangConf extends Conf {
 
@@ -17,8 +17,10 @@ public class LangConf extends Conf {
         langConf = this;
     }
 
+    /**
+     * Represents the language keys from the language config
+     */
     public enum Key {
-
         COLORS_BLACK("colors.black"),
         COLORS_BLUE("colors.blue"),
         COLORS_GREEN("colors.green"),

@@ -1,19 +1,5 @@
 package de.robotricker.transportpipes.duct.pipe;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeSet;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedDeque;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import org.bukkit.Chunk;
-import org.bukkit.World;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-
 import de.robotricker.transportpipes.TransportPipes;
 import de.robotricker.transportpipes.api.TransportPipesContainer;
 import de.robotricker.transportpipes.config.GeneralConf;
@@ -32,6 +18,15 @@ import de.robotricker.transportpipes.location.RelativeLocation;
 import de.robotricker.transportpipes.location.TPDirection;
 import net.querz.nbt.tag.CompoundTag;
 import net.querz.nbt.tag.ListTag;
+import org.bukkit.Chunk;
+import org.bukkit.World;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedDeque;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class Pipe extends Duct {
 
@@ -224,8 +219,8 @@ public class Pipe extends Duct {
 					}
 				}
 			}
-			else if (pipeItem.getRelativeLocation().isXEquals(0d) || pipeItem.getRelativeLocation().isYEquals(0d) || pipeItem.getRelativeLocation().isZEquals(0d)
-					|| pipeItem.getRelativeLocation().isXEquals(1d) || pipeItem.getRelativeLocation().isYEquals(1d) || pipeItem.getRelativeLocation().isZEquals(1d)) {
+			else if (pipeItem.getRelativeLocation().getDoubleX() <= 0d || pipeItem.getRelativeLocation().getDoubleY() <= 0d || pipeItem.getRelativeLocation().getDoubleZ() <= 0d
+					|| pipeItem.getRelativeLocation().getDoubleX() >= 1d || pipeItem.getRelativeLocation().getDoubleY() >= 1d || pipeItem.getRelativeLocation().getDoubleZ() >= 1d) {
 				// arrival at end of pipe
 
 				Duct duct = getDuctConnections().get(pipeItem.getMovingDir());
@@ -343,17 +338,23 @@ public class Pipe extends Duct {
 
         items.forEach(pipeItem -> {
             ((PipeManager) ductManager).despawnPipeItem(pipeItem);
-            dropItems.add(pipeItem.getItem());
+            if (destroyer != null) {
+            	dropItems.add(pipeItem.getItem());
+			}
         });
         items.clear();
         futureItems.forEach(pipeItem -> {
             ((PipeManager) ductManager).despawnPipeItem(pipeItem);
-            dropItems.add(pipeItem.getItem());
+			if (destroyer != null) {
+				dropItems.add(pipeItem.getItem());
+			}
         });
         futureItems.clear();
         unloadedItems.forEach(pipeItem -> {
             ((PipeManager) ductManager).despawnPipeItem(pipeItem);
-            dropItems.add(pipeItem.getItem());
+			if (destroyer != null) {
+				dropItems.add(pipeItem.getItem());
+			}
         });
         unloadedItems.clear();
 

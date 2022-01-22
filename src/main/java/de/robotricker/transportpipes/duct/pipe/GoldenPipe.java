@@ -1,16 +1,5 @@
 package de.robotricker.transportpipes.duct.pipe;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-
-import org.bukkit.Chunk;
-import org.bukkit.Material;
-import org.bukkit.World;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-
 import de.robotricker.transportpipes.TransportPipes;
 import de.robotricker.transportpipes.config.LangConf;
 import de.robotricker.transportpipes.duct.Duct;
@@ -27,6 +16,16 @@ import de.robotricker.transportpipes.location.BlockLocation;
 import de.robotricker.transportpipes.location.TPDirection;
 import net.querz.nbt.tag.CompoundTag;
 import net.querz.nbt.tag.ListTag;
+import org.bukkit.Chunk;
+import org.bukkit.Material;
+import org.bukkit.World;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 public class GoldenPipe extends Pipe {
 
@@ -84,8 +83,10 @@ public class GoldenPipe extends Pipe {
     @Override
     public List<ItemStack> destroyed(TransportPipes transportPipes, DuctManager<? extends Duct> ductManager, Player destroyer) {
         List<ItemStack> drop = super.destroyed(transportPipes, ductManager, destroyer);
-        for (Color gpc : Color.values()) {
-            drop.addAll(getItemFilter(gpc).getAsItemStacks());
+        if (destroyer != null) {
+            for (Color gpc : Color.values()) {
+                drop.addAll(getItemFilter(gpc).getAsItemStacks());
+            }
         }
         return drop;
     }
