@@ -29,6 +29,7 @@ import de.robotricker.transportpipes.rendersystems.pipe.modelled.ModelledPipeRen
 import de.robotricker.transportpipes.rendersystems.pipe.vanilla.VanillaPipeRenderSystem;
 import de.robotricker.transportpipes.saving.DiskService;
 import de.robotricker.transportpipes.utils.LWCUtils;
+import de.robotricker.transportpipes.utils.ProtectionUtils.ProtectionUtils;
 import de.robotricker.transportpipes.utils.WorldEditUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
@@ -115,6 +116,7 @@ public class TransportPipes extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(injector.getSingleton(WorldListener.class), this);
         Bukkit.getPluginManager().registerEvents(injector.getSingleton(PlayerSettingsInventory.class), this);
         Bukkit.getPluginManager().registerEvents(injector.getSingleton(ResourcepackService.class), this);
+        Bukkit.getPluginManager().registerEvents(injector.getSingleton(ProtectionUtils.class), this);
 
         //Register commands
         PaperCommandManager commandManager = new PaperCommandManager(this);

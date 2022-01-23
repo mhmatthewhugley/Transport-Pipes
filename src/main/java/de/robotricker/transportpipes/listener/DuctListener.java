@@ -15,6 +15,7 @@ import de.robotricker.transportpipes.items.ItemService;
 import de.robotricker.transportpipes.location.BlockLocation;
 import de.robotricker.transportpipes.location.TPDirection;
 import de.robotricker.transportpipes.utils.HitboxUtils;
+import de.robotricker.transportpipes.utils.ProtectionUtils.ProtectionUtils;
 import de.robotricker.transportpipes.utils.WorldUtils;
 import org.bukkit.*;
 import org.bukkit.block.Block;
@@ -28,18 +29,15 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
-import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.plugin.RegisteredListener;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
-import org.jetbrains.annotations.NotNull;
 
 import javax.inject.Inject;
 import java.util.*;
@@ -60,9 +58,10 @@ public class DuctListener implements Listener {
     private final TransportPipes transportPipes;
     private final ThreadService threadService;
     private final PlayerSettingsService playerSettingsService;
+    private final ProtectionUtils protectionUtils;
 
     @Inject
-    public DuctListener(ItemService itemService, JavaPlugin plugin, DuctRegister ductRegister, GlobalDuctManager globalDuctManager, TPContainerListener tpContainerListener, GeneralConf generalConf, TransportPipes transportPipes, ThreadService threadService, PlayerSettingsService playerSettingsService) {
+    public DuctListener(ItemService itemService, JavaPlugin plugin, DuctRegister ductRegister, GlobalDuctManager globalDuctManager, TPContainerListener tpContainerListener, GeneralConf generalConf, TransportPipes transportPipes, ThreadService threadService, PlayerSettingsService playerSettingsService, ProtectionUtils protectionUtils) {
         this.itemService = itemService;
         this.ductRegister = ductRegister;
         this.globalDuctManager = globalDuctManager;
@@ -71,6 +70,7 @@ public class DuctListener implements Listener {
         this.transportPipes = transportPipes;
         this.threadService = threadService;
         this.playerSettingsService = playerSettingsService;
+        this.protectionUtils = protectionUtils;
 
         for (Material m : Material.values()) {
             if (m.isInteractable()) {
@@ -199,7 +199,7 @@ public class DuctListener implements Listener {
                 if (clickedDuct != null && itemService.isWrench(interaction.item) && interaction.p.isSneaking()) {
                     // Wrench sneak click
                     Block ductBlock = clickedDuct.getBlockLoc().toBlock(interaction.p.getWorld());
-                    if (buildAllowed(interaction.p, ductBlock)) {
+                    if (protectionUtils.canBreak(interaction.p, ductBlock)) {
                         Block relativeBlock = HitboxUtils.getRelativeBlockOfDuct(globalDuctManager, interaction.p, ductBlock);
                         TPDirection clickedDir = TPDirection.fromBlockFace(ductBlock.getFace(Objects.requireNonNull(relativeBlock)));
                         Duct relativeDuct = clickedDuct.getDuctConnections().get(clickedDir);
@@ -229,7 +229,7 @@ public class DuctListener implements Listener {
                 if (clickedDuct != null && !manualPlaceable &&
                         (itemService.isWrench(interaction.item) || (!generalConf.getWrenchRequired() && !canBeUsedToObfuscate(interaction.item.getType())))) {
                     //wrench click
-                    if (buildAllowed(interaction.p, clickedDuct.getBlockLoc().toBlock(interaction.p.getWorld()))) {
+                    if (protectionUtils.canBreak(interaction.p, clickedDuct.getBlockLoc().toBlock(interaction.p.getWorld()))) {
                         clickedDuct.notifyClick(interaction.p, interaction.p.isSneaking());
                     }
 
@@ -265,7 +265,7 @@ public class DuctListener implements Listener {
                     else {
                         return;
                     }
-                    if (buildAllowed(interaction.p, ductBlock)) {
+                    if (protectionUtils.canBuild(interaction.p, ductBlock, interaction.item, interaction.hand)) {
 
                         BlockData oldBlockData = ductBlock.getBlockData().clone();
                         BlockData blockData = interaction.item.getType().createBlockData();
@@ -336,7 +336,7 @@ public class DuctListener implements Listener {
                     if (itemDuctType != null) {
 
                         // duct placement
-                        if (placeBlock != null && buildAllowed(interaction.p, placeBlock)) {
+                        if (placeBlock != null && protectionUtils.canBuild(interaction.p, placeBlock, interaction.item, interaction.hand)) {
                             boolean lwcAllowed = true;
                             for (TPDirection dir : TPDirection.values()) {
                                 if (WorldUtils.lwcProtection(placeBlock.getRelative(dir.getBlockFace()))) {
@@ -370,7 +370,7 @@ public class DuctListener implements Listener {
                         setDirectionalBlockFace(placeBlock.getLocation(), blockData, interaction.p);
                         placeBlock.setBlockData(blockData, true);
 
-                        if (buildAllowed(interaction.p, placeBlock)) {
+                        if (protectionUtils.canBuild(interaction.p, placeBlock, interaction.item, interaction.hand)) {
                             BlockPlaceEvent event = new BlockPlaceEvent(placeBlock, placeBlock.getState(), clickedDuct.getBlockLoc().toBlock(placeBlock.getWorld()), interaction.item, interaction.p, true, interaction.hand);
                             Bukkit.getPluginManager().callEvent(event);
                             if (!event.isCancelled()) {
@@ -404,7 +404,7 @@ public class DuctListener implements Listener {
             // duct destruction
             if (clickedDuct != null) {
                 BlockLocation clickedDuctLocation = clickedDuct.getBlockLoc();
-                if (buildAllowed(interaction.p, clickedDuctLocation.toBlock(interaction.p.getWorld()))) {
+                if (protectionUtils.canBreak(interaction.p, clickedDuctLocation.toBlock(interaction.p.getWorld()))) {
                     globalDuctManager.unregisterDuct(clickedDuct);
                     globalDuctManager.unregisterDuctInRenderSystem(clickedDuct, true);
                     globalDuctManager.updateNeighborDuctsConnections(clickedDuct);
@@ -465,53 +465,6 @@ public class DuctListener implements Listener {
         else p.getInventory().setItemInOffHand(item);
     }
 
-
-    private boolean buildAllowed(Player p, Block b) {
-        if (generalConf.getDisabledWorlds().contains(b.getWorld().getName())) {
-            return false;
-        }
-        if (p.isOp()) {
-            return true;
-        }
-
-        BreakPermissionEvent event = new BreakPermissionEvent(b, p);
-
-        // unregister anticheat listeners
-        List<RegisteredListener> unregisterListeners = new ArrayList<>();
-        for (RegisteredListener rl : event.getHandlers().getRegisteredListeners()) {
-            for (String antiCheat : generalConf.getAnticheatPlugins()) {
-                if (rl.getPlugin().getName().equalsIgnoreCase(antiCheat)) {
-                    unregisterListeners.add(rl);
-                }
-            }
-            if (rl.getListener().equals(tpContainerListener)) {
-                unregisterListeners.add(rl);
-            }
-        }
-        for (RegisteredListener rl : unregisterListeners) {
-            event.getHandlers().unregister(rl);
-        }
-
-        Bukkit.getPluginManager().callEvent(event);
-
-        // register anticheat listeners
-        event.getHandlers().registerAll(unregisterListeners);
-
-        return event.isAllowed();
-    }
-
-    @EventHandler(priority = EventPriority.HIGHEST)
-    public void onPermissionBreak(BlockBreakEvent event) {
-        if (event instanceof BreakPermissionEvent permissionEvent) {
-            if (event.isCancelled()) {
-                permissionEvent.setAllowed(false);
-            }
-            else {
-                permissionEvent.setCancelled(true);
-            }
-        }
-    }
-
     private static class Interaction {
         final Player p;
         final EquipmentSlot hand;
@@ -530,19 +483,6 @@ public class DuctListener implements Listener {
             this.clickedBlock = clickedBlock;
             this.blockFace = blockFace;
             this.action = action;
-        }
-    }
-
-    private static class BreakPermissionEvent extends BlockBreakEvent {
-        private boolean allowed = true;
-        public BreakPermissionEvent(@NotNull Block theBlock, @NotNull Player player) {
-            super(theBlock, player);
-        }
-        public void setAllowed(boolean allowed) {
-            this.allowed = allowed;
-        }
-        public boolean isAllowed() {
-            return allowed;
         }
     }
 

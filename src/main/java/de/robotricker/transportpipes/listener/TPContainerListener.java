@@ -1,22 +1,7 @@
 package de.robotricker.transportpipes.listener;
 
-import javax.inject.Inject;
-
-import de.robotricker.transportpipes.api.ContainerUpdateEvent;
-import org.bukkit.Bukkit;
-import org.bukkit.Chunk;
-import org.bukkit.block.*;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
-import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.block.BlockExplodeEvent;
-import org.bukkit.event.block.BlockPlaceEvent;
-import org.bukkit.event.entity.EntityExplodeEvent;
-import org.bukkit.event.world.ChunkLoadEvent;
-import org.bukkit.inventory.InventoryHolder;
-
 import de.robotricker.transportpipes.TransportPipes;
+import de.robotricker.transportpipes.api.ContainerUpdateEvent;
 import de.robotricker.transportpipes.api.TransportPipesContainer;
 import de.robotricker.transportpipes.container.BlockContainer;
 import de.robotricker.transportpipes.container.BrewingStandContainer;
@@ -31,7 +16,20 @@ import de.robotricker.transportpipes.duct.pipe.Pipe;
 import de.robotricker.transportpipes.location.BlockLocation;
 import de.robotricker.transportpipes.location.TPDirection;
 import de.robotricker.transportpipes.utils.WorldUtils;
+import org.bukkit.Bukkit;
+import org.bukkit.Chunk;
+import org.bukkit.block.*;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockExplodeEvent;
+import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.entity.EntityExplodeEvent;
+import org.bukkit.event.world.ChunkLoadEvent;
+import org.bukkit.inventory.InventoryHolder;
 
+import javax.inject.Inject;
 import java.util.Objects;
 
 public class TPContainerListener implements Listener {
@@ -45,27 +43,27 @@ public class TPContainerListener implements Listener {
     @Inject
     private TransportPipes transportPipes;
 
-    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
-    public void onBlockPlace(BlockPlaceEvent e) {
-        notifyBlockUpdate(e.getBlock(), true);
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onBlockPlace(BlockPlaceEvent event) {
+        notifyBlockUpdate(event.getBlock(), true);
     }
 
-    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
-    public void onBlockBreak(BlockBreakEvent e) {
-        notifyBlockUpdate(e.getBlock(), false);
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onBlockBreak(BlockBreakEvent event) {
+        notifyBlockUpdate(event.getBlock(), false);
     }
 
-    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
-    public void onBlockExplode(BlockExplodeEvent e) {
-        for (Block b : e.blockList()) {
-            notifyBlockUpdate(b, false);
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onBlockExplode(BlockExplodeEvent event) {
+        for (Block block : event.blockList()) {
+            notifyBlockUpdate(block, false);
         }
     }
 
-    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
-    public void onEntityExplode(EntityExplodeEvent e) {
-        for (Block b : e.blockList()) {
-            notifyBlockUpdate(b, false);
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onEntityExplode(EntityExplodeEvent event) {
+        for (Block block : event.blockList()) {
+            notifyBlockUpdate(block, false);
         }
     }
 
@@ -83,8 +81,8 @@ public class TPContainerListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-    public void onChunkLoad(ChunkLoadEvent e) {
-        handleChunkLoadSync(e.getChunk(), false);
+    public void onChunkLoad(ChunkLoadEvent event) {
+        handleChunkLoadSync(event.getChunk(), false);
     }
 
     /**
@@ -186,14 +184,14 @@ public class TPContainerListener implements Listener {
         PipeManager pipeManager = (PipeManager) (DuctManager<? extends Duct>) ductRegister.baseDuctTypeOf("pipe").getDuctManager();
 
         if (loadedChunk.getTileEntities() != null) {
-            for (BlockState bs : loadedChunk.getTileEntities()) {
-                if (WorldUtils.isContainerBlock(bs.getType())) {
+            for (BlockState blockState : loadedChunk.getTileEntities()) {
+                if (WorldUtils.isContainerBlock(blockState.getType())) {
 
                     //automatically ignores this block if it is already registered as container block
-                    updateContainerBlock(bs.getBlock(), true, !onServerStart);
+                    updateContainerBlock(blockState.getBlock(), true, !onServerStart);
 
                     //if this block is already registered, update the block, because the blockState object changes after a chunk unload and load
-                    TransportPipesContainer container = pipeManager.getContainerAtLoc(bs.getLocation());
+                    TransportPipesContainer container = pipeManager.getContainerAtLoc(blockState.getLocation());
                     if (container instanceof BlockContainer) {
                         ((BlockContainer) container).updateBlock();
                     }
