@@ -39,6 +39,7 @@ import org.bukkit.plugin.RegisteredListener;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
+import org.jetbrains.annotations.NotNull;
 
 import javax.inject.Inject;
 import java.util.*;
@@ -352,7 +353,7 @@ public class DuctListener implements Listener {
 
                                 decreaseHandItem(interaction.p, interaction.hand);
                                 
-                                DuctPlaceEvent event = new DuctPlaceEvent(interaction.p);
+                                DuctPlaceEvent event = new DuctPlaceEvent(interaction.p, duct.getBlockLoc());
                                 Bukkit.getPluginManager().callEvent(event);
                             } else {
                                 LangConf.Key.PROTECTED_BLOCK.sendMessage(interaction.p);
@@ -402,14 +403,15 @@ public class DuctListener implements Listener {
             Duct clickedDuct = HitboxUtils.getDuctLookingTo(globalDuctManager, interaction.p, interaction.clickedBlock);
             // duct destruction
             if (clickedDuct != null) {
-                if (buildAllowed(interaction.p, clickedDuct.getBlockLoc().toBlock(interaction.p.getWorld()))) {
+                BlockLocation clickedDuctLocation = clickedDuct.getBlockLoc();
+                if (buildAllowed(interaction.p, clickedDuctLocation.toBlock(interaction.p.getWorld()))) {
                     globalDuctManager.unregisterDuct(clickedDuct);
                     globalDuctManager.unregisterDuctInRenderSystem(clickedDuct, true);
                     globalDuctManager.updateNeighborDuctsConnections(clickedDuct);
                     globalDuctManager.updateNeighborDuctsInRenderSystems(clickedDuct, true);
                     globalDuctManager.playDuctDestroyActions(clickedDuct, interaction.p);
                     
-                    DuctBreakEvent event = new DuctBreakEvent(interaction.p);
+                    DuctBreakEvent event = new DuctBreakEvent(interaction.p, clickedDuctLocation);
                     Bukkit.getPluginManager().callEvent(event);
                 }
 
@@ -472,7 +474,7 @@ public class DuctListener implements Listener {
             return true;
         }
 
-        BlockBreakEvent event = new BlockBreakEvent(b, p);
+        BreakPermissionEvent event = new BreakPermissionEvent(b, p);
 
         // unregister anticheat listeners
         List<RegisteredListener> unregisterListeners = new ArrayList<>();
@@ -495,7 +497,19 @@ public class DuctListener implements Listener {
         // register anticheat listeners
         event.getHandlers().registerAll(unregisterListeners);
 
-        return !event.isCancelled();
+        return event.isAllowed();
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onPermissionBreak(BlockBreakEvent event) {
+        if (event instanceof BreakPermissionEvent permissionEvent) {
+            if (event.isCancelled()) {
+                permissionEvent.setAllowed(false);
+            }
+            else {
+                permissionEvent.setCancelled(true);
+            }
+        }
     }
 
     private static class Interaction {
@@ -516,6 +530,19 @@ public class DuctListener implements Listener {
             this.clickedBlock = clickedBlock;
             this.blockFace = blockFace;
             this.action = action;
+        }
+    }
+
+    private static class BreakPermissionEvent extends BlockBreakEvent {
+        private boolean allowed = true;
+        public BreakPermissionEvent(@NotNull Block theBlock, @NotNull Player player) {
+            super(theBlock, player);
+        }
+        public void setAllowed(boolean allowed) {
+            this.allowed = allowed;
+        }
+        public boolean isAllowed() {
+            return allowed;
         }
     }
 

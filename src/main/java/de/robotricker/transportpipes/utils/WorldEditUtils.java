@@ -44,6 +44,7 @@ public class WorldEditUtils {
                     BlockMaterial after = block.getBlockType().getMaterial();
 
                     if (after.isAir() || (after != before)) {
+                        BlockLocation ductLoc = duct.getBlockLoc();
                         globalDuctManager.unregisterDuct(duct);
                         globalDuctManager.unregisterDuctInRenderSystem(duct, true);
                         globalDuctManager.updateNeighborDuctsConnections(duct);
@@ -51,8 +52,8 @@ public class WorldEditUtils {
                         globalDuctManager.playDuctDestroyActions(duct, null);
 
                         Bukkit.getScheduler().runTask(plugin, () -> {
-                            DuctBreakEvent breakBreakEvent = new DuctBreakEvent(null);
-                            Bukkit.getPluginManager().callEvent(breakBreakEvent);
+                            DuctBreakEvent ductBreakEvent = new DuctBreakEvent(null, ductLoc);
+                            Bukkit.getPluginManager().callEvent(ductBreakEvent);
                         });
                     }
                 }
