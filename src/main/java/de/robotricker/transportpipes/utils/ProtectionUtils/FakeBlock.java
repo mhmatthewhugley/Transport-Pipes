@@ -4,14 +4,12 @@ import org.bukkit.*;
 import org.bukkit.block.*;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.MetadataValue;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.util.BoundingBox;
 import org.bukkit.util.RayTraceResult;
 import org.bukkit.util.Vector;
-import org.bukkit.util.VoxelShape;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -173,7 +171,7 @@ public class FakeBlock implements Block {
 
     @Override
     public void setBiome(@NotNull Biome bio) {
-        world.setBiome(location, bio);
+        world.setBiome(location.getBlockX(), location.getBlockY(), location.getBlockZ(), bio);
     }
 
     @Override
@@ -271,11 +269,6 @@ public class FakeBlock implements Block {
     }
 
     @Override
-    public float getBreakSpeed(@NotNull Player player) {
-        return 0;
-    }
-
-    @Override
     public boolean isPassable() {
         return location.getBlock().isPassable();
     }
@@ -290,12 +283,6 @@ public class FakeBlock implements Block {
     @Override
     public BoundingBox getBoundingBox() {
         return location.getBlock().getBoundingBox();
-    }
-
-    @NotNull
-    @Override
-    public VoxelShape getCollisionShape() {
-        return location.getBlock().getCollisionShape();
     }
 
     @Override

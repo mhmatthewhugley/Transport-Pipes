@@ -5,18 +5,19 @@ import de.robotricker.transportpipes.config.LangConf;
 import de.robotricker.transportpipes.duct.pipe.CraftingPipe;
 import de.robotricker.transportpipes.duct.pipe.filter.ItemData;
 import de.robotricker.transportpipes.location.TPDirection;
+import net.minecraft.server.v1_16_R3.*;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.craftbukkit.v1_16_R3.CraftWorld;
+import org.bukkit.craftbukkit.v1_16_R3.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.DragType;
+import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class CraftingPipeSettingsInventory extends DuctSettingsInventory {
 
@@ -146,50 +147,38 @@ public class CraftingPipeSettingsInventory extends DuctSettingsInventory {
     }
 
     private Recipe calculateRecipe() {
-        ItemStack[] items = new ItemStack[9];
+        ItemStack[] craftingMatrix = new ItemStack[9];
         for (int row = 0; row < 3; row++) {
             for (int col = 0; col < 3; col++) {
                 if (inv.getItem(10 + row * 9 + col) != null) {
-                    items[row * 3 + col] = inv.getItem(10 + row * 9 + col);
+                    craftingMatrix[row * 3 + col] = inv.getItem(10 + row * 9 + col);
                 } else {
-                    items[row * 3 + col] = null;
+                    craftingMatrix[row * 3 + col] = new ItemStack(Material.AIR);
                 }
             }
         }
 
-//        Inventory craftingInventory = Bukkit.createInventory(null, InventoryType.WORKBENCH);
-//        craftingInventory.setContents(items);
+        Container container = new Container(null, -1) {
+            @Override
+            public InventoryView getBukkitView() {
+                return null;
+            }
 
-//        Iterator<Recipe> iterator = Bukkit.recipeIterator();
-//        recipeLoop:
-//        while (iterator.hasNext()) {
-//            Recipe recipe = iterator.next();
-//            if (recipe instanceof ShapedRecipe shapedRecipe) {
-//                Map<Character, RecipeChoice> ingredients = shapedRecipe.getChoiceMap();
-//                int index = 0;
-//                for (String row : shapedRecipe.getShape()) {
-//                    for (char col : row.toCharArray()) {
-//                        RecipeChoice recipeChoice = ingredients.get(col);
-//                        if (recipeChoice.test(Objects.requireNonNull(items[index]))) {
-//                            if (index == 8) {
-//                                // All items have matched, return the recipe
-//                                return recipe;
-//                            }
-//                        }
-//                        else {
-//                            continue recipeLoop;
-//                        }
-//                        index++;
-//                    }
-//                }
-//            }
-//            else if (recipe instanceof ShapelessRecipe shapelessRecipe) {
-//                if (shapelessRecipe.getChoiceList().stream().allMatch(recipeChoice -> Arrays.stream(items).anyMatch(recipeChoice))) {
-//                    return recipe;
-//                }
-//            }
-//        }
-        return Bukkit.getCraftingRecipe(items, duct.getWorld());
+            @Override
+            public boolean canUse(EntityHuman entityHuman) {
+                return false;
+            }
+        };
+
+        InventoryCrafting inventoryCrafting = new InventoryCrafting(container, 3, 3);
+        for (int i = 0; i < craftingMatrix.length; i++) {
+            inventoryCrafting.setItem(i, CraftItemStack.asNMSCopy(craftingMatrix[i]));
+        }
+
+        World world = ((CraftWorld) duct.getWorld()).getHandle();
+        Optional<RecipeCrafting> recipeCrafting = world.getMinecraftServer().getCraftingManager().craft(Recipes.CRAFTING, inventoryCrafting, world);
+
+        return recipeCrafting.map(IRecipe::toBukkitRecipe).orElse(null);
     }
 
     private void updateResultWithDelay() {

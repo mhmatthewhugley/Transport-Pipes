@@ -1,18 +1,6 @@
 package de.robotricker.transportpipes.duct.factory;
 
-import javax.inject.Inject;
-
-import org.bukkit.Chunk;
-import org.bukkit.World;
-
-import de.robotricker.transportpipes.duct.pipe.ColoredPipe;
-import de.robotricker.transportpipes.duct.pipe.CraftingPipe;
-import de.robotricker.transportpipes.duct.pipe.ExtractionPipe;
-import de.robotricker.transportpipes.duct.pipe.GoldenPipe;
-import de.robotricker.transportpipes.duct.pipe.IcePipe;
-import de.robotricker.transportpipes.duct.pipe.IronPipe;
-import de.robotricker.transportpipes.duct.pipe.Pipe;
-import de.robotricker.transportpipes.duct.pipe.VoidPipe;
+import de.robotricker.transportpipes.duct.pipe.*;
 import de.robotricker.transportpipes.duct.pipe.filter.ItemDistributorService;
 import de.robotricker.transportpipes.duct.types.DuctType;
 import de.robotricker.transportpipes.duct.types.pipetype.ColoredPipeType;
@@ -20,6 +8,10 @@ import de.robotricker.transportpipes.inventory.CraftingPipeSettingsInventory;
 import de.robotricker.transportpipes.inventory.ExtractionPipeSettingsInventory;
 import de.robotricker.transportpipes.inventory.GoldenPipeSettingsInventory;
 import de.robotricker.transportpipes.location.BlockLocation;
+import org.bukkit.Chunk;
+import org.bukkit.World;
+
+import javax.inject.Inject;
 
 public class PipeFactory extends DuctFactory<Pipe> {
 
