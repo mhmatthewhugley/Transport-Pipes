@@ -156,39 +156,6 @@ public class CraftingPipeSettingsInventory extends DuctSettingsInventory {
                 }
             }
         }
-
-//        Inventory craftingInventory = Bukkit.createInventory(null, InventoryType.WORKBENCH);
-//        craftingInventory.setContents(items);
-
-//        Iterator<Recipe> iterator = Bukkit.recipeIterator();
-//        recipeLoop:
-//        while (iterator.hasNext()) {
-//            Recipe recipe = iterator.next();
-//            if (recipe instanceof ShapedRecipe shapedRecipe) {
-//                Map<Character, RecipeChoice> ingredients = shapedRecipe.getChoiceMap();
-//                int index = 0;
-//                for (String row : shapedRecipe.getShape()) {
-//                    for (char col : row.toCharArray()) {
-//                        RecipeChoice recipeChoice = ingredients.get(col);
-//                        if (recipeChoice.test(Objects.requireNonNull(items[index]))) {
-//                            if (index == 8) {
-//                                // All items have matched, return the recipe
-//                                return recipe;
-//                            }
-//                        }
-//                        else {
-//                            continue recipeLoop;
-//                        }
-//                        index++;
-//                    }
-//                }
-//            }
-//            else if (recipe instanceof ShapelessRecipe shapelessRecipe) {
-//                if (shapelessRecipe.getChoiceList().stream().allMatch(recipeChoice -> Arrays.stream(items).anyMatch(recipeChoice))) {
-//                    return recipe;
-//                }
-//            }
-//        }
         return Bukkit.getCraftingRecipe(items, duct.getWorld());
     }
 
