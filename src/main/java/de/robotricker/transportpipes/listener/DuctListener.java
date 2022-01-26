@@ -15,6 +15,7 @@ import de.robotricker.transportpipes.items.ItemService;
 import de.robotricker.transportpipes.location.BlockLocation;
 import de.robotricker.transportpipes.location.TPDirection;
 import de.robotricker.transportpipes.utils.HitboxUtils;
+import de.robotricker.transportpipes.utils.ProtectionUtils.FakeBlock;
 import de.robotricker.transportpipes.utils.ProtectionUtils.ProtectionUtils;
 import de.robotricker.transportpipes.utils.WorldUtils;
 import org.bukkit.*;
@@ -299,22 +300,22 @@ public class DuctListener implements Listener {
                 }
 
                 // ********************** PREPARATIONS FOR DUCT / BLOCK PLACE ****************************
-                Block placeBlock = null;
+                Block relativeBlock = null;
                 // If duct clicked, get block relative to clicked duct
                 if (clickedDuct != null) {
-                    placeBlock = HitboxUtils.getRelativeBlockOfDuct(globalDuctManager, interaction.p, clickedDuct.getBlockLoc().toBlock(interaction.p.getWorld()));
+                    relativeBlock = HitboxUtils.getRelativeBlockOfDuct(globalDuctManager, interaction.p, clickedDuct.getBlockLoc().toBlock(interaction.p.getWorld()));
                 }
                 // Otherwise, if block clicked, get block relative to clicked block
                 else if (interaction.clickedBlock != null) {
-                    placeBlock = interaction.clickedBlock.getRelative(interaction.blockFace);
+                    relativeBlock = interaction.clickedBlock.getRelative(interaction.blockFace);
                 }
-                // If hand item is not a duct, duct was not clicked, a block is to be placed, and the block isn't being placed at a duct
-                if (itemDuctType == null && clickedDuct == null && (placeBlock != null && globalDuctManager.getDuctAtLoc(placeBlock.getLocation()) == null)) {
+                // If hand item is not a duct, duct was not clicked, and there's a relative block and the relative block is not a duct
+                if (itemDuctType == null && clickedDuct == null && (relativeBlock != null && globalDuctManager.getDuctAtLoc(relativeBlock.getLocation()) == null)) {
                 	return;
                 }
-                // If a block is to be placed, and it's either solid or there's a duct where it's being placed
-                if (placeBlock != null && (placeBlock.getType().isSolid() || globalDuctManager.getDuctAtLoc(placeBlock.getLocation()) != null)) {
-                    placeBlock = null;
+                // If there's a relative block, and it's either solid or a duct
+                if (relativeBlock != null && (relativeBlock.getType().isSolid() || globalDuctManager.getDuctAtLoc(relativeBlock.getLocation()) != null)) {
+                    relativeBlock = null;
                 }
                 // If duct was not clicked, a block was clicked, the clicked block is interactable, and the player is not sneaking
                 if (clickedDuct == null && interaction.clickedBlock != null && interactables.contains(interaction.clickedBlock.getType()) && !interaction.p.isSneaking()) {
@@ -323,8 +324,9 @@ public class DuctListener implements Listener {
                     	return;
                     }
                 }
-                // Otherwise, if a block is not placed or a duct was clicked and hand item is not a duct or solid block
-                else if (placeBlock == null || (clickedDuct != null && !manualPlaceable)) {
+                // Otherwise, if there is no relative block or a duct was clicked and hand item is not a duct or solid block
+                else if (relativeBlock == null || (clickedDuct != null && !manualPlaceable)) {
+                    // Don't prevent players from eating or bone mealing
                     if (!interaction.item.getType().isEdible() && interaction.item.getType() != Material.BONE_MEAL) {
                         interaction.denyBlockUse = true;
                     }
@@ -333,18 +335,18 @@ public class DuctListener implements Listener {
 
                 // ********************** DUCT AND BLOCK PLACE ****************************
                 if (manualPlaceable) {
+                    // DUCT PLACEMENT
                     if (itemDuctType != null) {
-
-                        // duct placement
-                        if (placeBlock != null && protectionUtils.canBuild(interaction.p, placeBlock, interaction.item, interaction.hand)) {
+                        // At this point, relativeBlock is only null if we can't place a block there
+                        if (relativeBlock != null && protectionUtils.canBuild(interaction.p, relativeBlock, interaction.item, interaction.hand)) {
                             boolean lwcAllowed = true;
                             for (TPDirection dir : TPDirection.values()) {
-                                if (WorldUtils.lwcProtection(placeBlock.getRelative(dir.getBlockFace()))) {
+                                if (WorldUtils.lwcProtection(relativeBlock.getRelative(dir.getBlockFace()))) {
                                     lwcAllowed = false;
                                 }
                             }
                             if (lwcAllowed) {
-                                Duct duct = globalDuctManager.createDuctObject(itemDuctType, new BlockLocation(placeBlock.getLocation()), placeBlock.getWorld(), placeBlock.getChunk());
+                                Duct duct = globalDuctManager.createDuctObject(itemDuctType, new BlockLocation(relativeBlock.getLocation()), relativeBlock.getWorld(), relativeBlock.getChunk());
                                 globalDuctManager.registerDuct(duct);
                                 globalDuctManager.updateDuctConnections(duct);
                                 globalDuctManager.registerDuctInRenderSystems(duct, true);
@@ -362,37 +364,43 @@ public class DuctListener implements Listener {
 
                         interaction.cancel = true;
                         interaction.successful = true;
-                    } else if (clickedDuct != null) {
-                        //block placement next to duct
-
-                        BlockData oldBlockData = placeBlock.getBlockData().clone();
+                    }
+                    // BLOCK PLACEMENT NEXT TO DUCT
+                    else if (clickedDuct != null) {
                         BlockData blockData = interaction.item.getType().createBlockData();
-                        setDirectionalBlockFace(placeBlock.getLocation(), blockData, interaction.p);
-                        placeBlock.setBlockData(blockData, true);
+                        setDirectionalBlockFace(relativeBlock.getLocation(), blockData, interaction.p);
+                        Block fakeBlock = new FakeBlock(relativeBlock.getWorld(), relativeBlock.getLocation(), interaction.item.getType());
+                        fakeBlock.setBlockData(blockData, false);
 
-                        if (protectionUtils.canBuild(interaction.p, placeBlock, interaction.item, interaction.hand)) {
-                            BlockPlaceEvent event = new BlockPlaceEvent(placeBlock, placeBlock.getState(), clickedDuct.getBlockLoc().toBlock(placeBlock.getWorld()), interaction.item, interaction.p, true, interaction.hand);
+                        if (protectionUtils.canBuild(interaction.p, fakeBlock, interaction.item, interaction.hand)) {
+                            BlockData oldBlockData = relativeBlock.getBlockData().clone();
+                            relativeBlock.setBlockData(blockData, true);
+
+                            BlockPlaceEvent event = new BlockPlaceEvent(relativeBlock, relativeBlock.getState(), clickedDuct.getBlockLoc().toBlock(relativeBlock.getWorld()), interaction.item, interaction.p, true, interaction.hand);
                             Bukkit.getPluginManager().callEvent(event);
+
                             if (!event.isCancelled()) {
-                                if (!placeBlock.getType().isOccluding() && !Tag.SLABS.isTagged(placeBlock.getType()) && !Tag.STAIRS.isTagged(placeBlock.getType())
-                                        && !Tag.IMPERMEABLE.isTagged(placeBlock.getType()) && placeBlock.getType() != Material.GLOWSTONE &&
-                                        !WorldUtils.isContainerBlock(placeBlock.getType()) &&
-                                        placeBlock.getRelative(BlockFace.DOWN).getType().isAir()) {
-                                    placeBlock.setBlockData(oldBlockData);
+                                Material blockType = relativeBlock.getType();
+                                // If the block to place is not solid, slab, stair, impermeable, glowstone, and container
+                                if (!blockType.isOccluding() && !Tag.SLABS.isTagged(blockType) && !Tag.STAIRS.isTagged(blockType)
+                                        && !Tag.IMPERMEABLE.isTagged(blockType) && blockType != Material.GLOWSTONE &&
+                                        !WorldUtils.isContainerBlock(blockType)) {
+                                    relativeBlock.setBlockData(oldBlockData, true);
                                 }
                                 else {
                                     // create TransportPipesContainer from placed block if it is such
                                     if (WorldUtils.isContainerBlock(interaction.item.getType())) {
-                                        tpContainerListener.updateContainerBlock(placeBlock, true, true);
+                                        tpContainerListener.updateContainerBlock(relativeBlock, true, true);
                                     }
 
                                     decreaseHandItem(interaction.p, interaction.hand);
                                 }
                             }
                             else {
-                                placeBlock.setBlockData(oldBlockData, true);
+                                relativeBlock.setBlockData(oldBlockData, true);
                             }
                         }
+
                         interaction.cancel = true;
                         interaction.successful = true;
                     }
