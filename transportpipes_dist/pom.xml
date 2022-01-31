@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>transportpipes_dist</artifactId>
+    <packaging>jar</packaging>
+    <name>TransportPipes</name>
+
+    <parent>
+        <groupId>de.robotricker</groupId>
+        <artifactId>transportpipes_parent</artifactId>
+        <version>5.4.1</version>
+    </parent>
+
+    <properties>
+        <maven.compiler.source>16</maven.compiler.source>
+        <maven.compiler.target>16</maven.compiler.target>
+
+        <!-- Versioning properties -->
+        <project.buildNumber>CUSTOM</project.buildNumber>
+        <project.versionCode>${project.version}-b${project.buildNumber}</project.versionCode>
+        <project.finalNameBase>${project.name}-${project.version}</project.finalNameBase>
+    </properties>
+
+    <profiles>
+        <!-- Jenkins profile -->
+        <!-- Set the buildNumber using the jenkins env. variable -->
+        <profile>
+            <id>jenkins</id>
+            <activation>
+                <property>
+                    <name>env.BUILD_NUMBER</name>
+                </property>
+            </activation>
+            <properties>
+                <project.buildNumber>${env.BUILD_NUMBER}</project.buildNumber>
+            </properties>
+        </profile>
+    </profiles>
+
+    <build>
+        <defaultGoal>clean package</defaultGoal>
+        <directory>../target</directory>
+        <!-- Little hack to make the shade plugin output a file with the right name -->
+        <finalName>${project.finalNameBase}-noshade</finalName>
+        <plugins>
+            <!-- Clean the target folder content -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-clean-plugin</artifactId>
+                <version>3.1.0</version>
+            </plugin>
+            <!-- Modify MANIFEST.MF -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.2.0</version>
+                <configuration>
+                    <archive>
+                        <manifestEntries>
+                            <Built-By>BlackBeltPanda</Built-By>
+                        </manifestEntries>
+                    </archive>
+                </configuration>
+            </plugin>
+            <!-- Generate a jar containing the source javadoc -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>3.3.0</version>
+                <configuration>
+                    <finalName>${project.finalNameBase}</finalName>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>attach-javadoc</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <!-- Generate a jar containing the java sources -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>3.2.0</version>
+                <configuration>
+                    <finalName>${project.finalNameBase}</finalName>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <!-- Generate a jar containing classes, resources and shaded libraries -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.3.0-SNAPSHOT</version>
+                <configuration>
+                    <!-- Don't create the reduced pom file, as we don't deploy the shaded jar -->
+                    <createDependencyReducedPom>false</createDependencyReducedPom>
+                    <!-- Deploy the non shaded jar as main artifact -->
+                    <shadedArtifactAttached>true</shadedArtifactAttached>
+                    <!-- Use the base jar name, to help server owners download the right jar -->
+                    <finalName>${project.finalNameBase}</finalName>
+
+                    <!-- Relocate shaded libraries that might cause class conflicts with other plugins -->
+                    <relocations>
+                        <relocation>
+                            <pattern>net.querz.nbt</pattern>
+                            <shadedPattern>de.robotricker.transportpipes.libs.net.querz.nbt</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>com.fasterxml</pattern>
+                            <shadedPattern>de.robotricker.transportpipes.libs.com.fasterxml</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>org.slf4j</pattern>
+                            <shadedPattern>de.robotricker.transportpipes.libs.org.slf4j</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>javax.inject</pattern>
+                            <shadedPattern>de.robotricker.transportpipes.libs.javax.inject</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>ch.jalu</pattern>
+                            <shadedPattern>de.robotricker.transportpipes.libs.ch.jalu</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>co.aikar.commands</pattern>
+                            <shadedPattern>de.robotricker.transportpipes.libs.co.aikar.commands</shadedPattern>
+                        </relocation>
+                    </relocations>
+                    <filters>
+                        <!-- Ignore manifest signatures for shading the project into an uber-jar to fix -->
+                        <!-- "Invalid signature file digest for Manifest main attributes" -->
+                        <filter>
+                            <artifact>*:*</artifact>
+                            <excludes>
+                                <exclude>META-INF/*.SF</exclude>
+                                <exclude>META-INF/*.DSA</exclude>
+                                <exclude>META-INF/*.RSA</exclude>
+                            </excludes>
+                        </filter>
+                    </filters>
+                    <transformers>
+                        <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer" />
+                    </transformers>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <!-- Install the jars as artifacts into the local repository -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-install-plugin</artifactId>
+                <version>3.0.0-M1</version>
+            </plugin>
+            <!-- Deploy the jars as artifacts into the remote repository -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <version>3.0.0-M1</version>
+            </plugin>
+            <!-- Handle documentation generation, required by other plugins -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-site-plugin</artifactId>
+                <version>3.9.0</version>
+            </plugin>
+        </plugins>
+    </build>
+
+    <dependencies>
+        <dependency>
+            <groupId>de.robotricker</groupId>
+            <artifactId>transportpipes_core</artifactId>
+            <version>5.4.1</version>
+        </dependency>
+        <dependency>
+            <groupId>de.robotricker</groupId>
+            <artifactId>transportpipes_1_16_5</artifactId>
+            <version>5.4.1</version>
+        </dependency>
+        <dependency>
+            <groupId>de.robotricker</groupId>
+            <artifactId>transportpipes_1_17</artifactId>
+            <version>5.4.1</version>
+        </dependency>
+        <dependency>
+            <groupId>de.robotricker</groupId>
+            <artifactId>transportpipes_1_17_1</artifactId>
+            <version>5.4.1</version>
+        </dependency>
+    </dependencies>
+    
+</project>
