@@ -1,5 +1,6 @@
 package de.robotricker.transportpipes.utils.ProtectionUtils;
 
+import de.robotricker.transportpipes.TransportPipes;
 import de.robotricker.transportpipes.config.GeneralConf;
 import de.robotricker.transportpipes.listener.TPContainerListener;
 import org.bukkit.Bukkit;
@@ -25,11 +26,13 @@ public class ProtectionUtils implements Listener {
 
     private final GeneralConf generalConf;
     private final TPContainerListener tpContainerListener;
+    private final TransportPipes transportPipes;
 
     @Inject
-    public ProtectionUtils(GeneralConf generalConf, TPContainerListener tpContainerListener) {
+    public ProtectionUtils(GeneralConf generalConf, TPContainerListener tpContainerListener, TransportPipes transportPipes) {
         this.generalConf = generalConf;
         this.tpContainerListener = tpContainerListener;
+        this.transportPipes = transportPipes;
     }
 
     public boolean canBuild(Player player, Block block, ItemStack item, EquipmentSlot hand) {
@@ -37,7 +40,7 @@ public class ProtectionUtils implements Listener {
             return false;
         }
 
-        Block fakeBlock = new FakeBlock(block.getWorld(), block.getLocation(), Material.HOPPER);
+        Block fakeBlock = transportPipes.getFakeBlock().getBlock(block.getWorld(), block.getLocation(), Material.HOPPER);
         BuildPermissionEvent event = new BuildPermissionEvent(fakeBlock, block.getState(), block.getRelative(BlockFace.DOWN), item, player, true, hand);
         callEventWithoutAntiCheat(event);
 
@@ -49,7 +52,7 @@ public class ProtectionUtils implements Listener {
             return false;
         }
 
-        Block fakeBlock = new FakeBlock(block.getWorld(), block.getLocation(), Material.HOPPER);
+        Block fakeBlock = transportPipes.getFakeBlock().getBlock(block.getWorld(), block.getLocation(), Material.HOPPER);
         BreakPermissionEvent event = new BreakPermissionEvent(fakeBlock, player);
         callEventWithoutAntiCheat(event);
 

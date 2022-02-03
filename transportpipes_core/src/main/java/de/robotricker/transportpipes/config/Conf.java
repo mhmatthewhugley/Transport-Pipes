@@ -13,7 +13,7 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Objects;
+import java.util.logging.Level;
 
 public class Conf {
 
@@ -42,7 +42,14 @@ public class Conf {
 
             InputStream is = configPlugin.getResource(jarConfigName);
             Files.createDirectories(finalConfigFile.getParent());
-            Files.copy(Objects.requireNonNull(is), finalConfigFile);
+
+            if (is == null) {
+                Bukkit.getLogger().log(Level.SEVERE, "InputStream is null for config " + jarConfigName + ".");
+                Bukkit.getLogger().log(Level.SEVERE, "Unable to copy bytes to " + finalConfigFile + ".");
+            }
+            else{
+                Files.copy(is, finalConfigFile);
+            }
 
             YamlConfiguration newConf = YamlConfiguration.loadConfiguration(finalConfigFile.toFile());
             Map<String, Object> valuesAfter = newConf.getValues(true);

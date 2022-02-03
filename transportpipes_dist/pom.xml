@@ -6,7 +6,6 @@
 
     <artifactId>transportpipes_dist</artifactId>
     <packaging>jar</packaging>
-    <name>TransportPipes</name>
 
     <parent>
         <groupId>de.robotricker</groupId>
@@ -15,43 +14,14 @@
     </parent>
 
     <properties>
-        <maven.compiler.source>16</maven.compiler.source>
-        <maven.compiler.target>16</maven.compiler.target>
-
-        <!-- Versioning properties -->
-        <project.buildNumber>CUSTOM</project.buildNumber>
-        <project.versionCode>${project.version}-b${project.buildNumber}</project.versionCode>
-        <project.finalNameBase>${project.name}-${project.version}</project.finalNameBase>
+        <project.finalNameBase>${project.parent.name}-${project.version}</project.finalNameBase>
     </properties>
 
-    <profiles>
-        <!-- Jenkins profile -->
-        <!-- Set the buildNumber using the jenkins env. variable -->
-        <profile>
-            <id>jenkins</id>
-            <activation>
-                <property>
-                    <name>env.BUILD_NUMBER</name>
-                </property>
-            </activation>
-            <properties>
-                <project.buildNumber>${env.BUILD_NUMBER}</project.buildNumber>
-            </properties>
-        </profile>
-    </profiles>
-
     <build>
-        <defaultGoal>clean package</defaultGoal>
         <directory>../target</directory>
         <!-- Little hack to make the shade plugin output a file with the right name -->
         <finalName>${project.finalNameBase}-noshade</finalName>
         <plugins>
-            <!-- Clean the target folder content -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-clean-plugin</artifactId>
-                <version>3.1.0</version>
-            </plugin>
             <!-- Modify MANIFEST.MF -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -64,40 +34,6 @@
                         </manifestEntries>
                     </archive>
                 </configuration>
-            </plugin>
-            <!-- Generate a jar containing the source javadoc -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <version>3.3.0</version>
-                <configuration>
-                    <finalName>${project.finalNameBase}</finalName>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>attach-javadoc</id>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <!-- Generate a jar containing the java sources -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-source-plugin</artifactId>
-                <version>3.2.0</version>
-                <configuration>
-                    <finalName>${project.finalNameBase}</finalName>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>attach-sources</id>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                    </execution>
-                </executions>
             </plugin>
             <!-- Generate a jar containing classes, resources and shaded libraries -->
             <plugin>
@@ -140,8 +76,6 @@
                         </relocation>
                     </relocations>
                     <filters>
-                        <!-- Ignore manifest signatures for shading the project into an uber-jar to fix -->
-                        <!-- "Invalid signature file digest for Manifest main attributes" -->
                         <filter>
                             <artifact>*:*</artifact>
                             <excludes>
@@ -151,9 +85,6 @@
                             </excludes>
                         </filter>
                     </filters>
-                    <transformers>
-                        <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer" />
-                    </transformers>
                 </configuration>
                 <executions>
                     <execution>
@@ -164,23 +95,18 @@
                     </execution>
                 </executions>
             </plugin>
-            <!-- Install the jars as artifacts into the local repository -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-install-plugin</artifactId>
-                <version>3.0.0-M1</version>
-            </plugin>
-            <!-- Deploy the jars as artifacts into the remote repository -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-deploy-plugin</artifactId>
-                <version>3.0.0-M1</version>
-            </plugin>
-            <!-- Handle documentation generation, required by other plugins -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-site-plugin</artifactId>
-                <version>3.9.0</version>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>3.3.1</version>
+                <executions>
+                    <execution>
+                        <id>attach-javadoc</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

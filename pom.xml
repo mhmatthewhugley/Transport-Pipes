@@ -60,27 +60,23 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>16</java.version>
+        <maven.compiler.source>${java.version}</maven.compiler.source>
+        <maven.compiler.target>${java.version}</maven.compiler.target>
+        <spigot.javadoc>https://hub.spigotmc.org/javadocs/spigot/</spigot.javadoc>
+        <bukkit.javadoc>https://hub.spigotmc.org/javadocs/bukkit/</bukkit.javadoc>
     </properties>
-
-    <!-- Snapshot repo for maven -->
-    <pluginRepositories>
-        <pluginRepository>
-            <id>apache.snapshots</id>
-            <url>https://repository.apache.org/snapshots/</url>
-        </pluginRepository>
-    </pluginRepositories>
 
     <build>
         <plugins>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <version>3.3.0</version>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>3.2.0</version>
                 <executions>
                     <execution>
-                        <id>aggregate</id>
+                        <id>bundle-sources</id>
+                        <phase>package</phase>
                         <goals>
-                            <goal>aggregate</goal>
+                            <goal>jar-no-fork</goal>
                         </goals>
                     </execution>
                 </executions>
@@ -132,73 +128,6 @@
             <groupId>com.comphenix.protocol</groupId>
             <artifactId>ProtocolLib</artifactId>
             <version>4.8.0-SNAPSHOT</version>
-            <scope>provided</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>cglib</groupId>
-                    <artifactId>cglib-nodep</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>com.comphenix.executors</groupId>
-                    <artifactId>BukkitExecutors</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-
-        <!-- Jalu Injector, https://github.com/ljacqu/DependencyInjector -->
-        <dependency>
-            <groupId>ch.jalu</groupId>
-            <artifactId>injector</artifactId>
-            <version>1.0</version>
-            <optional>true</optional>
-        </dependency>
-
-        <!-- https://mvnrepository.com/artifact/org.jetbrains/annotations -->
-        <dependency>
-            <groupId>org.jetbrains</groupId>
-            <artifactId>annotations</artifactId>
-            <version>21.0.1</version>
-        </dependency>
-
-        <!-- ACF -->
-        <dependency>
-            <groupId>co.aikar</groupId>
-            <artifactId>acf-paper</artifactId>
-            <version>0.5.0-SNAPSHOT</version>
-            <scope>compile</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-simple</artifactId>
-            <version>1.7.32</version>
-            <optional>true</optional>
-        </dependency>
-
-        <dependency>
-            <groupId>com.github.Querz</groupId>
-            <artifactId>NBT</artifactId>
-            <version>6.1</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.griefcraft.lwc</groupId>
-            <artifactId>LWCX</artifactId>
-            <version>2.2.6</version>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>fr.xephi</groupId>
-            <artifactId>authme</artifactId>
-            <version>5.6.0-SNAPSHOT</version>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>com.sk89q.worldedit</groupId>
-            <artifactId>worldedit-bukkit</artifactId>
-            <version>7.2.8</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>

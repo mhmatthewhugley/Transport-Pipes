@@ -5,6 +5,7 @@
 
     <artifactId>transportpipes_core</artifactId>
     <packaging>jar</packaging>
+    <name>TransportPipes</name>
 
     <parent>
         <groupId>de.robotricker</groupId>
@@ -30,45 +31,7 @@
                 </excludes>
             </resource>
         </resources>
-
-        <plugins>
-            <!-- Compile and include classes -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.1</version>
-                <configuration>
-                    <source>${java.version}</source>
-                    <target>${java.version}</target>
-                </configuration>
-            </plugin>
-            <!-- Generate a jar containing the source javadoc -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <version>3.3.0</version>
-                <configuration>
-                    <finalName>TransportPipes-${project.version}</finalName>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>attach-javadoc</id>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
     </build>
-
-    <repositories>
-        <!-- SpigotAPI -->
-        <repository>
-            <id>spigotmc-repo</id>
-            <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots</url>
-        </repository>
-    </repositories>
 
     <dependencies>
         <!-- Spigot API, minecraft server modding API, https://www.spigotmc.org/ -->
@@ -77,30 +40,60 @@
             <artifactId>spigot-api</artifactId>
             <version>1.16.5-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>com.googlecode.json-simple</groupId>
-                    <artifactId>json-simple</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>com.google.code.gson</groupId>
-                    <artifactId>gson</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.yaml</groupId>
-                    <artifactId>snakeyaml</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>net.md-5</groupId>
-                    <artifactId>bungeecord-chat</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
 
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot</artifactId>
             <version>1.16.5-R0.1-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- Jalu Injector, https://github.com/ljacqu/DependencyInjector -->
+        <dependency>
+            <groupId>ch.jalu</groupId>
+            <artifactId>injector</artifactId>
+            <version>1.0</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.jetbrains/annotations -->
+        <dependency>
+            <groupId>org.jetbrains</groupId>
+            <artifactId>annotations</artifactId>
+            <version>21.0.1</version>
+        </dependency>
+
+        <!-- ACF -->
+        <dependency>
+            <groupId>co.aikar</groupId>
+            <artifactId>acf-paper</artifactId>
+            <version>0.5.0-SNAPSHOT</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.github.Querz</groupId>
+            <artifactId>NBT</artifactId>
+            <version>6.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.griefcraft.lwc</groupId>
+            <artifactId>LWCX</artifactId>
+            <version>2.2.6</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>fr.xephi</groupId>
+            <artifactId>authme</artifactId>
+            <version>5.6.0-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.sk89q.worldedit</groupId>
+            <artifactId>worldedit-bukkit</artifactId>
+            <version>7.2.8</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>

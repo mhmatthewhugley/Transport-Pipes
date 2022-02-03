@@ -15,7 +15,6 @@ import de.robotricker.transportpipes.items.ItemService;
 import de.robotricker.transportpipes.location.BlockLocation;
 import de.robotricker.transportpipes.location.TPDirection;
 import de.robotricker.transportpipes.utils.HitboxUtils;
-import de.robotricker.transportpipes.utils.ProtectionUtils.FakeBlock;
 import de.robotricker.transportpipes.utils.ProtectionUtils.ProtectionUtils;
 import de.robotricker.transportpipes.utils.WorldUtils;
 import org.bukkit.*;
@@ -369,7 +368,7 @@ public class DuctListener implements Listener {
                     else if (clickedDuct != null) {
                         BlockData blockData = interaction.item.getType().createBlockData();
                         setDirectionalBlockFace(relativeBlock.getLocation(), blockData, interaction.p);
-                        Block fakeBlock = new FakeBlock(relativeBlock.getWorld(), relativeBlock.getLocation(), interaction.item.getType());
+                        Block fakeBlock = transportPipes.getFakeBlock().getBlock(relativeBlock.getWorld(), relativeBlock.getLocation(), interaction.item.getType());
                         fakeBlock.setBlockData(blockData, false);
 
                         if (protectionUtils.canBuild(interaction.p, fakeBlock, interaction.item, interaction.hand)) {
