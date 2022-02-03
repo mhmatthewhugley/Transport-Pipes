@@ -18,95 +18,23 @@
     </properties>
 
     <build>
-        <directory>../target</directory>
         <!-- Little hack to make the shade plugin output a file with the right name -->
         <finalName>${project.finalNameBase}-noshade</finalName>
         <plugins>
-            <!-- Modify MANIFEST.MF -->
+            <!-- Modify MANIFEST.MF values -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
-                <version>3.2.0</version>
-                <configuration>
-                    <archive>
-                        <manifestEntries>
-                            <Built-By>BlackBeltPanda</Built-By>
-                        </manifestEntries>
-                    </archive>
-                </configuration>
             </plugin>
             <!-- Generate a jar containing classes, resources and shaded libraries -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>3.3.0-SNAPSHOT</version>
-                <configuration>
-                    <!-- Don't create the reduced pom file, as we don't deploy the shaded jar -->
-                    <createDependencyReducedPom>false</createDependencyReducedPom>
-                    <!-- Deploy the non shaded jar as main artifact -->
-                    <shadedArtifactAttached>true</shadedArtifactAttached>
-                    <!-- Use the base jar name, to help server owners download the right jar -->
-                    <finalName>${project.finalNameBase}</finalName>
-
-                    <!-- Relocate shaded libraries that might cause class conflicts with other plugins -->
-                    <relocations>
-                        <relocation>
-                            <pattern>net.querz.nbt</pattern>
-                            <shadedPattern>de.robotricker.transportpipes.libs.net.querz.nbt</shadedPattern>
-                        </relocation>
-                        <relocation>
-                            <pattern>com.fasterxml</pattern>
-                            <shadedPattern>de.robotricker.transportpipes.libs.com.fasterxml</shadedPattern>
-                        </relocation>
-                        <relocation>
-                            <pattern>org.slf4j</pattern>
-                            <shadedPattern>de.robotricker.transportpipes.libs.org.slf4j</shadedPattern>
-                        </relocation>
-                        <relocation>
-                            <pattern>javax.inject</pattern>
-                            <shadedPattern>de.robotricker.transportpipes.libs.javax.inject</shadedPattern>
-                        </relocation>
-                        <relocation>
-                            <pattern>ch.jalu</pattern>
-                            <shadedPattern>de.robotricker.transportpipes.libs.ch.jalu</shadedPattern>
-                        </relocation>
-                        <relocation>
-                            <pattern>co.aikar.commands</pattern>
-                            <shadedPattern>de.robotricker.transportpipes.libs.co.aikar.commands</shadedPattern>
-                        </relocation>
-                    </relocations>
-                    <filters>
-                        <filter>
-                            <artifact>*:*</artifact>
-                            <excludes>
-                                <exclude>META-INF/*.SF</exclude>
-                                <exclude>META-INF/*.DSA</exclude>
-                                <exclude>META-INF/*.RSA</exclude>
-                            </excludes>
-                        </filter>
-                    </filters>
-                </configuration>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>shade</goal>
-                        </goals>
-                    </execution>
-                </executions>
             </plugin>
+            <!-- Generate a javadoc jar -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <version>3.3.1</version>
-                <executions>
-                    <execution>
-                        <id>attach-javadoc</id>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                    </execution>
-                </executions>
             </plugin>
         </plugins>
     </build>
