@@ -4,22 +4,25 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>transportpipes_dist</artifactId>
+    <artifactId>transportpipes-dist</artifactId>
     <packaging>jar</packaging>
 
     <parent>
         <groupId>de.robotricker</groupId>
-        <artifactId>transportpipes_parent</artifactId>
-        <version>5.4.1</version>
+        <artifactId>transportpipes-parent</artifactId>
+        <version>5.4.1-SNAPSHOT</version>
     </parent>
 
-    <properties>
-        <project.finalNameBase>${project.parent.name}-${project.version}</project.finalNameBase>
-    </properties>
-
     <build>
-        <!-- Little hack to make the shade plugin output a file with the right name -->
-        <finalName>${project.finalNameBase}-noshade</finalName>
+        <resources>
+            <resource>
+                <directory>${maven.multiModuleProjectDirectory}</directory>
+                <filtering>false</filtering>
+                <includes>
+                    <include>LICENSE</include>
+                </includes>
+            </resource>
+        </resources>
         <plugins>
             <!-- Modify MANIFEST.MF values -->
             <plugin>
@@ -41,24 +44,24 @@
 
     <dependencies>
         <dependency>
-            <groupId>de.robotricker</groupId>
-            <artifactId>transportpipes_core</artifactId>
-            <version>5.4.1</version>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>transportpipes-core</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>de.robotricker</groupId>
-            <artifactId>transportpipes_1_16_5</artifactId>
-            <version>5.4.1</version>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>transportpipes-1_16_5</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>de.robotricker</groupId>
-            <artifactId>transportpipes_1_17</artifactId>
-            <version>5.4.1</version>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>transportpipes-1_17</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>de.robotricker</groupId>
-            <artifactId>transportpipes_1_17_1</artifactId>
-            <version>5.4.1</version>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>transportpipes-1_17_1</artifactId>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
     

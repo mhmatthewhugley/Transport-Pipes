@@ -4,8 +4,8 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>de.robotricker</groupId>
-    <artifactId>transportpipes_parent</artifactId>
-    <version>5.4.1</version>
+    <artifactId>transportpipes-parent</artifactId>
+    <version>5.4.1-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>TransportPipes</name>
@@ -14,11 +14,11 @@
     <url>https://github.com/BlackBeltPanda/Transport-Pipes</url>
 
     <modules>
-        <module>transportpipes_core</module>
-        <module>transportpipes_1_16_5</module>
-        <module>transportpipes_1_17</module>
-        <module>transportpipes_1_17_1</module>
-        <module>transportpipes_dist</module>
+        <module>transportpipes-core</module>
+        <module>transportpipes-1_16_5</module>
+        <module>transportpipes-1_17</module>
+        <module>transportpipes-1_17_1</module>
+        <module>transportpipes-dist</module>
     </modules>
 
     <scm>
@@ -60,7 +60,6 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <maven.compiler.release>16</maven.compiler.release>
-        <project.finalNameBase>${project.name}-${project.version}</project.finalNameBase>
     </properties>
 
     <build>
@@ -85,10 +84,6 @@
                     <artifactId>maven-shade-plugin</artifactId>
                     <version>3.3.1-SNAPSHOT</version>
                     <configuration>
-                        <!-- Deploy the non shaded jar as main artifact -->
-                        <shadedArtifactAttached>true</shadedArtifactAttached>
-                        <!-- Use the base jar name, to help server owners download the right jar -->
-                        <finalName>${project.finalNameBase}</finalName>
 
                         <!-- Relocate shaded libraries that might cause class conflicts with other plugins -->
                         <relocations>
@@ -121,6 +116,7 @@
                             <filter>
                                 <artifact>*:*</artifact>
                                 <excludes>
+                                    <exclude>META-INF/*.MF</exclude>
                                     <exclude>META-INF/*.SF</exclude>
                                     <exclude>META-INF/*.DSA</exclude>
                                     <exclude>META-INF/*.RSA</exclude>
@@ -134,6 +130,11 @@
                             <goals>
                                 <goal>shade</goal>
                             </goals>
+                            <configuration>
+                                <transformers>
+                                    <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer"/>
+                                </transformers>
+                            </configuration>
                         </execution>
                     </executions>
                 </plugin>

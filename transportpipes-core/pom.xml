@@ -3,29 +3,22 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>transportpipes_core</artifactId>
+    <artifactId>transportpipes-core</artifactId>
     <packaging>jar</packaging>
     <name>TransportPipes</name>
 
     <parent>
         <groupId>de.robotricker</groupId>
-        <artifactId>transportpipes_parent</artifactId>
-        <version>5.4.1</version>
+        <artifactId>transportpipes-parent</artifactId>
+        <version>5.4.1-SNAPSHOT</version>
     </parent>
 
     <build>
         <resources>
             <resource>
-                <directory>.</directory>
-                <filtering>false</filtering>
-                <includes>
-                    <include>LICENSE</include>
-                </includes>
-            </resource>
-            <resource>
                 <targetPath>.</targetPath>
                 <filtering>true</filtering>
-                <directory>${basedir}/src/main/resources/</directory>
+                <directory>src/main/resources</directory>
             </resource>
         </resources>
     </build>
