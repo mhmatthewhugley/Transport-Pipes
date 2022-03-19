@@ -24,15 +24,10 @@
             </resource>
         </resources>
         <plugins>
-            <!-- Modify MANIFEST.MF values -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-            </plugin>
             <!-- Generate a jar containing classes, resources and shaded libraries -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-shade-plugin</artifactId>
+                <artifactId>maven-assembly-plugin</artifactId>
             </plugin>
             <!-- Generate a javadoc jar -->
             <plugin>
