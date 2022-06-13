@@ -1,4 +1,4 @@
-![Logo](https://image.ibb.co/mDqyqU/Logo2.png)
+![Logo](https://media.discordapp.net/attachments/985954336247013416/985955570236395571/TransportPipes.gif)
 
 The Transport-Pipes plugin adds several pipes into Minecraft. At the moment there are colored pipes, golden pipes, iron pipes, extraction pipes, void pipes and ice pipes. Similar to the BuildCraft mod, these pipes can transport any kind of item.
 
@@ -8,7 +8,7 @@ For more detailed information read the TransportPipes wiki:
 <a href="https://github.com/BlackBeltPanda/Transport-Pipes/wiki">![Wiki](https://cdn.discordapp.com/attachments/315609061859131392/340971064937152512/Logomakr_5JxOqW.png)</a>
 
 For issueing bugs and suggestions you can either use the following Discord server:
-https://discord.gg/wPKCAX5
+[https://discord.gg/wPKCAX5](https://discord.gg/dyHrNH5aQK)
 or write a new issue here on GitHub.
 # Builds
 
