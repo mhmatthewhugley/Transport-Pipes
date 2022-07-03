@@ -68,7 +68,7 @@ public class TPContainerListener implements Listener {
     }
 
     private void notifyBlockUpdate(Block block, boolean place) {
-        if (WorldUtils.isContainerBlock(block.getType())) {
+        if (WorldUtils.isContainerBlock(block)) {
             updateContainerBlock(block, place, true);
         }
         if (!place) {
@@ -185,7 +185,7 @@ public class TPContainerListener implements Listener {
 
         if (loadedChunk.getTileEntities() != null) {
             for (BlockState blockState : loadedChunk.getTileEntities()) {
-                if (WorldUtils.isContainerBlock(blockState.getType())) {
+                if (WorldUtils.isContainerBlock(blockState)) {
 
                     //automatically ignores this block if it is already registered as container block
                     updateContainerBlock(blockState.getBlock(), true, !onServerStart);

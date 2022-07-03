@@ -14,7 +14,11 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockState;
+import org.bukkit.block.Container;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.BlockStateMeta;
 
 import java.util.*;
 
@@ -36,11 +40,17 @@ public class WorldUtils {
         return playerList;
     }
 
-    public static boolean isContainerBlock(Material material) {
-        return switch (material) {
-            case DISPENSER, CHEST, BARREL, FURNACE, BLAST_FURNACE, SMOKER, TRAPPED_CHEST, DROPPER, HOPPER, BREWING_STAND, SHULKER_BOX, WHITE_SHULKER_BOX, BLACK_SHULKER_BOX, BLUE_SHULKER_BOX, GRAY_SHULKER_BOX, BROWN_SHULKER_BOX, CYAN_SHULKER_BOX, GREEN_SHULKER_BOX, LIGHT_BLUE_SHULKER_BOX, LIGHT_GRAY_SHULKER_BOX, LIME_SHULKER_BOX, MAGENTA_SHULKER_BOX, ORANGE_SHULKER_BOX, PINK_SHULKER_BOX, PURPLE_SHULKER_BOX, RED_SHULKER_BOX, YELLOW_SHULKER_BOX -> true;
-            default -> false;
-        };
+    public static boolean isContainerBlock(ItemStack itemStack) {
+        return itemStack.hasItemMeta() && itemStack.getItemMeta() instanceof BlockStateMeta blockStateMeta
+                && isContainerBlock(blockStateMeta.getBlockState());
+    }
+
+    public static boolean isContainerBlock(Block block) {
+        return isContainerBlock(block.getState());
+    }
+
+    public static boolean isContainerBlock(BlockState blockState) {
+        return blockState instanceof Container;
     }
 
     public static boolean lwcProtection(Block b) {

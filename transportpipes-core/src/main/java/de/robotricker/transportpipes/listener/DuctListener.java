@@ -383,12 +383,12 @@ public class DuctListener implements Listener {
                                 // If the block to place is not solid, slab, stair, impermeable, glowstone, and container
                                 if (!blockType.isOccluding() && !Tag.SLABS.isTagged(blockType) && !Tag.STAIRS.isTagged(blockType)
                                         && !Tag.IMPERMEABLE.isTagged(blockType) && blockType != Material.GLOWSTONE &&
-                                        !WorldUtils.isContainerBlock(blockType)) {
+                                        !WorldUtils.isContainerBlock(relativeBlock)) {
                                     relativeBlock.setBlockData(oldBlockData, true);
                                 }
                                 else {
                                     // create TransportPipesContainer from placed block if it is such
-                                    if (WorldUtils.isContainerBlock(interaction.item.getType())) {
+                                    if (WorldUtils.isContainerBlock(interaction.item)) {
                                         tpContainerListener.updateContainerBlock(relativeBlock, true, true);
                                     }
 
