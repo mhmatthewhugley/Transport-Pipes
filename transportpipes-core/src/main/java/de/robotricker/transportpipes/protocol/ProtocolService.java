@@ -17,7 +17,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import javax.inject.Inject;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -90,7 +89,7 @@ public class ProtocolService {
             spawnEntityLivingContainer.getDoubles().write(1, blockLoc.getY() + asd.getRelLoc().getDoubleY() + offset.getDoubleY()); // Y Location
             spawnEntityLivingContainer.getDoubles().write(2, blockLoc.getZ() + asd.getRelLoc().getDoubleZ() + offset.getDoubleZ()); // Z Location
             spawnEntityLivingContainer.getIntegers().write(0, asd.getEntityID()); // Entity ID
-            spawnEntityLivingContainer.getIntegers().write(5, (int) (yaw * 256.0f / 360.0f)); // Yaw
+            transportPipes.getProtocolProvider().setASDYaw(spawnEntityLivingContainer, yaw); // Yaw
             
             protocolManager.sendServerPacket(player, spawnEntityLivingContainer);
             
@@ -111,9 +110,9 @@ public class ProtocolService {
             WrappedDataWatcher dataWatcher = new WrappedDataWatcher();
             WrappedDataWatcher.WrappedDataWatcherObject entityMask = new WrappedDataWatcher.WrappedDataWatcherObject(0, BYTE_SERIALIZER);
             WrappedDataWatcher.WrappedDataWatcherObject nameVisible = new WrappedDataWatcher.WrappedDataWatcherObject(3, BOOLEAN_SERIALIZER);
-            WrappedDataWatcher.WrappedDataWatcherObject asMask = new WrappedDataWatcher.WrappedDataWatcherObject(transportPipes.getProtocolProvider().asMask, BYTE_SERIALIZER);
-            WrappedDataWatcher.WrappedDataWatcherObject headRot = new WrappedDataWatcher.WrappedDataWatcherObject(transportPipes.getProtocolProvider().headRot, VECTOR_SERIALIZER);
-            WrappedDataWatcher.WrappedDataWatcherObject rArmRot = new WrappedDataWatcher.WrappedDataWatcherObject(transportPipes.getProtocolProvider().rArmRot, VECTOR_SERIALIZER);
+            WrappedDataWatcher.WrappedDataWatcherObject asMask = new WrappedDataWatcher.WrappedDataWatcherObject(transportPipes.getProtocolProvider().getMaskIndex(), BYTE_SERIALIZER);
+            WrappedDataWatcher.WrappedDataWatcherObject headRot = new WrappedDataWatcher.WrappedDataWatcherObject(transportPipes.getProtocolProvider().getHeadRotIndex(), VECTOR_SERIALIZER);
+            WrappedDataWatcher.WrappedDataWatcherObject rArmRot = new WrappedDataWatcher.WrappedDataWatcherObject(transportPipes.getProtocolProvider().getRightArmRotIndex(), VECTOR_SERIALIZER);
 
             dataWatcher.setObject(entityMask, (byte) (0x20 | 0x01)); // Invisible and on fire (to fix lighting issues)
             dataWatcher.setObject(nameVisible, false); // Custom Name Visible
@@ -142,11 +141,7 @@ public class ProtocolService {
             }
 
             transportPipes.runTaskAsync(() -> {
-                try {
-                    protocolManager.sendServerPacket(player, entityEquipmentContainer);
-                } catch (InvocationTargetException e) {
-                    e.printStackTrace();
-                }
+                protocolManager.sendServerPacket(player, entityEquipmentContainer);
             }, 1L);
 
         } catch (Exception e) {

@@ -94,9 +94,17 @@ public class TransportPipes extends JavaPlugin {
                     Bukkit.getLogger().log(Level.SEVERE, "TransportPipes could not find a valid implementation for this server version.");
                 }
                 break;
+            case "1.19":
+                try {
+                    protocolProvider = (ProtocolProvider) Class.forName(providerClass + "1_19").getDeclaredConstructor().newInstance();
+                    fakeBlock = (FakeBlock) Class.forName(fakeBlockClass + "1_19").getDeclaredConstructor().newInstance();
+                } catch (InstantiationException | IllegalAccessException | ClassNotFoundException | NoSuchMethodException | InvocationTargetException e) {
+                    Bukkit.getLogger().log(Level.SEVERE, "TransportPipes could not find a valid implementation for this server version.");
+                }
+                break;
             default:
                 getLogger().log(Level.SEVERE, "------------------------------------------");
-                getLogger().log(Level.SEVERE, "TransportPipes currently only works with Minecraft 1.16.5 or newer. You are running version " + version + ".");
+                getLogger().log(Level.SEVERE, "TransportPipes currently only works with Minecraft 1.16.5 through 1.19. You are running version " + version + ".");
                 getLogger().log(Level.SEVERE, "------------------------------------------");
                 Bukkit.getPluginManager().disablePlugin(this);
                 return;

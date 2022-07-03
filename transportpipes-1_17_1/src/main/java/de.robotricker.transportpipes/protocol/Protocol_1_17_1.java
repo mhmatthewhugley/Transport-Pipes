@@ -12,14 +12,24 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class Protocol_1_17_1 extends ProtocolProvider {
+public class Protocol_1_17_1 implements ProtocolProvider {
 
-    public Protocol_1_17_1() {
-        super(15, 16, 19);
+    @Override
+    public int getMaskIndex() {
+        return 15;
+    }
+
+    @Override
+    public int getHeadRotIndex() {
+        return 16;
+    }
+
+    @Override
+    public int getRightArmRotIndex() {
+        return 19;
     }
 
     @Override
@@ -27,12 +37,7 @@ public class Protocol_1_17_1 extends ProtocolProvider {
         PacketContainer entityDestroyContainer = protocolManager.createPacket(PacketType.Play.Server.ENTITY_DESTROY);
         List<Integer> ids = armorStandData.stream().mapToInt(ArmorStandData::getEntityID).boxed().collect(Collectors.toList());
         entityDestroyContainer.getIntLists().write(0, ids);
-        try {
-            protocolManager.sendServerPacket(p, entityDestroyContainer);
-        }
-        catch (InvocationTargetException e) {
-            e.printStackTrace();
-        }
+        protocolManager.sendServerPacket(p, entityDestroyContainer);
     }
 
     @Override

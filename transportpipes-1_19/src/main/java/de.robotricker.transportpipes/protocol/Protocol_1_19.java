@@ -3,30 +3,20 @@ package de.robotricker.transportpipes.protocol;
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolManager;
 import com.comphenix.protocol.events.PacketContainer;
+import com.comphenix.protocol.reflect.StructureModifier;
 import de.robotricker.transportpipes.TransportPipes;
 import de.robotricker.transportpipes.duct.Duct;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.world.entity.player.EntityHuman;
-import net.minecraft.world.inventory.Container;
-import net.minecraft.world.inventory.InventoryCrafting;
-import net.minecraft.world.item.crafting.IRecipe;
-import net.minecraft.world.item.crafting.RecipeCrafting;
-import net.minecraft.world.item.crafting.Recipes;
-import net.minecraft.world.level.World;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_17_R1.CraftWorld;
-import org.bukkit.craftbukkit.v1_17_R1.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
-public class Protocol_1_17 implements ProtocolProvider {
+public class Protocol_1_19 implements ProtocolProvider {
 
     @Override
     public int getMaskIndex() {
@@ -64,28 +54,11 @@ public class Protocol_1_17 implements ProtocolProvider {
             }
         }
 
-        Container container = new Container(null, -1) {
-            @Override
-            public InventoryView getBukkitView() {
-                return null;
-            }
+        return Bukkit.getCraftingRecipe(craftingMatrix, duct.getWorld());
+    }
 
-            @Override
-            public boolean canUse(EntityHuman entityHuman) {
-                return false;
-            }
-        };
-
-        InventoryCrafting inventoryCrafting = new InventoryCrafting(container, 3, 3);
-        for (int i = 0; i < craftingMatrix.length; i++) {
-            inventoryCrafting.setItem(i, CraftItemStack.asNMSCopy(craftingMatrix[i]));
-        }
-
-        World world = ((CraftWorld) duct.getWorld()).getHandle();
-        MinecraftServer server = world.getMinecraftServer();
-        if (server == null) return null;
-        Optional<RecipeCrafting> recipeCrafting = server.getCraftingManager().craft(Recipes.a, inventoryCrafting, world);
-
-        return recipeCrafting.map(IRecipe::toBukkitRecipe).orElse(null);
+    @Override
+    public StructureModifier setASDYaw(PacketContainer spawnEntityLivingContainer, double yaw) {
+        return spawnEntityLivingContainer.getBytes().write(1, (byte) (yaw * 256 / 360));
     }
 }
