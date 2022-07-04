@@ -8,6 +8,9 @@ import de.robotricker.transportpipes.TransportPipes;
 import de.robotricker.transportpipes.duct.Duct;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.block.data.BlockData;
+import org.bukkit.block.data.type.AmethystCluster;
+import org.bukkit.block.data.type.LightningRod;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -60,5 +63,18 @@ public class Protocol_1_19 implements ProtocolProvider {
     @Override
     public StructureModifier setASDYaw(PacketContainer spawnEntityLivingContainer, double yaw) {
         return spawnEntityLivingContainer.getBytes().write(1, (byte) (yaw * 256 / 360));
+    }
+
+    @Override
+    public boolean isClickedFaceDirectional(BlockData blockData) {
+        clickedFaceDirectionals.add(AmethystCluster.class);
+        clickedFaceDirectionals.add(LightningRod.class);
+        clickedFaceMaterials.add(Material.DEEPSLATE);
+        clickedFaceMaterials.add(Material.INFESTED_DEEPSLATE);
+        clickedFaceMaterials.add(Material.OCHRE_FROGLIGHT);
+        clickedFaceMaterials.add(Material.PEARLESCENT_FROGLIGHT);
+        clickedFaceMaterials.add(Material.VERDANT_FROGLIGHT);
+        clickedFaceMaterials.add(Material.MUDDY_MANGROVE_ROOTS);
+        return ProtocolProvider.super.isClickedFaceDirectional(blockData);
     }
 }

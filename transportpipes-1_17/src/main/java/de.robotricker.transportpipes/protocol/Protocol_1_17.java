@@ -14,6 +14,9 @@ import net.minecraft.world.item.crafting.RecipeCrafting;
 import net.minecraft.world.item.crafting.Recipes;
 import net.minecraft.world.level.World;
 import org.bukkit.Material;
+import org.bukkit.block.data.BlockData;
+import org.bukkit.block.data.type.AmethystCluster;
+import org.bukkit.block.data.type.LightningRod;
 import org.bukkit.craftbukkit.v1_17_R1.CraftWorld;
 import org.bukkit.craftbukkit.v1_17_R1.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
@@ -87,5 +90,14 @@ public class Protocol_1_17 implements ProtocolProvider {
         Optional<RecipeCrafting> recipeCrafting = server.getCraftingManager().craft(Recipes.a, inventoryCrafting, world);
 
         return recipeCrafting.map(IRecipe::toBukkitRecipe).orElse(null);
+    }
+
+    @Override
+    public boolean isClickedFaceDirectional(BlockData blockData) {
+        clickedFaceDirectionals.add(AmethystCluster.class);
+        clickedFaceDirectionals.add(LightningRod.class);
+        clickedFaceMaterials.add(Material.DEEPSLATE);
+        clickedFaceMaterials.add(Material.INFESTED_DEEPSLATE);
+        return ProtocolProvider.super.isClickedFaceDirectional(blockData);
     }
 }

@@ -20,8 +20,11 @@ import de.robotricker.transportpipes.utils.WorldUtils;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.block.Container;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.block.data.Directional;
+import org.bukkit.block.data.Orientable;
+import org.bukkit.block.data.Rotatable;
 import org.bukkit.block.data.type.Stairs;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
@@ -34,7 +37,9 @@ import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.BlockStateMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
@@ -116,16 +121,16 @@ public class DuctListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.LOW)
-    public void onInteract(PlayerInteractEvent e) {
-        Player p = e.getPlayer();
-        Block clickedBlock = e.getClickedBlock();
-        UUID uuid = p.getUniqueId();
+    public void onInteract(PlayerInteractEvent event) {
+        Player player = event.getPlayer();
+        Block clickedBlock = event.getClickedBlock();
+        UUID uuid = player.getUniqueId();
 
-        if (e.getAction() == Action.PHYSICAL) {
+        if (event.getAction() == Action.PHYSICAL) {
             return;
         }
 
-        if (e.getAction() == Action.LEFT_CLICK_AIR) {
+        if (event.getAction() == Action.LEFT_CLICK_AIR) {
             if (noClick.contains(uuid)) {
                 return;
             }
@@ -139,37 +144,37 @@ public class DuctListener implements Listener {
             }
         }.runTaskLater(transportPipes, 3L);
         
-        if (e.getHand() == EquipmentSlot.HAND) {
-            Interaction offHandInteraction = new Interaction(p, EquipmentSlot.OFF_HAND, p.getInventory().getItemInOffHand(), clickedBlock, e.getBlockFace(), e.getAction());
-            interactions.put(p, offHandInteraction);
+        if (event.getHand() == EquipmentSlot.HAND) {
+            Interaction offHandInteraction = new Interaction(player, EquipmentSlot.OFF_HAND, player.getInventory().getItemInOffHand(), clickedBlock, event.getBlockFace(), event.getAction());
+            interactions.put(player, offHandInteraction);
 
-            Interaction mainHandInteraction = new Interaction(p, EquipmentSlot.HAND, p.getInventory().getItemInMainHand(), clickedBlock, e.getBlockFace(), e.getAction());
+            Interaction mainHandInteraction = new Interaction(player, EquipmentSlot.HAND, player.getInventory().getItemInMainHand(), clickedBlock, event.getBlockFace(), event.getAction());
             callInteraction(mainHandInteraction);
-            if (mainHandInteraction.cancel) e.setCancelled(true);
-            if (mainHandInteraction.denyBlockUse) e.setUseInteractedBlock(Event.Result.DENY);
+            if (mainHandInteraction.cancel) event.setCancelled(true);
+            if (mainHandInteraction.denyBlockUse) event.setUseInteractedBlock(Event.Result.DENY);
             if (mainHandInteraction.successful) {
-                interactions.put(p, null);
+                interactions.put(player, null);
             }
         }
-        else if (e.getHand() == EquipmentSlot.OFF_HAND) {
-            if (interactions.containsKey(p) && interactions.get(p) == null) {
-                e.setCancelled(true);
+        else if (event.getHand() == EquipmentSlot.OFF_HAND) {
+            if (interactions.containsKey(player) && interactions.get(player) == null) {
+                event.setCancelled(true);
                 return;
             }
-            if (interactions.containsKey(p)) {
-                interactions.remove(p);
+            if (interactions.containsKey(player)) {
+                interactions.remove(player);
             }
             else {
-                Interaction mainHandInteraction = new Interaction(p, EquipmentSlot.HAND, p.getInventory().getItemInMainHand(), clickedBlock, e.getBlockFace(), e.getAction());
+                Interaction mainHandInteraction = new Interaction(player, EquipmentSlot.HAND, player.getInventory().getItemInMainHand(), clickedBlock, event.getBlockFace(), event.getAction());
                 callInteraction(mainHandInteraction);
                 if (mainHandInteraction.successful) {
                     return;
                 }
             }
-            Interaction offHandInteraction = new Interaction(p, EquipmentSlot.OFF_HAND, p.getInventory().getItemInOffHand(), clickedBlock, e.getBlockFace(), e.getAction());
+            Interaction offHandInteraction = new Interaction(player, EquipmentSlot.OFF_HAND, player.getInventory().getItemInOffHand(), clickedBlock, event.getBlockFace(), event.getAction());
             callInteraction(offHandInteraction);
-            if (offHandInteraction.cancel) e.setCancelled(true);
-            if (offHandInteraction.denyBlockUse) e.setUseInteractedBlock(Event.Result.DENY);
+            if (offHandInteraction.cancel) event.setCancelled(true);
+            if (offHandInteraction.denyBlockUse) event.setUseInteractedBlock(Event.Result.DENY);
         }
 
     }
@@ -177,8 +182,8 @@ public class DuctListener implements Listener {
     private void callInteraction(Interaction interaction) {
         if (interaction.action == Action.RIGHT_CLICK_AIR || interaction.action == Action.RIGHT_CLICK_BLOCK) {
             if (interaction.item != null) {
-                // clicedDuct is the duct that was clicked, if a duct was clicked, otherwise null
-                Duct clickedDuct = HitboxUtils.getDuctLookingTo(globalDuctManager, interaction.p, interaction.clickedBlock);
+                // clickedDuct is the duct that was clicked, if a duct was clicked, otherwise null
+                Duct clickedDuct = HitboxUtils.getDuctLookingTo(globalDuctManager, interaction.player, interaction.clickedBlock);
                 // itemDuctType is the duct type in the player's hand when they click, if they have one, otherwise null
                 DuctType itemDuctType = itemService.readDuctTags(interaction.item, ductRegister);
                 // manualPlaceable is true if the item in the player's hand can be placed, ie the item is a block or a duct
@@ -196,20 +201,20 @@ public class DuctListener implements Listener {
                 }
 
                 // ********************** WRENCH SNEAK DUCT CLICK ****************************
-                if (clickedDuct != null && itemService.isWrench(interaction.item) && interaction.p.isSneaking()) {
+                if (clickedDuct != null && itemService.isWrench(interaction.item) && interaction.player.isSneaking()) {
                     // Wrench sneak click
-                    Block ductBlock = clickedDuct.getBlockLoc().toBlock(interaction.p.getWorld());
-                    if (protectionUtils.canBreak(interaction.p, ductBlock)) {
-                        Block relativeBlock = HitboxUtils.getRelativeBlockOfDuct(globalDuctManager, interaction.p, ductBlock);
+                    Block ductBlock = clickedDuct.getBlockLoc().toBlock(interaction.player.getWorld());
+                    if (protectionUtils.canBreak(interaction.player, ductBlock)) {
+                        Block relativeBlock = HitboxUtils.getRelativeBlockOfDuct(globalDuctManager, interaction.player, ductBlock);
                         TPDirection clickedDir = TPDirection.fromBlockFace(ductBlock.getFace(Objects.requireNonNull(relativeBlock)));
                         Duct relativeDuct = clickedDuct.getDuctConnections().get(clickedDir);
                         if (clickedDuct.getBlockedConnections().contains(clickedDir)) {
                             clickedDuct.getBlockedConnections().remove(clickedDir);
-                            LangConf.Key.CONNECTION_UNBLOCKED.sendMessage(interaction.p, Objects.requireNonNull(clickedDir).toString());
+                            LangConf.Key.CONNECTION_UNBLOCKED.sendMessage(interaction.player, Objects.requireNonNull(clickedDir).toString());
                         }
                         else {
                             clickedDuct.getBlockedConnections().add(clickedDir);
-                            LangConf.Key.CONNECTION_BLOCKED.sendMessage(interaction.p, Objects.requireNonNull(clickedDir).toString());
+                            LangConf.Key.CONNECTION_BLOCKED.sendMessage(interaction.player, Objects.requireNonNull(clickedDir).toString());
                         }
                         globalDuctManager.updateDuctConnections(clickedDuct);
                         globalDuctManager.updateDuctInRenderSystems(clickedDuct, true);
@@ -229,8 +234,8 @@ public class DuctListener implements Listener {
                 if (clickedDuct != null && !manualPlaceable &&
                         (itemService.isWrench(interaction.item) || (!generalConf.getWrenchRequired() && !canBeUsedToObfuscate(interaction.item.getType())))) {
                     //wrench click
-                    if (protectionUtils.canBreak(interaction.p, clickedDuct.getBlockLoc().toBlock(interaction.p.getWorld()))) {
-                        clickedDuct.notifyClick(interaction.p, interaction.p.isSneaking());
+                    if (protectionUtils.canBreak(interaction.player, clickedDuct.getBlockLoc().toBlock(interaction.player.getWorld()))) {
+                        clickedDuct.notifyClick(interaction.player, interaction.player.isSneaking());
                     }
 
                     interaction.cancel = true;
@@ -239,10 +244,10 @@ public class DuctListener implements Listener {
                 }
 
                 // ********************** SNEAK WRENCH NON DUCT CLICK ****************************
-                if (clickedDuct == null && itemService.isWrench(interaction.item) && interaction.p.isSneaking()) {
+                if (clickedDuct == null && itemService.isWrench(interaction.item) && interaction.player.isSneaking()) {
                     //wrench click
 
-                    WorldUtils.startShowHiddenDuctsProcess(interaction.p, globalDuctManager, threadService, transportPipes, generalConf, playerSettingsService);
+                    WorldUtils.startShowHiddenDuctsProcess(interaction.player, globalDuctManager, threadService, transportPipes, generalConf, playerSettingsService);
 
                     interaction.cancel = true;
                     interaction.successful = true;
@@ -250,13 +255,13 @@ public class DuctListener implements Listener {
                 }
 
                 // ********************** DUCT OBFUSCATION ****************************
-                if (!interaction.p.isSneaking() && canBeUsedToObfuscate(interaction.item.getType())) {
+                if (!interaction.player.isSneaking() && canBeUsedToObfuscate(interaction.item.getType())) {
                     // block can be used to obfuscate and player is not sneaking
                     // this block will be used to obfuscate the duct
                     Duct relativeDuct = null;
                     Block ductBlock;
                     if (clickedDuct != null) {
-                        ductBlock = clickedDuct.getBlockLoc().toBlock(interaction.p.getWorld());
+                        ductBlock = clickedDuct.getBlockLoc().toBlock(interaction.player.getWorld());
                     }
                     else if (interaction.clickedBlock != null) {
                         ductBlock = interaction.clickedBlock.getRelative(interaction.blockFace);
@@ -265,24 +270,29 @@ public class DuctListener implements Listener {
                     else {
                         return;
                     }
-                    if (protectionUtils.canBuild(interaction.p, ductBlock, interaction.item, interaction.hand)) {
+                    if (protectionUtils.canBuild(interaction.player, ductBlock, interaction.item, interaction.hand)) {
 
                         BlockData oldBlockData = ductBlock.getBlockData().clone();
                         BlockData blockData = interaction.item.getType().createBlockData();
-                        setDirectionalBlockFace(ductBlock.getLocation(), blockData, interaction.p);
+                        setDirectionalBlockFace(
+                                ductBlock,
+                                clickedDuct != null ? clickedDuct.getBlockLoc().toBlock(ductBlock.getWorld()) : null,
+                                interaction.player,
+                                interaction.blockFace
+                        );
                         ductBlock.setBlockData(blockData, true);
 
-                        BlockPlaceEvent event = new BlockPlaceEvent(ductBlock, ductBlock.getState(), ductBlock.getRelative(BlockFace.DOWN), interaction.item, interaction.p, true, interaction.hand);
+                        BlockPlaceEvent event = new BlockPlaceEvent(ductBlock, ductBlock.getState(), ductBlock.getRelative(BlockFace.DOWN), interaction.item, interaction.player, true, interaction.hand);
                         Bukkit.getPluginManager().callEvent(event);
 
                         if (!event.isCancelled()) {
                             if (clickedDuct != null) {
                                 clickedDuct.obfuscatedWith(blockData);
-                                decreaseHandItem(interaction.p, interaction.hand);
+                                decreaseHandItem(interaction.player, interaction.hand);
                             }
                             else if (relativeDuct != null) {
                                 relativeDuct.obfuscatedWith(blockData);
-                                decreaseHandItem(interaction.p, interaction.hand);
+                                decreaseHandItem(interaction.player, interaction.hand);
                             }
                             else {
                                 ductBlock.setBlockData(oldBlockData, true);
@@ -302,7 +312,7 @@ public class DuctListener implements Listener {
                 Block relativeBlock = null;
                 // If duct clicked, get block relative to clicked duct
                 if (clickedDuct != null) {
-                    relativeBlock = HitboxUtils.getRelativeBlockOfDuct(globalDuctManager, interaction.p, clickedDuct.getBlockLoc().toBlock(interaction.p.getWorld()));
+                    relativeBlock = HitboxUtils.getRelativeBlockOfDuct(globalDuctManager, interaction.player, clickedDuct.getBlockLoc().toBlock(interaction.player.getWorld()));
                 }
                 // Otherwise, if block clicked, get block relative to clicked block
                 else if (interaction.clickedBlock != null) {
@@ -317,7 +327,7 @@ public class DuctListener implements Listener {
                     relativeBlock = null;
                 }
                 // If duct was not clicked, a block was clicked, the clicked block is interactable, and the player is not sneaking
-                if (clickedDuct == null && interaction.clickedBlock != null && interactables.contains(interaction.clickedBlock.getType()) && !interaction.p.isSneaking()) {
+                if (clickedDuct == null && interaction.clickedBlock != null && interactables.contains(interaction.clickedBlock.getType()) && !interaction.player.isSneaking()) {
                 	// Stairs are considered interactable for some weird reason so ignore those
                     if (!(interaction.clickedBlock.getBlockData() instanceof Stairs)) {
                     	return;
@@ -337,7 +347,7 @@ public class DuctListener implements Listener {
                     // DUCT PLACEMENT
                     if (itemDuctType != null) {
                         // At this point, relativeBlock is only null if we can't place a block there
-                        if (relativeBlock != null && protectionUtils.canBuild(interaction.p, relativeBlock, interaction.item, interaction.hand)) {
+                        if (relativeBlock != null && protectionUtils.canBuild(interaction.player, relativeBlock, interaction.item, interaction.hand)) {
                             boolean lwcAllowed = true;
                             for (TPDirection dir : TPDirection.values()) {
                                 if (WorldUtils.lwcProtection(relativeBlock.getRelative(dir.getBlockFace()))) {
@@ -352,12 +362,12 @@ public class DuctListener implements Listener {
                                 globalDuctManager.updateNeighborDuctsConnections(duct);
                                 globalDuctManager.updateNeighborDuctsInRenderSystems(duct, true);
 
-                                decreaseHandItem(interaction.p, interaction.hand);
+                                decreaseHandItem(interaction.player, interaction.hand);
                                 
-                                DuctPlaceEvent event = new DuctPlaceEvent(interaction.p, duct.getBlockLoc());
+                                DuctPlaceEvent event = new DuctPlaceEvent(interaction.player, duct.getBlockLoc());
                                 Bukkit.getPluginManager().callEvent(event);
                             } else {
-                                LangConf.Key.PROTECTED_BLOCK.sendMessage(interaction.p);
+                                LangConf.Key.PROTECTED_BLOCK.sendMessage(interaction.player);
                             }
                         }
 
@@ -366,36 +376,73 @@ public class DuctListener implements Listener {
                     }
                     // BLOCK PLACEMENT NEXT TO DUCT
                     else if (clickedDuct != null) {
+                        // Create new blockdata from the player's item in hand
                         BlockData blockData = interaction.item.getType().createBlockData();
-                        setDirectionalBlockFace(relativeBlock.getLocation(), blockData, interaction.p);
-                        Block fakeBlock = transportPipes.getFakeBlock().getBlock(relativeBlock.getWorld(), relativeBlock.getLocation(), interaction.item.getType());
+
+                        // Create a fake block from new blockdata to test build permissions
+                        Block fakeBlock = transportPipes.getFakeBlock().getBlock(
+                                relativeBlock.getWorld(),
+                                relativeBlock.getLocation(),
+                                interaction.item.getType()
+                        );
                         fakeBlock.setBlockData(blockData, false);
 
-                        if (protectionUtils.canBuild(interaction.p, fakeBlock, interaction.item, interaction.hand)) {
+                        if (protectionUtils.canBuild(interaction.player, fakeBlock, interaction.item, interaction.hand)) {
+                            // Copy the original blockdata from placed block's location (typically air)
                             BlockData oldBlockData = relativeBlock.getBlockData().clone();
+
+                            // Set placed block's blockdata to new blockdata
                             relativeBlock.setBlockData(blockData, true);
 
-                            BlockPlaceEvent event = new BlockPlaceEvent(relativeBlock, relativeBlock.getState(), clickedDuct.getBlockLoc().toBlock(relativeBlock.getWorld()), interaction.item, interaction.p, true, interaction.hand);
+                            // Update the block's direction if possible
+                            setDirectionalBlockFace(
+                                    relativeBlock,
+                                    clickedDuct.getBlockLoc().toBlock(relativeBlock.getWorld()),
+                                    interaction.player,
+                                    interaction.blockFace
+                            );
+
+                            // Call BlockPlaceEvent for compatibility
+                            BlockPlaceEvent event = new BlockPlaceEvent(
+                                    relativeBlock,
+                                    relativeBlock.getState(),
+                                    clickedDuct.getBlockLoc().toBlock(relativeBlock.getWorld()),
+                                    interaction.item,
+                                    interaction.player,
+                                    true,
+                                    interaction.hand
+                            );
                             Bukkit.getPluginManager().callEvent(event);
 
+                            // This is probably redundant, but might as well check the event's cancellation state
                             if (!event.isCancelled()) {
                                 Material blockType = relativeBlock.getType();
+
                                 // If the block to place is not solid, slab, stair, impermeable, glowstone, and container
+                                // Reset blockdata to original data
                                 if (!blockType.isOccluding() && !Tag.SLABS.isTagged(blockType) && !Tag.STAIRS.isTagged(blockType)
                                         && !Tag.IMPERMEABLE.isTagged(blockType) && blockType != Material.GLOWSTONE &&
                                         !WorldUtils.isContainerBlock(relativeBlock)) {
                                     relativeBlock.setBlockData(oldBlockData, true);
-                                }
-                                else {
-                                    // create TransportPipesContainer from placed block if it is such
-                                    if (WorldUtils.isContainerBlock(interaction.item)) {
+                                } else {
+                                    // Add inventory contents for container blocks
+                                    if (relativeBlock.getState() instanceof Container blockContainer
+                                            && interaction.item.hasItemMeta()
+                                            && interaction.item.getItemMeta() instanceof BlockStateMeta itemBlockStateMeta
+                                            && itemBlockStateMeta.getBlockState() instanceof Container itemContainer) {
+                                        Inventory itemInventory = itemContainer.getSnapshotInventory();
+                                        Inventory blockInventory = blockContainer.getSnapshotInventory();
+                                        blockInventory.setContents(itemInventory.getContents());
+                                        blockContainer.update(true);
+
+                                        // create TransportPipesContainer from placed block if it is such
                                         tpContainerListener.updateContainerBlock(relativeBlock, true, true);
                                     }
 
-                                    decreaseHandItem(interaction.p, interaction.hand);
+                                    decreaseHandItem(interaction.player, interaction.hand);
                                 }
-                            }
-                            else {
+                            } else {
+                                // Event was cancelled, reset the block data
                                 relativeBlock.setBlockData(oldBlockData, true);
                             }
                         }
@@ -407,18 +454,18 @@ public class DuctListener implements Listener {
 
             }
         } else if (interaction.action == Action.LEFT_CLICK_AIR || interaction.action == Action.LEFT_CLICK_BLOCK) {
-            Duct clickedDuct = HitboxUtils.getDuctLookingTo(globalDuctManager, interaction.p, interaction.clickedBlock);
+            Duct clickedDuct = HitboxUtils.getDuctLookingTo(globalDuctManager, interaction.player, interaction.clickedBlock);
             // duct destruction
             if (clickedDuct != null) {
                 BlockLocation clickedDuctLocation = clickedDuct.getBlockLoc();
-                if (protectionUtils.canBreak(interaction.p, clickedDuctLocation.toBlock(interaction.p.getWorld()))) {
+                if (protectionUtils.canBreak(interaction.player, clickedDuctLocation.toBlock(interaction.player.getWorld()))) {
                     globalDuctManager.unregisterDuct(clickedDuct);
                     globalDuctManager.unregisterDuctInRenderSystem(clickedDuct, true);
                     globalDuctManager.updateNeighborDuctsConnections(clickedDuct);
                     globalDuctManager.updateNeighborDuctsInRenderSystems(clickedDuct, true);
-                    globalDuctManager.playDuctDestroyActions(clickedDuct, interaction.p);
+                    globalDuctManager.playDuctDestroyActions(clickedDuct, interaction.player);
                     
-                    DuctBreakEvent event = new DuctBreakEvent(interaction.p, clickedDuctLocation);
+                    DuctBreakEvent event = new DuctBreakEvent(interaction.player, clickedDuctLocation);
                     Bukkit.getPluginManager().callEvent(event);
                 }
 
@@ -433,29 +480,81 @@ public class DuctListener implements Listener {
                 !type.isInteractable() && !type.hasGravity();
     }
 
-    private void setDirectionalBlockFace(Location b, BlockData bd, Player p) {
-        if (bd instanceof Directional) {
-            Vector dir = new Vector(b.getX() + 0.5d, b.getY() + 0.5d, b.getZ() + 0.5d);
-            dir.subtract(p.getEyeLocation().toVector());
-            double absX = Math.abs(dir.getX());
-            double absY = Math.abs(dir.getY());
-            double absZ = Math.abs(dir.getZ());
-            if (((Directional) bd).getFaces().contains(BlockFace.UP) && ((Directional) bd).getFaces().contains(BlockFace.DOWN)) {
-                if (absX >= absY && absX >= absZ) {
-                    ((Directional) bd).setFacing(dir.getX() > 0 ? BlockFace.WEST : BlockFace.EAST);
-                } else if (absY >= absX && absY >= absZ) {
-                    ((Directional) bd).setFacing(dir.getY() > 0 ? BlockFace.DOWN : BlockFace.UP);
-                } else {
-                    ((Directional) bd).setFacing(dir.getZ() > 0 ? BlockFace.NORTH : BlockFace.SOUTH);
-                }
-            } else {
-                if (absX >= absZ) {
-                    ((Directional) bd).setFacing(dir.getX() > 0 ? BlockFace.WEST : BlockFace.EAST);
-                } else {
-                    ((Directional) bd).setFacing(dir.getZ() > 0 ? BlockFace.NORTH : BlockFace.SOUTH);
-                }
+    private void setDirectionalBlockFace(Block placedBlock, Block clickedBlock, Player player, BlockFace interactedFace) {
+        BlockData blockData = placedBlock.getBlockData();
+        Location location = placedBlock.getLocation();
+
+        // Calculate the direction from player to block location
+        Vector dir = new Vector(location.getX() + 0.5d, location.getY() + 0.5d, location.getZ() + 0.5d);
+        dir.subtract(player.getEyeLocation().toVector());
+        double absX = Math.abs(dir.getX());
+        double absY = Math.abs(dir.getY());
+        double absZ = Math.abs(dir.getZ());
+
+        BlockFace newFace = clickedBlock != null ? placedBlock.getFace(clickedBlock) : interactedFace;
+        // For some idiotic reason, Shulker Boxes face the other direction
+        if (Tag.SHULKER_BOXES.isTagged(placedBlock.getType()) && newFace != null) {
+            newFace = newFace.getOppositeFace();
+        }
+
+        // If direction depends on clicked face, set it if possible
+        if (transportPipes.getProtocolProvider().isClickedFaceDirectional(blockData)) {
+            if ((blockData instanceof Directional directional && directional.getFaces().contains(newFace))
+            || (blockData instanceof Orientable orientable && orientable.getAxes().contains(convertBlockFaceToAxis(newFace)))
+            || (blockData instanceof Rotatable)) {
+                setFacing(placedBlock, newFace);
+                return;
             }
         }
+
+        // Otherwise, first check if we have vertical direction
+        if ((blockData instanceof Directional directional && (placedBlock.getType() == Material.HOPPER
+                || directional.getFaces().contains(BlockFace.UP) && directional.getFaces().contains(BlockFace.DOWN)))
+                || (blockData instanceof Orientable orientable && orientable.getAxes().contains(Axis.Z))
+                || (blockData instanceof Rotatable)) {
+            if (absX >= absY && absX >= absZ) {
+                newFace = dir.getX() > 0 ? BlockFace.WEST : BlockFace.EAST;
+            } else if (absY >= absX && absY >= absZ) {
+                newFace = dir.getY() > 0 ? BlockFace.DOWN : BlockFace.UP;
+            } else {
+                newFace = dir.getZ() > 0 ? BlockFace.NORTH : BlockFace.SOUTH;
+            }
+        } else {
+            // No vertical direction, so limit direction to horizontal
+            if (absX >= absZ) {
+                newFace = dir.getX() > 0 ? BlockFace.WEST : BlockFace.EAST;
+            } else {
+                newFace = dir.getZ() > 0 ? BlockFace.NORTH : BlockFace.SOUTH;
+            }
+        }
+
+        setFacing(placedBlock, newFace);
+    }
+
+    private void setFacing(Block block, BlockFace blockFace) {
+        BlockData blockData = block.getBlockData();
+        if (blockData instanceof Directional directional) {
+            if (directional.getFaces().contains(blockFace)) {
+                directional.setFacing(blockFace);
+                block.setBlockData(directional);
+            }
+        }
+        if (blockData instanceof Orientable orientable) {
+            orientable.setAxis(convertBlockFaceToAxis(blockFace));
+            block.setBlockData(orientable);
+        }
+        if (blockData instanceof Rotatable rotatable) {
+            rotatable.setRotation(blockFace);
+            block.setBlockData(rotatable);
+        }
+    }
+
+    private static Axis convertBlockFaceToAxis(BlockFace face) {
+        return switch (face) {
+            case NORTH, SOUTH -> Axis.Z;
+            case UP, DOWN -> Axis.Y;
+            default -> Axis.X;
+        };
     }
 
     private void decreaseHandItem(Player p, EquipmentSlot hand) {
@@ -473,7 +572,7 @@ public class DuctListener implements Listener {
     }
 
     private static class Interaction {
-        final Player p;
+        final Player player;
         final EquipmentSlot hand;
         final ItemStack item;
         final Block clickedBlock;
@@ -483,8 +582,8 @@ public class DuctListener implements Listener {
         boolean denyBlockUse;
         boolean successful = false;
 
-        Interaction(Player p, EquipmentSlot hand, ItemStack item, Block clickedBlock, BlockFace blockFace, Action action) {
-            this.p = p;
+        Interaction(Player player, EquipmentSlot hand, ItemStack item, Block clickedBlock, BlockFace blockFace, Action action) {
+            this.player = player;
             this.hand = hand;
             this.item = item;
             this.clickedBlock = clickedBlock;

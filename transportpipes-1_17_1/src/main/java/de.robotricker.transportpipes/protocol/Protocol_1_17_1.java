@@ -7,6 +7,9 @@ import de.robotricker.transportpipes.TransportPipes;
 import de.robotricker.transportpipes.duct.Duct;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.block.data.BlockData;
+import org.bukkit.block.data.type.AmethystCluster;
+import org.bukkit.block.data.type.LightningRod;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -54,5 +57,14 @@ public class Protocol_1_17_1 implements ProtocolProvider {
         }
 
         return Bukkit.getCraftingRecipe(craftingMatrix, duct.getWorld());
+    }
+
+    @Override
+    public boolean isClickedFaceDirectional(BlockData blockData) {
+        clickedFaceDirectionals.add(AmethystCluster.class);
+        clickedFaceDirectionals.add(LightningRod.class);
+        clickedFaceMaterials.add(Material.DEEPSLATE);
+        clickedFaceMaterials.add(Material.INFESTED_DEEPSLATE);
+        return ProtocolProvider.super.isClickedFaceDirectional(blockData);
     }
 }
