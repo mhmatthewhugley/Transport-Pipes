@@ -45,6 +45,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
 import javax.inject.Inject;
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
 public class DuctListener implements Listener {
@@ -380,11 +381,14 @@ public class DuctListener implements Listener {
                         BlockData blockData = interaction.item.getType().createBlockData();
 
                         // Create a fake block from new blockdata to test build permissions
-                        Block fakeBlock = transportPipes.getFakeBlock().getBlock(
-                                relativeBlock.getWorld(),
-                                relativeBlock.getLocation(),
-                                interaction.item.getType()
-                        );
+                        Block fakeBlock;
+                        try {
+                            fakeBlock = transportPipes.getFakeBlock(relativeBlock.getWorld(), relativeBlock.getLocation(), interaction.item.getType());
+                        } catch (NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException e) {
+                            e.printStackTrace();
+                            return;
+                        }
+
                         fakeBlock.setBlockData(blockData, false);
 
                         if (protectionUtils.canBuild(interaction.player, fakeBlock, interaction.item, interaction.hand)) {

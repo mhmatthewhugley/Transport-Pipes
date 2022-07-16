@@ -19,18 +19,11 @@ import java.util.List;
 
 public class FakeBlock_1_16_5 extends FakeBlock implements Block {
 
-    World world;
-    Location location;
-    Material material;
-    BlockData blockData;
-
-    @Override
-    public Block getBlock(World world, Location location, Material material) {
+    public FakeBlock_1_16_5(World world, Location location, Material material) {
         this.world = world;
         this.location = location;
         this.material = material;
         this.blockData = material.createBlockData();
-        return this;
     }
 
     @Override

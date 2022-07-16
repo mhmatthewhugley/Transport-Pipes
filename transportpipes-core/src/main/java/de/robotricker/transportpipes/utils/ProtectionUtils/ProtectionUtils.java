@@ -19,6 +19,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.RegisteredListener;
 
 import javax.inject.Inject;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,7 +41,14 @@ public class ProtectionUtils implements Listener {
             return false;
         }
 
-        Block fakeBlock = transportPipes.getFakeBlock().getBlock(block.getWorld(), block.getLocation(), Material.HOPPER);
+        Block fakeBlock;
+        try {
+            fakeBlock = transportPipes.getFakeBlock(block.getWorld(), block.getLocation(), Material.HOPPER);
+        } catch (NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException e) {
+            e.printStackTrace();
+            return false;
+        }
+
         BuildPermissionEvent event = new BuildPermissionEvent(fakeBlock, block.getState(), block.getRelative(BlockFace.DOWN), item, player, true, hand);
         callEventWithoutAntiCheat(event);
 
@@ -52,7 +60,14 @@ public class ProtectionUtils implements Listener {
             return false;
         }
 
-        Block fakeBlock = transportPipes.getFakeBlock().getBlock(block.getWorld(), block.getLocation(), Material.HOPPER);
+        Block fakeBlock;
+        try {
+            fakeBlock = transportPipes.getFakeBlock(block.getWorld(), block.getLocation(), Material.HOPPER);
+        } catch (NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException e) {
+            e.printStackTrace();
+            return false;
+        }
+
         BreakPermissionEvent event = new BreakPermissionEvent(fakeBlock, player);
         callEventWithoutAntiCheat(event);
 

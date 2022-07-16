@@ -30,12 +30,10 @@ import de.robotricker.transportpipes.rendersystems.pipe.modelled.ModelledPipeRen
 import de.robotricker.transportpipes.rendersystems.pipe.vanilla.VanillaPipeRenderSystem;
 import de.robotricker.transportpipes.saving.DiskService;
 import de.robotricker.transportpipes.utils.LWCUtils;
-import de.robotricker.transportpipes.utils.ProtectionUtils.FakeBlock;
 import de.robotricker.transportpipes.utils.ProtectionUtils.ProtectionUtils;
 import de.robotricker.transportpipes.utils.WorldEditUtils;
-import org.bukkit.Bukkit;
-import org.bukkit.Chunk;
-import org.bukkit.World;
+import org.bukkit.*;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -56,29 +54,29 @@ public class TransportPipes extends JavaPlugin {
     private ThreadService thread;
     private DiskService diskService;
 
-    static ProtocolProvider protocolProvider;
-    static FakeBlock fakeBlock;
+    private static ProtocolProvider protocolProvider;
+    private static Class<?> fakeBlockClass;
 
     @Override
     public void onEnable() {
-
         // Load protocol-specific classes
         String version = Bukkit.getBukkitVersion().split("-")[0];
-        String providerClass = TransportPipes.class.getPackage().getName() + ".protocol.Protocol_";
-        String fakeBlockClass = TransportPipes.class.getPackage().getName() + ".utils.ProtectionUtils.FakeBlock_";
+        String protocolProviderClassName = TransportPipes.class.getPackage().getName() + ".protocol.Protocol_";
+        String fakeBlockClassName = TransportPipes.class.getPackage().getName() + ".utils.ProtectionUtils.FakeBlock_";
+
         switch(version) {
             case "1.16.5":
                 try {
-                    protocolProvider = (ProtocolProvider) Class.forName(providerClass + "1_16_5").getDeclaredConstructor().newInstance();
-                    fakeBlock = (FakeBlock) Class.forName(fakeBlockClass + "1_16_5").getDeclaredConstructor().newInstance();
+                    protocolProvider = (ProtocolProvider) Class.forName(protocolProviderClassName + "1_16_5").getDeclaredConstructor().newInstance();
+                    fakeBlockClass = Class.forName(fakeBlockClassName + "1_16_5");
                 } catch (InstantiationException | IllegalAccessException | ClassNotFoundException | NoSuchMethodException | InvocationTargetException e) {
                     Bukkit.getLogger().log(Level.SEVERE, "TransportPipes could not find a valid implementation for this server version.");
                 }
                 break;
             case "1.17":
                 try {
-                    protocolProvider = (ProtocolProvider) Class.forName(providerClass + "1_17").getDeclaredConstructor().newInstance();
-                    fakeBlock = (FakeBlock) Class.forName(fakeBlockClass + "1_17").getDeclaredConstructor().newInstance();
+                    protocolProvider = (ProtocolProvider) Class.forName(protocolProviderClassName + "1_17").getDeclaredConstructor().newInstance();
+                    fakeBlockClass = Class.forName(fakeBlockClassName + "1_17");
                 } catch (InstantiationException | IllegalAccessException | ClassNotFoundException | NoSuchMethodException | InvocationTargetException e) {
                     Bukkit.getLogger().log(Level.SEVERE, "TransportPipes could not find a valid implementation for this server version.");
                 }
@@ -88,16 +86,16 @@ public class TransportPipes extends JavaPlugin {
             case "1.18.1":
             case "1.18.2":
                 try {
-                    protocolProvider = (ProtocolProvider) Class.forName(providerClass + "1_17_1").getDeclaredConstructor().newInstance();
-                    fakeBlock = (FakeBlock) Class.forName(fakeBlockClass + "1_17_1").getDeclaredConstructor().newInstance();
+                    protocolProvider = (ProtocolProvider) Class.forName(protocolProviderClassName + "1_17_1").getDeclaredConstructor().newInstance();
+                    fakeBlockClass = Class.forName(fakeBlockClassName + "1_17_1");
                 } catch (InstantiationException | IllegalAccessException | ClassNotFoundException | NoSuchMethodException | InvocationTargetException e) {
                     Bukkit.getLogger().log(Level.SEVERE, "TransportPipes could not find a valid implementation for this server version.");
                 }
                 break;
             case "1.19":
                 try {
-                    protocolProvider = (ProtocolProvider) Class.forName(providerClass + "1_19").getDeclaredConstructor().newInstance();
-                    fakeBlock = (FakeBlock) Class.forName(fakeBlockClass + "1_19").getDeclaredConstructor().newInstance();
+                    protocolProvider = (ProtocolProvider) Class.forName(protocolProviderClassName + "1_19").getDeclaredConstructor().newInstance();
+                    fakeBlockClass = Class.forName(fakeBlockClassName + "1_19");
                 } catch (InstantiationException | IllegalAccessException | ClassNotFoundException | NoSuchMethodException | InvocationTargetException e) {
                     Bukkit.getLogger().log(Level.SEVERE, "TransportPipes could not find a valid implementation for this server version.");
                 }
@@ -226,8 +224,11 @@ public class TransportPipes extends JavaPlugin {
         return protocolProvider;
     }
 
-    public FakeBlock getFakeBlock() {
-        return fakeBlock;
+    public Block getFakeBlock(World world, Location location, Material material) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+        Class<?> [] paramTypes = { World.class, Location.class, Material.class };
+        Object [] paramValues = { world, location, material };
+
+        return (Block) fakeBlockClass.getConstructor(paramTypes).newInstance(paramValues);
     }
 
     public void changeRenderSystem(Player p, String newRenderSystemName) {

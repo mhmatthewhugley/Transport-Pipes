@@ -3,8 +3,11 @@ package de.robotricker.transportpipes.utils.ProtectionUtils;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
-import org.bukkit.block.Block;
+import org.bukkit.block.data.BlockData;
 
 public abstract class FakeBlock {
-    public abstract Block getBlock(World world, Location location, Material material);
+    World world;
+    Location location;
+    Material material;
+    BlockData blockData;
 }
