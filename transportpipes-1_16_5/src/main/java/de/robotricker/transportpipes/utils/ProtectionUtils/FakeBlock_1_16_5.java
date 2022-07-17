@@ -19,16 +19,17 @@ import java.util.List;
 
 public class FakeBlock_1_16_5 extends FakeBlock implements Block {
 
-    public FakeBlock_1_16_5(World world, Location location, Material material) {
+    public FakeBlock_1_16_5(World world, Location location) {
         this.world = world;
         this.location = location;
-        this.material = material;
-        this.blockData = material.createBlockData();
+        this.material = Material.HOPPER;
+        this.blockData = this.material.createBlockData();
+        hopper = new FakeHopper_1_16_5(world, location, this);
     }
 
     @Override
     public byte getData() {
-        return 0;
+        return hopper.getRawData();
     }
 
     @NotNull
@@ -126,24 +127,16 @@ public class FakeBlock_1_16_5 extends FakeBlock implements Block {
     }
 
     @Override
-    public void setBlockData(@NotNull BlockData data) {
-        this.blockData = data;
-    }
+    public void setBlockData(@NotNull BlockData data) {}
 
     @Override
-    public void setBlockData(@NotNull BlockData data, boolean applyPhysics) {
-        this.blockData = data;
-    }
+    public void setBlockData(@NotNull BlockData data, boolean applyPhysics) {}
 
     @Override
-    public void setType(@NotNull Material type) {
-        this.material = type;
-    }
+    public void setType(@NotNull Material type) {}
 
     @Override
-    public void setType(@NotNull Material type, boolean applyPhysics) {
-        this.material = type;
-    }
+    public void setType(@NotNull Material type, boolean applyPhysics) {}
 
     @Nullable
     @Override
@@ -155,7 +148,7 @@ public class FakeBlock_1_16_5 extends FakeBlock implements Block {
     @NotNull
     @Override
     public BlockState getState() {
-        return location.getBlock().getState();
+        return hopper;
     }
 
     @NotNull
@@ -165,58 +158,56 @@ public class FakeBlock_1_16_5 extends FakeBlock implements Block {
     }
 
     @Override
-    public void setBiome(@NotNull Biome bio) {
-        world.setBiome(location.getBlockX(), location.getBlockY(), location.getBlockZ(), bio);
-    }
+    public void setBiome(@NotNull Biome bio) {}
 
     @Override
     public boolean isBlockPowered() {
-        return location.getBlock().isBlockPowered();
+        return false;
     }
 
     @Override
     public boolean isBlockIndirectlyPowered() {
-        return location.getBlock().isBlockIndirectlyPowered();
+        return false;
     }
 
     @Override
     public boolean isBlockFacePowered(@NotNull BlockFace face) {
-        return location.getBlock().isBlockFacePowered(face);
+        return false;
     }
 
     @Override
     public boolean isBlockFaceIndirectlyPowered(@NotNull BlockFace face) {
-        return location.getBlock().isBlockFaceIndirectlyPowered(face);
+        return false;
     }
 
     @Override
     public int getBlockPower(@NotNull BlockFace face) {
-        return location.getBlock().getBlockPower(face);
+        return 0;
     }
 
     @Override
     public int getBlockPower() {
-        return location.getBlock().getBlockPower();
+        return 0;
     }
 
     @Override
     public boolean isEmpty() {
-        return material.isAir();
+        return false;
     }
 
     @Override
     public boolean isLiquid() {
-        return material == Material.WATER || material == Material.LAVA;
+        return false;
     }
 
     @Override
     public double getTemperature() {
-        return location.getBlock().getTemperature();
+        return 0.0;
     }
 
     @Override
     public double getHumidity() {
-        return location.getBlock().getHumidity();
+        return 0.0;
     }
 
     @NotNull
@@ -265,7 +256,7 @@ public class FakeBlock_1_16_5 extends FakeBlock implements Block {
 
     @Override
     public boolean isPassable() {
-        return location.getBlock().isPassable();
+        return false;
     }
 
     @Nullable
@@ -281,9 +272,7 @@ public class FakeBlock_1_16_5 extends FakeBlock implements Block {
     }
 
     @Override
-    public void setMetadata(@NotNull String metadataKey, @NotNull MetadataValue newMetadataValue) {
-
-    }
+    public void setMetadata(@NotNull String metadataKey, @NotNull MetadataValue newMetadataValue) {}
 
     @NotNull
     @Override
@@ -297,7 +286,5 @@ public class FakeBlock_1_16_5 extends FakeBlock implements Block {
     }
 
     @Override
-    public void removeMetadata(@NotNull String metadataKey, @NotNull Plugin owningPlugin) {
-
-    }
+    public void removeMetadata(@NotNull String metadataKey, @NotNull Plugin owningPlugin) {}
 }
