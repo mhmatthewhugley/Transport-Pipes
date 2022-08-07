@@ -1,6 +1,7 @@
 package de.robotricker.transportpipes.items;
 
-import com.comphenix.protocol.reflect.FieldUtils;
+import com.comphenix.protocol.reflect.accessors.Accessors;
+import com.comphenix.protocol.reflect.accessors.FieldAccessor;
 import com.comphenix.protocol.wrappers.WrappedGameProfile;
 import com.comphenix.protocol.wrappers.WrappedSignedProperty;
 import de.robotricker.transportpipes.TransportPipes;
@@ -28,7 +29,6 @@ import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 
 import javax.inject.Inject;
-import java.lang.reflect.Field;
 import java.util.*;
 
 public class ItemService {
@@ -135,11 +135,9 @@ public class ItemService {
         SkullMeta skullMeta = (SkullMeta) skull.getItemMeta();
         Objects.requireNonNull(skullMeta).setOwningPlayer(Bukkit.getOfflinePlayer(UUID.fromString(uuid)));
 
-        Field field = FieldUtils.getField(skullMeta.getClass(), "profile", true);
-        try {
-            FieldUtils.writeField(field, skullMeta, wrappedProfile.getHandle());
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
+        FieldAccessor accessor = Accessors.getFieldAccessorOrNull(skullMeta.getClass(), "profile", boolean.class);
+        if (accessor != null) {
+            accessor.set(skullMeta, wrappedProfile.getHandle());
         }
 
         skull.setItemMeta(skullMeta);
