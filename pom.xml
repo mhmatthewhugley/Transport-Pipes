@@ -5,7 +5,7 @@
 
     <groupId>de.robotricker</groupId>
     <artifactId>transportpipes-parent</artifactId>
-    <version>5.4.2-SNAPSHOT</version>
+    <version>5.4.3-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>TransportPipes</name>
