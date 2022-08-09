@@ -94,6 +94,7 @@ public class TransportPipes extends JavaPlugin {
                 break;
             case "1.19":
             case "1.19.1":
+            case "1.19.2":
                 try {
                     protocolProvider = (ProtocolProvider) Class.forName(protocolProviderClassName + "1_19").getDeclaredConstructor().newInstance();
                     fakeBlockClass = Class.forName(fakeBlockClassName + "1_19");
