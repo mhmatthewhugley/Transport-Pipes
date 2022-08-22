@@ -24,7 +24,11 @@ public class FakeBlock_1_16_5 extends FakeBlock implements Block {
         this.location = location;
         this.material = Material.HOPPER;
         this.blockData = this.material.createBlockData();
-        hopper = new FakeHopper_1_16_5(world, location, this);
+        this.hopper = new FakeHopper_1_16_5(world, location, this);
+    }
+
+    public BlockState getState(boolean ignoredUseSnapshot) {
+        return getState();
     }
 
     @Override
