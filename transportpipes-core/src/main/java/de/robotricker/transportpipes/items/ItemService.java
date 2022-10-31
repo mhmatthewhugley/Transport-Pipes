@@ -135,7 +135,7 @@ public class ItemService {
         SkullMeta skullMeta = (SkullMeta) skull.getItemMeta();
         Objects.requireNonNull(skullMeta).setOwningPlayer(Bukkit.getOfflinePlayer(UUID.fromString(uuid)));
 
-        FieldAccessor accessor = Accessors.getFieldAccessorOrNull(skullMeta.getClass(), "profile", boolean.class);
+        FieldAccessor accessor = Accessors.getFieldAccessorOrNull(skullMeta.getClass(), "profile", wrappedProfile.getHandle().getClass());
         if (accessor != null) {
             accessor.set(skullMeta, wrappedProfile.getHandle());
         }
