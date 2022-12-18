@@ -4,6 +4,8 @@ import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolManager;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.reflect.StructureModifier;
+import com.comphenix.protocol.wrappers.Vector3F;
+import com.comphenix.protocol.wrappers.WrappedDataWatcher;
 import de.robotricker.transportpipes.TransportPipes;
 import de.robotricker.transportpipes.duct.Duct;
 import org.bukkit.Material;
@@ -61,6 +63,34 @@ public interface ProtocolProvider {
         return Tag.LOGS.isTagged(material) || Tag.SHULKER_BOXES.isTagged(material)
                 || clickedFaceMaterials.stream().anyMatch(clickedFaceMaterial -> material == clickedFaceMaterial)
                 || clickedFaceDirectionals.stream().anyMatch(clickedFaceDirectional -> clickedFaceDirectional.isInstance(blockData));
+    }
+
+    WrappedDataWatcher.Serializer BYTE_SERIALIZER = WrappedDataWatcher.Registry.get(Byte.class);
+    WrappedDataWatcher.Serializer VECTOR_SERIALIZER = WrappedDataWatcher.Registry.getVectorSerializer();
+    WrappedDataWatcher.Serializer BOOLEAN_SERIALIZER = WrappedDataWatcher.Registry.get(Boolean.class);
+
+    default PacketContainer setEntityMetadata(ProtocolManager protocolManager, ArmorStandData asd) {
+        PacketContainer entityMetadataContainer = protocolManager.createPacket(PacketType.Play.Server.ENTITY_METADATA);
+        entityMetadataContainer.getModifier().writeDefaults();
+        entityMetadataContainer.getIntegers().write(0, asd.getEntityID()); // Entity ID
+
+        byte bitMask = (byte) ((asd.isSmall() ? 0x01 : 0x00) | 0x04 | 0x08 | 0x10); // Is Small + Has Arms + No BasePlate + Marker
+
+        WrappedDataWatcher dataWatcher = new WrappedDataWatcher();
+        WrappedDataWatcher.WrappedDataWatcherObject entityMask = new WrappedDataWatcher.WrappedDataWatcherObject(0, BYTE_SERIALIZER);
+        WrappedDataWatcher.WrappedDataWatcherObject nameVisible = new WrappedDataWatcher.WrappedDataWatcherObject(3, BOOLEAN_SERIALIZER);
+        WrappedDataWatcher.WrappedDataWatcherObject asMask = new WrappedDataWatcher.WrappedDataWatcherObject(getMaskIndex(), BYTE_SERIALIZER);
+        WrappedDataWatcher.WrappedDataWatcherObject headRot = new WrappedDataWatcher.WrappedDataWatcherObject(getHeadRotIndex(), VECTOR_SERIALIZER);
+        WrappedDataWatcher.WrappedDataWatcherObject rArmRot = new WrappedDataWatcher.WrappedDataWatcherObject(getRightArmRotIndex(), VECTOR_SERIALIZER);
+
+        dataWatcher.setObject(entityMask, (byte) (0x20 | 0x01)); // Invisible and on fire (to fix lighting issues)
+        dataWatcher.setObject(nameVisible, false); // Custom Name Visible
+        dataWatcher.setObject(asMask, bitMask); // Armor Stand Data
+        dataWatcher.setObject(headRot, new Vector3F((float) asd.getHeadRotation().getX(), (float) asd.getHeadRotation().getY(), (float) asd.getHeadRotation().getZ())); // Head Rotation
+        dataWatcher.setObject(rArmRot, new Vector3F((float) asd.getArmRotation().getX(), (float) asd.getArmRotation().getY(), (float) asd.getArmRotation().getZ())); // Right Arm Rotation
+        entityMetadataContainer.getWatchableCollectionModifier().write(0, dataWatcher.getWatchableObjects());
+
+        return entityMetadataContainer;
     }
 
 }
