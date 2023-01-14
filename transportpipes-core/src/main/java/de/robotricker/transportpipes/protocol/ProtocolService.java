@@ -110,9 +110,7 @@ public class ProtocolService {
                 entityEquipmentContainer.getSlotStackPairLists().write(0, itemList);
             }
 
-            transportPipes.runTaskAsync(() -> {
-                protocolManager.sendServerPacket(player, entityEquipmentContainer);
-            }, 1L);
+            protocolManager.sendServerPacket(player, entityEquipmentContainer);
 
         } catch (Exception e) {
             e.printStackTrace();
