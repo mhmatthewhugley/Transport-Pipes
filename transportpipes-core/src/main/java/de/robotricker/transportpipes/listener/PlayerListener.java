@@ -42,7 +42,7 @@ public class PlayerListener implements Listener {
 
     @EventHandler
     public void onQuit(PlayerQuitEvent e) {
-        globalDuctManager.getPlayerDucts(e.getPlayer()).clear();
+        globalDuctManager.clearPlayerDucts(e.getPlayer());
         ((PipeManager) (DuctManager<? extends Duct>) ductRegister.baseDuctTypeOf("pipe").getDuctManager()).getPlayerPipeItems(e.getPlayer()).clear();
     }
 
