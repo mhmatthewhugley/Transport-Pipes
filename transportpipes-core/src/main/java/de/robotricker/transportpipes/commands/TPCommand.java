@@ -62,9 +62,8 @@ public class TPCommand extends BaseCommand {
             Map<BlockLocation, Duct> ductMap = globalDuctManager.getDucts(world);
             for (Duct duct : ductMap.values()) {
                 if (duct.getDuctType().getBaseDuctType().is("Pipe")) {
-                	Pipe pipe = (Pipe) duct;
                     worldPipes++;
-                    worldItems += pipe.getItems().size();
+                    worldItems += ((Pipe) duct).getItems().size();
                 }
             }
             cs.sendMessage(MessageUtils.formatColoredMsg("&6" + world.getName() + ": &e" + worldPipes + " &6" + "pipes, &e" + worldItems + " &6items"));
