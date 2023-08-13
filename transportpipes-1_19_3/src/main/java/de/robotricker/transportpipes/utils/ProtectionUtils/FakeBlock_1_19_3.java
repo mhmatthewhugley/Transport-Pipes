@@ -308,9 +308,14 @@ public class FakeBlock_1_19_3 extends FakeBlock implements Block {
     @Override
     public void removeMetadata(@NotNull String metadataKey, @NotNull Plugin owningPlugin) {}
 
-    @NotNull
     @Override
     public String getTranslationKey() {
-        return this.material.getTranslationKey();
+        if (location != null && location.getBlock() != null && location.getBlock().getType() != null) {
+            return location.getBlock().getType().getBlockTranslationKey();
+        } else if (this.material != null) {
+            return this.material.getTranslationKey();
+        } else {
+            return "default.translation.key";
+        }
     }
 }
